@@ -8,6 +8,7 @@ Write-Host "[1/2] Starting Backend FastAPI server on http://localhost:8000..." -
 $backendJob = Start-Process powershell -ArgumentList "-NoExit", "-Command", "python -m uvicorn backend.main:app --reload --port 8000" -PassThru
 
 # 2. Start Frontend Vite server
-Write-Host "[2/2] Starting Frontend Vite dev server on http://localhost:5173..." -ForegroundColor Green
+Write-Host "[2/2] Starting Frontend Vite dev server on http://localhost:8080..." -ForegroundColor Green
 Set-Location frontend
 npm run dev
+
