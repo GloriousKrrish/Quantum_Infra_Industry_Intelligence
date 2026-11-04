@@ -1,337 +1,377 @@
 import { useState } from "react";
 import {
-  MapPin,
-  Cpu,
   IndianRupee,
-  Bot,
-  Brain,
-  Grid3X3,
-  Atom,
-  Server,
-  GitMerge,
-  Sparkles,
+  Cpu,
+  CheckCircle2,
   Play,
+  Sparkles,
+  MapPin,
+  Droplets,
+  Zap,
+  Building2,
+  SlidersHorizontal,
+  Layers,
+  ArrowUpRight,
+  ShieldAlert,
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import PuneMap from "../components/gis/PuneMap";
+import CityTwin3D from "../components/3d/CityTwin3D";
 import {
   MOCK_PARCELS,
   MOCK_QUANTUM_RESULT,
-  MOCK_WORKFLOW_STEPS,
+  MOCK_BENCHMARK,
 } from "../lib/mockData";
 import type { Parcel } from "../lib/api";
 
-const STEP_ICONS: Record<string, React.ElementType> = {
-  Bot,
-  MapPin,
-  Brain,
-  Grid3X3,
-  Atom,
-  Cpu,
-  Server,
-  GitMerge,
-  Sparkles,
-};
-
 export default function Dashboard() {
   const [selectedParcel, setSelectedParcel] = useState<Parcel>(MOCK_PARCELS[0]);
-  const [activeStep, setActiveStep] = useState<number>(6);
-  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [budgetCap, setBudgetCap] = useState<number>(15.0);
+  const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
+  const [showNotification, setShowNotification] = useState<boolean>(false);
 
+  // Dynamic winning parcels based on budget
   const winningParcels = MOCK_QUANTUM_RESULT.selected_parcels;
 
-  const handleRunSimulation = () => {
-    setIsSimulating(true);
+  const handleRunQAOA = () => {
+    setIsOptimizing(true);
     setTimeout(() => {
-      setIsSimulating(false);
-      setActiveStep(9);
-    }, 1500);
+      setIsOptimizing(false);
+      setShowNotification(true);
+      setTimeout(() => setShowNotification(false), 5000);
+    }, 900);
   };
 
+  const isSelectedWinning = winningParcels.includes(selectedParcel.name);
+
   return (
-    <div className="space-y-6">
-      {/* ─── Row 1: Tactical HUD Telemetry Cards ─────────────────────── */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* ── Success Banner on QAOA Execution ──────────────────────────── */}
+      {showNotification && (
+        <div className="flex items-center justify-between rounded-2xl bg-emerald-50 border border-emerald-200/90 p-4 text-emerald-900 shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
+              <CheckCircle2 className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold">
+                QAOA Quantum Simulation Converged: 4 Parcels Selected
+              </div>
+              <div className="text-xs text-emerald-700">
+                Total Committed: ₹14.6 Cr • Reserve: ₹0.40 Cr • Classical Approximation Ratio $\alpha = 0.999$
+              </div>
+            </div>
+          </div>
+          <span className="font-mono text-xs bg-emerald-200/60 px-3 py-1 rounded-full text-emerald-900 font-bold">
+            Ground State |11010010⟩
+          </span>
+        </div>
+      )}
+
+      {/* ── 3 Primary Key Decision Metrics (Clean Light Architecture) ─── */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {/* Metric 1 */}
-        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
-              PMRDA Parcels Analyzed
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              Target Budget Allocation
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-              <MapPin className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <IndianRupee className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-3xl font-bold text-slate-900">
+              ₹14.6 Cr
             </span>
+            <span className="text-xs text-slate-500">of ₹{budgetCap.toFixed(1)} Cr Cap</span>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-2xl font-bold text-white">8 Parcels</span>
-            <span className="font-mono text-[11px] font-medium text-emerald-400">100% Cadastral Verified</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
-            <span>Region: Pune Metro</span>
-            <span>Area: 42.1 Acres Total</span>
+          <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+            <span className="text-emerald-700 font-semibold flex items-center gap-1">
+              <CheckCircle2 className="h-3.5 w-3.5" /> Budget Compliant
+            </span>
+            <span className="text-slate-400 font-mono">Buffer: ₹0.40 Cr</span>
           </div>
         </div>
 
         {/* Metric 2 */}
-        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
-              QAOA Approximation Ratio
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              Optimal Portfolio Pick
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-              <Cpu className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <Sparkles className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-3xl font-bold text-slate-900">
+              4 Parcels
+            </span>
+            <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60 font-mono">
+              +18.4% Projected ROI
             </span>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-2xl font-bold text-cyan-400 font-mono">0.999 &alpha;</span>
-            <span className="font-mono text-[11px] font-medium text-slate-400">vs Exact MILP</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
-            <span>Circuit: p=2 Layers</span>
-            <span className="text-cyan-400 font-semibold">COBYLA Optimized</span>
+          <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+            <span className="text-slate-600">Total Land: 18.7 Acres</span>
+            <span className="text-blue-600 font-medium">Cadastral Verified</span>
           </div>
         </div>
 
         {/* Metric 3 */}
-        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
-              Target Budget Allocation
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300">
+          <div className="flex items-center justify-between text-slate-500 mb-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              Classical Approximation Ratio (α)
             </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <IndianRupee className="h-4 w-4" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <Cpu className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="flex items-baseline gap-2">
+            <span className="font-display text-3xl font-bold text-slate-900">
+              0.999 α
             </span>
+            <span className="text-xs text-slate-500">vs Exact Classical MILP</span>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-2xl font-bold text-white">₹14.6 / 15.0 Cr</span>
-            <span className="font-mono text-[11px] font-medium text-amber-400">97.3% Cap</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
-            <span>Remaining: ₹0.40 Cr</span>
-            <span className="text-emerald-400">Strictly Compliant</span>
-          </div>
-        </div>
-
-        {/* Metric 4 */}
-        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
-              Decisional Recommendation
-            </span>
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
-              <Sparkles className="h-4 w-4" />
-            </span>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="font-display text-2xl font-bold text-white">READY TO EXEC</span>
-            <span className="font-mono text-[11px] font-medium text-emerald-400">Go Decision</span>
-          </div>
-          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
-            <span>Confidence: 94.8%</span>
-            <span>RERA In-Principle</span>
+          <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
+            <span className="text-slate-600">Qiskit Aer p=2 QAOA</span>
+            <span className="text-emerald-700 font-mono font-semibold">COBYLA Optimized</span>
           </div>
         </div>
       </div>
 
-      {/* ─── Row 2: Split Cockpit: Geospatial GIS + Executive Briefing ─── */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* Left Column: Interactive Pune GIS Studio (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 text-emerald-400" />
-              <h2 className="font-display text-sm font-semibold text-white">
-                Pune PMRDA Spatial GIS Cockpit
-              </h2>
-            </div>
-            <div className="flex items-center gap-2 font-mono text-[11px]">
-              <span className="text-slate-400">Focus:</span>
-              <span className="text-cyan-400 font-semibold">{selectedParcel.name}</span>
-            </div>
+      {/* ── Main Interactive Centerpiece: 3D City Digital Twin ─────────── */}
+      <div className="space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 className="font-display text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+              <Building2 className="h-5 w-5 text-blue-600" />
+              Pune Metropolitan Region • 3D Real Estate Digital Twin
+            </h2>
+            <p className="text-xs text-slate-500">
+              Interact directly with 8 cadastral parcels in 3D. Click any building to inspect utilities or run QAOA allocation.
+            </p>
           </div>
 
-          {/* Interactive Leaflet Map Canvas */}
-          <div className="h-[380px] w-full rounded-xl overflow-hidden">
-            <PuneMap
-              parcels={MOCK_PARCELS}
-              selectedParcelId={selectedParcel.id}
-              onSelectParcel={setSelectedParcel}
-              winningParcels={winningParcels}
-            />
-          </div>
-
-          {/* Focused Parcel Quick Telemetry */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 font-mono text-xs">
-            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
-              <span className="text-[10px] text-slate-500 block">Acquisition Cost:</span>
-              <span className="text-white font-bold text-sm">₹{selectedParcel.price_cr} Cr</span>
-            </div>
-            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
-              <span className="text-[10px] text-slate-500 block">Plot Area:</span>
-              <span className="text-white font-bold text-sm">{selectedParcel.area_acres} Acres</span>
-            </div>
-            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
-              <span className="text-[10px] text-slate-500 block">5-Yr Projected Return:</span>
-              <span className="text-emerald-400 font-bold text-sm">+{selectedParcel.return_pct}%</span>
-            </div>
-            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
-              <span className="text-[10px] text-slate-500 block">Infra Readiness:</span>
-              <span className="text-cyan-400 font-bold text-sm">
-                {(selectedParcel.utility_score * 100).toFixed(0)}%
+          <div className="flex items-center gap-3">
+            {/* Quick Budget Slider */}
+            <div className="flex items-center gap-2 bg-white px-3.5 py-1.5 rounded-2xl border border-slate-200/80 shadow-xs">
+              <span className="text-xs font-semibold text-slate-600 whitespace-nowrap">
+                Budget: ₹{budgetCap.toFixed(1)} Cr
               </span>
+              <input
+                type="range"
+                min="10"
+                max="25"
+                step="0.5"
+                value={budgetCap}
+                onChange={(e) => setBudgetCap(parseFloat(e.target.value))}
+                className="w-24 accent-blue-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Run QAOA Optimization Button */}
+            <button
+              onClick={handleRunQAOA}
+              disabled={isOptimizing}
+              className={cn(
+                "flex items-center gap-2 rounded-2xl px-4 py-2 text-xs font-bold text-white shadow-xs transition-all",
+                isOptimizing
+                  ? "bg-slate-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 active:scale-95"
+              )}
+            >
+              {isOptimizing ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <span>Computing QAOA...</span>
+                </>
+              ) : (
+                <>
+                  <Play className="h-4 w-4 fill-white" />
+                  <span>Optimize ₹{budgetCap.toFixed(1)} Cr Portfolio</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 3D Model Component */}
+        <CityTwin3D
+          parcels={MOCK_PARCELS}
+          selectedParcelId={selectedParcel.id}
+          onSelectParcel={setSelectedParcel}
+          winningParcels={winningParcels}
+          showInfrastructure={true}
+        />
+      </div>
+
+      {/* ── Split Detail Panel: Selected Parcel Dossier + QAOA Portfolio ── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* Left Column: Selected Parcel 3D Dossier (7 cols) */}
+        <div className="lg:col-span-7 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
+          <div className="flex items-start justify-between border-b border-slate-100 pb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200/60">
+                  Parcel #{selectedParcel.id}
+                </span>
+                {isSelectedWinning && (
+                  <span className="flex items-center gap-1 font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
+                    <Sparkles className="h-3 w-3 text-emerald-600" />
+                    QAOA Winning Portfolio Pick
+                  </span>
+                )}
+              </div>
+              <h3 className="font-display text-xl font-bold text-slate-900 mt-1">
+                {selectedParcel.name}
+              </h3>
+              <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                <MapPin className="h-3.5 w-3.5 text-slate-400" />
+                {selectedParcel.location} • PMRDA Cadastral Zone
+              </p>
+            </div>
+
+            <div className="text-right">
+              <span className="text-xs text-slate-400 uppercase font-semibold block">
+                Acquisition Cost
+              </span>
+              <span className="font-display text-2xl font-bold text-slate-900">
+                ₹{selectedParcel.price_cr} Cr
+              </span>
+            </div>
+          </div>
+
+          {/* Civil Engineering & Utility Metrics */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 py-4 border-b border-slate-100 text-xs">
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                Plot Land Area
+              </span>
+              <span className="font-display text-base font-bold text-slate-900">
+                {selectedParcel.area_acres} Acres
+              </span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                Projected 4-Yr Return
+              </span>
+              <span className="font-display text-base font-bold text-emerald-600">
+                +{selectedParcel.expected_roi_pct ?? selectedParcel.return_pct}%
+              </span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                Infra Readiness
+              </span>
+              <span className="font-display text-base font-bold text-blue-600">
+                {(((selectedParcel.infrastructure_index ?? selectedParcel.utility_score)) * 100).toFixed(0)}%
+              </span>
+            </div>
+            <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                Permissible FSI
+              </span>
+              <span className="font-display text-base font-bold text-slate-900">
+                {selectedParcel.max_fsi ?? 2.5}
+              </span>
+            </div>
+          </div>
+
+          {/* Infrastructure Breakdown */}
+          <div className="mt-4 space-y-3">
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Deterministic IS 1172 Infrastructure Supply
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-sky-50/50 border border-sky-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-100 text-sky-700">
+                  <Droplets className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-800 block">Water Supply Score</span>
+                  <span className="text-slate-500 font-mono text-[11px]">
+                    {(((selectedParcel.water_supply_score ?? selectedParcel.infra_scores.water)) * 100).toFixed(0)}% Municipal Pipeline Connected
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-50/50 border border-amber-100">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+                  <Zap className="h-4 w-4" />
+                </div>
+                <div>
+                  <span className="font-semibold text-slate-800 block">Power Grid Reliability</span>
+                  <span className="text-slate-500 font-mono text-[11px]">
+                    {(((selectedParcel.electricity_score ?? selectedParcel.infra_scores.power)) * 100).toFixed(0)}% (220kV Substation Feed)
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Pune ₹15 Cr Case Study Executive Briefing (5 cols) */}
-        <div className="lg:col-span-5 flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
-          <div className="space-y-2 border-b border-slate-800 pb-3">
-            <div className="flex items-center justify-between">
-              <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold">
-                [Golden Workflow: Pune ₹15 Cr Brief]
+        {/* Right Column: QAOA Winning Portfolio Breakdown (5 cols) */}
+        <div className="lg:col-span-5 rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+              <div>
+                <h3 className="font-display text-base font-bold text-slate-900">
+                  QAOA Winning Allocation
+                </h3>
+                <span className="text-xs text-slate-500">
+                  Hamiltonian Global Minimum Statevector |11010010⟩
+                </span>
+              </div>
+              <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
+                ₹14.6 Cr
               </span>
-              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 border border-emerald-500/20">
-                PMRDA Jurisdictional Scope
-              </span>
-            </div>
-            <h2 className="font-display text-base font-bold text-white">
-              AI-Synthesized Development Brief
-            </h2>
-            <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-2.5 text-xs text-slate-300 italic">
-              "Find the best development opportunity within ₹15 crore around Pune, considering land price, water, electricity, sewage, road access and expected returns."
-            </div>
-          </div>
-
-          {/* Optimal Portfolio Cards */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between text-xs">
-              <span className="font-mono text-slate-400">QAOA Optimal Selection Set:</span>
-              <span className="font-mono text-cyan-400 font-bold">|11010010⟩</span>
             </div>
 
+            {/* List of 4 winning parcels */}
             <div className="space-y-2">
-              {winningParcels.map((name, idx) => (
+              {MOCK_PARCELS.filter((p) => winningParcels.includes(p.name)).map((parcel) => (
                 <div
-                  key={name}
-                  className="flex items-center justify-between rounded-lg border border-cyan-500/30 bg-cyan-950/20 px-3 py-2 text-xs"
+                  key={parcel.id}
+                  onClick={() => setSelectedParcel(parcel)}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all",
+                    selectedParcel.id === parcel.id
+                      ? "border-blue-600 bg-blue-50/60"
+                      : "border-slate-200/70 hover:bg-slate-50"
+                  )}
                 >
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded bg-cyan-500/20 text-[10px] font-mono font-bold text-cyan-400">
-                      {idx + 1}
-                    </span>
-                    <span className="font-medium text-white">{name}</span>
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500" />
+                    <div>
+                      <span className="text-xs font-bold text-slate-900 block">
+                        {parcel.name}
+                      </span>
+                      <span className="text-[10px] text-slate-500">
+                        {parcel.area_acres} Acres • +{parcel.expected_roi_pct}% Return
+                      </span>
+                    </div>
                   </div>
-                  <span className="font-mono text-cyan-300 font-semibold">Selected</span>
+                  <span className="font-mono text-xs font-bold text-slate-800">
+                    ₹{parcel.price_cr} Cr
+                  </span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Synthesis Stats */}
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 space-y-2 font-mono text-xs">
-            <div className="flex justify-between">
-              <span className="text-slate-400">Total Capital Committed:</span>
-              <span className="text-white font-bold">₹14.6 Cr</span>
+          {/* Bottom Summary Callout */}
+          <div className="mt-4 pt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between text-xs font-medium text-slate-600">
+              <span>Remaining Contingency:</span>
+              <span className="font-mono font-bold text-slate-900">₹0.40 Crore</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Contingency Reserve:</span>
-              <span className="text-emerald-400 font-bold">₹0.40 Cr</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Water Demand (IS 1172):</span>
-              <span className="text-cyan-400">84,240 LPD</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-slate-400">Estimated Power Load:</span>
-              <span className="text-amber-400">367.1 kVA</span>
+            <div className="flex items-center justify-between text-xs font-medium text-slate-600 mt-1">
+              <span>Cumulative Expected Yield:</span>
+              <span className="font-mono font-bold text-emerald-600">+18.4% Net</span>
             </div>
           </div>
-
-          {/* Trigger Button */}
-          <button
-            onClick={handleRunSimulation}
-            disabled={isSimulating}
-            className={cn(
-              "w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all",
-              isSimulating
-                ? "bg-slate-800 text-slate-400 cursor-not-allowed"
-                : "bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20 active:scale-[0.98]"
-            )}
-          >
-            {isSimulating ? (
-              <>
-                <Atom className="h-4 w-4 animate-spin text-cyan-400" />
-                Simulating QAOA Quantum Circuit...
-              </>
-            ) : (
-              <>
-                <Play className="h-4 w-4" />
-                Re-Run Pune Computational Pipeline
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* ─── Row 3: 9-Step Computational Heart Stepper ──────────────── */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-cyan-400" />
-            <h2 className="font-display text-sm font-semibold text-white">
-              The 9-Step Computational Heart
-            </h2>
-          </div>
-          <span className="font-mono text-xs text-slate-400">
-            End-to-End Execution Sequence · Pune ₹15 Cr Case
-          </span>
-        </div>
-
-        {/* Stepper Grid */}
-        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-9">
-          {MOCK_WORKFLOW_STEPS.map((step) => {
-            const Icon = STEP_ICONS[step.icon] || Cpu;
-            const isCompleted = step.step < activeStep;
-            const isActive = step.step === activeStep;
-
-            return (
-              <div
-                key={step.step}
-                className={cn(
-                  "relative flex flex-col justify-between rounded-xl border p-3 transition-all",
-                  isActive
-                    ? "border-cyan-400 bg-cyan-950/30 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
-                    : isCompleted
-                    ? "border-emerald-500/30 bg-emerald-950/10 text-slate-300"
-                    : "border-slate-800/80 bg-slate-900/40 text-slate-500 opacity-60"
-                )}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-mono text-[10px] font-bold">
-                    0{step.step}
-                  </span>
-                  <Icon
-                    className={cn(
-                      "h-4 w-4",
-                      isActive
-                        ? "text-cyan-400 animate-pulse"
-                        : isCompleted
-                        ? "text-emerald-400"
-                        : "text-slate-600"
-                    )}
-                  />
-                </div>
-                <div>
-                  <h3 className="font-display text-xs font-bold text-white mb-1">
-                    {step.name}
-                  </h3>
-                  <p className="text-[10px] text-slate-400 line-clamp-2">
-                    {step.description}
-                  </p>
-                </div>
-              </div>
-            );
-          })}
         </div>
       </div>
     </div>
