@@ -3,19 +3,30 @@ import {
   MapPin,
   Droplets,
   Zap,
-  PipetteIcon,
+  Pipette,
   Route,
   Search,
   SlidersHorizontal,
   X,
+  Map as MapIcon,
+  LayoutGrid,
+  Columns,
+  Cpu,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
-import { MOCK_PARCELS } from "../lib/mockData";
+import { MOCK_PARCELS, MOCK_QUANTUM_RESULT } from "../lib/mockData";
+import PuneMap from "../components/gis/PuneMap";
 import type { Parcel } from "../lib/api";
 
 // ─── Infrastructure Score Bar ─────────────────────────────────────────────────
 
-function InfraBar({ label, value, icon: Icon, color }: {
+function InfraBar({
+  label,
+  value,
+  icon: Icon,
+  color,
+}: {
   label: string;
   value: number;
   icon: React.ElementType;
@@ -25,16 +36,16 @@ function InfraBar({ label, value, icon: Icon, color }: {
   return (
     <div className="flex items-center gap-2">
       <Icon className={cn("h-3.5 w-3.5 shrink-0", color)} />
-      <span className="w-14 text-[11px] text-slate-500">{label}</span>
+      <span className="w-16 text-[10px] font-mono text-slate-500 uppercase">{label}</span>
       <div className="flex-1">
-        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-800">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-900 border border-slate-800">
           <div
             className={cn("h-full rounded-full transition-all duration-500", color.replace("text-", "bg-"))}
             style={{ width: `${pct}%` }}
           />
         </div>
       </div>
-      <span className="w-8 text-right font-mono text-[11px] text-slate-400">{pct}</span>
+      <span className="w-8 text-right font-mono text-[10px] text-slate-400">{pct}%</span>
     </div>
   );
 }
@@ -50,89 +61,57 @@ function ParcelCard({
   isSelected: boolean;
   onSelect: (p: Parcel) => void;
 }) {
-  const statusColors: Record<string, string> = {
-    Available: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    "Under Review": "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    Shortlisted: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  };
+  const isWinner = MOCK_QUANTUM_RESULT.selected_parcels.includes(parcel.name);
 
   return (
     <div
       onClick={() => onSelect(parcel)}
       className={cn(
-        "group cursor-pointer rounded-xl border bg-slate-900/80 p-4 transition-all duration-300 hover:shadow-lg",
+        "group cursor-pointer rounded-xl border p-4 transition-all duration-200 relative overflow-hidden",
         isSelected
-          ? "border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.1)]"
-          : "border-slate-700/50 hover:border-slate-600/50"
+          ? "border-cyan-400 bg-cyan-950/20 shadow-[0_0_15px_rgba(34,211,238,0.1)]"
+          : "border-slate-800 bg-slate-950/80 hover:border-slate-700 hover:bg-slate-900/60"
       )}
     >
+      {isWinner && (
+        <div className="absolute top-0 right-0 bg-cyan-500/20 text-cyan-300 border-b border-l border-cyan-500/30 font-mono text-[9px] px-2 py-0.5 rounded-bl font-semibold uppercase tracking-wider">
+          QAOA Ground State
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-3 flex items-start justify-between">
         <div>
-          <h3 className="text-sm font-semibold text-slate-200 group-hover:text-cyan-400 transition-colors">
+          <h3 className="font-display text-sm font-bold text-white group-hover:text-cyan-300 transition-colors">
             {parcel.name}
           </h3>
-          <p className="flex items-center gap-1 text-[11px] text-slate-500">
-            <MapPin className="h-3 w-3" />
+          <p className="flex items-center gap-1 text-[11px] font-mono text-slate-500 mt-0.5">
+            <MapPin className="h-3 w-3 text-slate-500" />
             {parcel.location}
           </p>
         </div>
-        <span
-          className={cn(
-            "inline-flex rounded-full border px-2 py-0.5 text-[10px] font-medium",
-            statusColors[parcel.status]
-          )}
-        >
-          {parcel.status}
+        <span className="font-mono text-xs font-bold text-white bg-slate-900 px-2 py-1 rounded border border-slate-800">
+          ₹{parcel.price_cr} Cr
         </span>
       </div>
 
-      {/* Key metrics */}
-      <div className="mb-3 grid grid-cols-3 gap-2 rounded-lg bg-slate-800/50 p-2.5">
+      {/* Quick stats */}
+      <div className="mb-3 grid grid-cols-2 gap-2 border-y border-slate-900 py-2 font-mono text-xs">
         <div>
-          <p className="text-[10px] text-slate-500">Area</p>
-          <p className="font-mono text-xs font-semibold text-slate-200">{parcel.area_acres} ac</p>
+          <span className="text-[10px] text-slate-500 block uppercase">Area</span>
+          <span className="font-semibold text-slate-300">{parcel.area_acres} Acres</span>
         </div>
         <div>
-          <p className="text-[10px] text-slate-500">Price</p>
-          <p className="font-mono text-xs font-semibold text-slate-200">₹{parcel.price_cr} Cr</p>
-        </div>
-        <div>
-          <p className="text-[10px] text-slate-500">Return</p>
-          <p className={cn("font-mono text-xs font-semibold", parcel.return_pct >= 17 ? "text-emerald-400" : "text-slate-300")}>
-            {parcel.return_pct}%
-          </p>
+          <span className="text-[10px] text-slate-500 block uppercase">Proj. Return</span>
+          <span className="font-semibold text-emerald-400">+{parcel.return_pct}%</span>
         </div>
       </div>
 
-      {/* Infrastructure scores */}
+      {/* Infrastructure Mini Bars */}
       <div className="space-y-1.5">
-        <InfraBar label="Water" value={parcel.infra_scores.water} icon={Droplets} color="text-blue-400" />
+        <InfraBar label="Water" value={parcel.infra_scores.water} icon={Droplets} color="text-sky-400" />
         <InfraBar label="Power" value={parcel.infra_scores.power} icon={Zap} color="text-amber-400" />
-        <InfraBar label="Sewage" value={parcel.infra_scores.sewage} icon={PipetteIcon} color="text-violet-400" />
         <InfraBar label="Road" value={parcel.infra_scores.road} icon={Route} color="text-emerald-400" />
-      </div>
-
-      {/* Utility score badge + action */}
-      <div className="mt-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Utility</span>
-          <span
-            className={cn(
-              "rounded-md px-2 py-0.5 font-mono text-xs font-bold",
-              parcel.utility_score >= 0.85
-                ? "bg-emerald-500/10 text-emerald-400"
-                : parcel.utility_score >= 0.70
-                  ? "bg-amber-500/10 text-amber-400"
-                  : "bg-rose-500/10 text-rose-400"
-            )}
-          >
-            {(parcel.utility_score * 100).toFixed(0)}
-          </span>
-        </div>
-        <button className="rounded-lg bg-cyan-500/10 px-3 py-1 text-[11px] font-medium text-cyan-400 transition-colors hover:bg-cyan-500/20">
-          Analyze
-        </button>
       </div>
     </div>
   );
@@ -141,85 +120,55 @@ function ParcelCard({
 // ─── Detail Sidebar Panel ─────────────────────────────────────────────────────
 
 function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void }) {
-  const infraItems = [
-    { label: "Water Supply", value: parcel.infra_scores.water, icon: Droplets, color: "text-blue-400" },
-    { label: "Power Grid", value: parcel.infra_scores.power, icon: Zap, color: "text-amber-400" },
-    { label: "Sewage System", value: parcel.infra_scores.sewage, icon: PipetteIcon, color: "text-violet-400" },
-    { label: "Road Connectivity", value: parcel.infra_scores.road, icon: Route, color: "text-emerald-400" },
-  ];
+  const navigate = useNavigate();
 
   return (
-    <div className="rounded-xl border border-slate-700/50 bg-slate-900/80 p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-slate-200">Parcel Details</h3>
-        <button onClick={onClose} className="rounded-lg p-1 text-slate-500 hover:bg-slate-800 hover:text-slate-300">
+    <div className="rounded-xl border border-slate-800 bg-slate-950/95 p-5 backdrop-blur-md space-y-4">
+      <div className="flex items-start justify-between border-b border-slate-800 pb-3">
+        <div>
+          <span className="font-mono text-[9px] uppercase tracking-wider text-cyan-400 font-bold">
+            Cadastral Record PMRDA-#{parcel.id.toString().padStart(4, "0")}
+          </span>
+          <h2 className="font-display text-base font-bold text-white mt-0.5">{parcel.name}</h2>
+          <p className="text-xs font-mono text-slate-500">{parcel.location}</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="rounded-lg p-1 text-slate-500 hover:bg-slate-900 hover:text-slate-300"
+        >
           <X className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Parcel name and location */}
-      <div className="mb-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 p-3">
-        <h4 className="font-semibold text-cyan-400">{parcel.name}</h4>
-        <p className="text-xs text-slate-500">{parcel.location}</p>
-      </div>
-
-      {/* Key stats */}
-      <div className="mb-4 grid grid-cols-2 gap-3">
-        <div className="rounded-lg bg-slate-800/50 p-3">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Area</p>
-          <p className="mt-0.5 font-mono text-lg font-bold text-slate-100">{parcel.area_acres} ac</p>
+      <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+        <div className="rounded bg-slate-900/60 p-2 border border-slate-800">
+          <span className="text-[10px] text-slate-500 block">Asking Price</span>
+          <span className="text-sm font-bold text-white">₹{parcel.price_cr} Cr</span>
         </div>
-        <div className="rounded-lg bg-slate-800/50 p-3">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Price</p>
-          <p className="mt-0.5 font-mono text-lg font-bold text-slate-100">₹{parcel.price_cr} Cr</p>
-        </div>
-        <div className="rounded-lg bg-slate-800/50 p-3">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">ROI</p>
-          <p className={cn("mt-0.5 font-mono text-lg font-bold", parcel.return_pct >= 17 ? "text-emerald-400" : "text-slate-100")}>
-            {parcel.return_pct}%
-          </p>
-        </div>
-        <div className="rounded-lg bg-slate-800/50 p-3">
-          <p className="text-[10px] font-medium uppercase tracking-wider text-slate-500">Utility</p>
-          <p className="mt-0.5 font-mono text-lg font-bold text-cyan-400">{(parcel.utility_score * 100).toFixed(0)}</p>
+        <div className="rounded bg-slate-900/60 p-2 border border-slate-800">
+          <span className="text-[10px] text-slate-500 block">Total Area</span>
+          <span className="text-sm font-bold text-white">{parcel.area_acres} Acres</span>
         </div>
       </div>
 
-      {/* Full infrastructure breakdown */}
-      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">
-        Infrastructure Breakdown
-      </h4>
-      <div className="space-y-3">
-        {infraItems.map((item) => {
-          const pct = Math.round(item.value * 100);
-          const Icon = item.icon;
-          return (
-            <div key={item.label}>
-              <div className="mb-1 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Icon className={cn("h-3.5 w-3.5", item.color)} />
-                  <span className="text-xs text-slate-300">{item.label}</span>
-                </div>
-                <span className="font-mono text-xs font-semibold text-slate-200">{pct}%</span>
-              </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800">
-                <div
-                  className={cn("h-full rounded-full transition-all duration-700", item.color.replace("text-", "bg-"))}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
+      {/* Infrastructure breakdown */}
+      <div className="space-y-2.5 border-t border-slate-900 pt-3">
+        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          Deterministic IS 1172 Breakdown
+        </span>
+        <InfraBar label="Water Supply" value={parcel.infra_scores.water} icon={Droplets} color="text-sky-400" />
+        <InfraBar label="Power Grid" value={parcel.infra_scores.power} icon={Zap} color="text-amber-400" />
+        <InfraBar label="Road Access" value={parcel.infra_scores.road} icon={Route} color="text-emerald-400" />
+        <InfraBar label="Sewage Net" value={parcel.infra_scores.sewage} icon={Pipette} color="text-violet-400" />
       </div>
 
-      {/* Action buttons */}
-      <div className="mt-5 flex gap-2">
-        <button className="flex-1 rounded-lg bg-cyan-500 px-4 py-2 text-xs font-semibold text-slate-950 transition-colors hover:bg-cyan-400">
-          Run QAOA
-        </button>
-        <button className="flex-1 rounded-lg border border-slate-600 px-4 py-2 text-xs font-semibold text-slate-300 transition-colors hover:bg-slate-800">
-          Compare
+      <div className="border-t border-slate-800 pt-3 flex gap-2">
+        <button
+          onClick={() => navigate("/quantum")}
+          className="flex-1 flex items-center justify-center gap-1.5 rounded-lg bg-cyan-500 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400"
+        >
+          <Cpu className="h-3.5 w-3.5" />
+          Feed to QAOA
         </button>
       </div>
     </div>
@@ -227,15 +176,16 @@ function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void 
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// LAND STUDIO PAGE
+// MAIN LAND STUDIO PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function LandStudio() {
-  const [budget, setBudget] = useState(15);
+  const [budget, setBudget] = useState(15.0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(null);
+  const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(MOCK_PARCELS[0]);
+  const [viewMode, setViewMode] = useState<"split" | "map" | "grid">("split");
 
-  // Filter parcels by budget and search
+  // Filter parcels
   const filteredParcels = useMemo(() => {
     return MOCK_PARCELS.filter((p) => {
       const withinBudget = p.price_cr <= budget;
@@ -249,17 +199,17 @@ export default function LandStudio() {
 
   return (
     <div className="space-y-6">
-      {/* ── Top Controls: Budget Slider + Search ──────────────── */}
-      <div className="rounded-xl border border-slate-700/50 bg-slate-900/80 p-5">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:gap-8">
+      {/* ── Top Controls: Budget Slider + Search + View Mode ──────────────── */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           {/* Budget Slider */}
-          <div className="flex-1">
+          <div className="flex-1 max-w-xl">
             <div className="mb-2 flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm font-medium text-slate-300">
+              <label className="flex items-center gap-2 font-display text-sm font-semibold text-white">
                 <SlidersHorizontal className="h-4 w-4 text-cyan-400" />
-                Investment Budget
+                Capital Budget Constraint (₹ Cr)
               </label>
-              <span className="rounded-md bg-cyan-500/10 px-2.5 py-0.5 font-mono text-sm font-bold text-cyan-400">
+              <span className="rounded-lg bg-cyan-500/10 px-3 py-0.5 font-mono text-sm font-bold text-cyan-400 border border-cyan-500/30">
                 ₹{budget.toFixed(1)} Cr
               </span>
             </div>
@@ -270,39 +220,114 @@ export default function LandStudio() {
               step={0.5}
               value={budget}
               onChange={(e) => setBudget(parseFloat(e.target.value))}
-              className="h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-800 accent-cyan-400
-                [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cyan-400 [&::-webkit-slider-thumb]:shadow-[0_0_10px_rgba(6,182,212,0.5)]"
+              className="w-full accent-cyan-400 cursor-pointer"
             />
-            <div className="mt-1 flex justify-between text-[10px] text-slate-600">
-              <span>₹5 Cr</span>
-              <span>₹15 Cr</span>
-              <span>₹25 Cr</span>
+            <div className="mt-1 flex justify-between font-mono text-[10px] text-slate-500">
+              <span>₹5 Cr (Entry)</span>
+              <span>₹15 Cr (PMRDA Baseline)</span>
+              <span>₹25 Cr (Megasite)</span>
             </div>
           </div>
 
-          {/* Search */}
-          <div className="relative lg:w-72">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Search parcels..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-slate-700/50 bg-slate-800/50 pl-9 pr-4 text-sm text-slate-300 placeholder-slate-500 outline-none focus:border-cyan-500/50"
-            />
+          {/* Search & View Switcher */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-500" />
+              <input
+                type="text"
+                placeholder="Search micro-market..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9 w-52 rounded-lg border border-slate-800 bg-slate-900/90 pl-8 pr-3 font-mono text-xs text-slate-200 placeholder-slate-500 outline-none focus:border-cyan-500/50"
+              />
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex rounded-lg border border-slate-800 bg-slate-900/80 p-0.5">
+              <button
+                onClick={() => setViewMode("split")}
+                className={cn(
+                  "flex items-center gap-1 rounded px-2.5 py-1 text-xs font-mono transition-colors",
+                  viewMode === "split" ? "bg-cyan-500/20 text-cyan-300 font-semibold" : "text-slate-400 hover:text-slate-200"
+                )}
+                title="Split Map & Grid"
+              >
+                <Columns className="h-3.5 w-3.5" />
+                Split
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={cn(
+                  "flex items-center gap-1 rounded px-2.5 py-1 text-xs font-mono transition-colors",
+                  viewMode === "map" ? "bg-cyan-500/20 text-cyan-300 font-semibold" : "text-slate-400 hover:text-slate-200"
+                )}
+                title="Map Only"
+              >
+                <MapIcon className="h-3.5 w-3.5" />
+                GIS Map
+              </button>
+              <button
+                onClick={() => setViewMode("grid")}
+                className={cn(
+                  "flex items-center gap-1 rounded px-2.5 py-1 text-xs font-mono transition-colors",
+                  viewMode === "grid" ? "bg-cyan-500/20 text-cyan-300 font-semibold" : "text-slate-400 hover:text-slate-200"
+                )}
+                title="Grid Only"
+              >
+                <LayoutGrid className="h-3.5 w-3.5" />
+                Grid
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Result count */}
-        <p className="mt-3 text-xs text-slate-500">
-          Showing <span className="font-semibold text-slate-300">{filteredParcels.length}</span> parcels within ₹{budget.toFixed(1)} Cr budget
+        <p className="mt-3 font-mono text-[11px] text-slate-400 border-t border-slate-900 pt-2">
+          Displaying <b className="text-white">{filteredParcels.length}</b> eligible PMRDA parcels within budget &le; ₹{budget.toFixed(1)} Cr
         </p>
       </div>
 
-      {/* ── Main Area: Parcels Grid + Detail Panel ────────────── */}
-      <div className="flex gap-6">
-        {/* Parcel Cards Grid */}
-        <div className={cn("grid gap-4 transition-all", selectedParcel ? "flex-1 grid-cols-1 md:grid-cols-2" : "flex-1 grid-cols-1 md:grid-cols-2 xl:grid-cols-3")}>
+      {/* ── Main Workspace Body ───────────────────────────────────────────── */}
+      {viewMode === "split" && (
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+          {/* Map on Left (6 cols) */}
+          <div className="lg:col-span-6 h-[560px] rounded-2xl overflow-hidden border border-slate-800">
+            <PuneMap
+              parcels={filteredParcels}
+              selectedParcelId={selectedParcel?.id ?? null}
+              onSelectParcel={setSelectedParcel}
+              winningParcels={MOCK_QUANTUM_RESULT.selected_parcels}
+            />
+          </div>
+
+          {/* Cards on Right (6 cols) */}
+          <div className="lg:col-span-6 flex flex-col gap-4 overflow-y-auto max-h-[560px] pr-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {filteredParcels.map((parcel) => (
+                <ParcelCard
+                  key={parcel.id}
+                  parcel={parcel}
+                  isSelected={selectedParcel?.id === parcel.id}
+                  onSelect={setSelectedParcel}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewMode === "map" && (
+        <div className="h-[620px] rounded-2xl overflow-hidden border border-slate-800">
+          <PuneMap
+            parcels={filteredParcels}
+            selectedParcelId={selectedParcel?.id ?? null}
+            onSelectParcel={setSelectedParcel}
+            winningParcels={MOCK_QUANTUM_RESULT.selected_parcels}
+          />
+        </div>
+      )}
+
+      {viewMode === "grid" && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filteredParcels.map((parcel) => (
             <ParcelCard
               key={parcel.id}
@@ -311,24 +336,15 @@ export default function LandStudio() {
               onSelect={setSelectedParcel}
             />
           ))}
-          {filteredParcels.length === 0 && (
-            <div className="col-span-full flex flex-col items-center justify-center rounded-xl border border-dashed border-slate-700/50 py-16">
-              <MapPin className="mb-3 h-8 w-8 text-slate-600" />
-              <p className="text-sm text-slate-500">No parcels found within budget</p>
-              <p className="text-xs text-slate-600">Try increasing the budget limit</p>
-            </div>
-          )}
         </div>
+      )}
 
-        {/* Detail Sidebar */}
-        {selectedParcel && (
-          <div className="hidden w-80 shrink-0 lg:block">
-            <div className="sticky top-24">
-              <DetailPanel parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Floating Detail Drawer when parcel is selected */}
+      {selectedParcel && (
+        <div className="fixed bottom-6 right-6 z-50 w-88 shadow-2xl">
+          <DetailPanel parcel={selectedParcel} onClose={() => setSelectedParcel(null)} />
+        </div>
+      )}
     </div>
   );
 }

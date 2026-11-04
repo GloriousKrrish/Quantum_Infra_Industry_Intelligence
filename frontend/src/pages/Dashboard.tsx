@@ -1,10 +1,8 @@
+import { useState } from "react";
 import {
   MapPin,
   Cpu,
-  BarChart3,
   IndianRupee,
-  TrendingUp,
-  TrendingDown,
   Bot,
   Brain,
   Grid3X3,
@@ -12,24 +10,16 @@ import {
   Server,
   GitMerge,
   Sparkles,
-  CheckCircle2,
-  Loader2,
-  Circle,
+  Play,
 } from "lucide-react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
 import { cn } from "../lib/utils";
-import { MOCK_PARCELS, MOCK_BITSTRING_PROBS, MOCK_WORKFLOW_STEPS } from "../lib/mockData";
-
-// ─── Icon map for workflow steps ──────────────────────────────────────────────
+import PuneMap from "../components/gis/PuneMap";
+import {
+  MOCK_PARCELS,
+  MOCK_QUANTUM_RESULT,
+  MOCK_WORKFLOW_STEPS,
+} from "../lib/mockData";
+import type { Parcel } from "../lib/api";
 
 const STEP_ICONS: Record<string, React.ElementType> = {
   Bot,
@@ -43,361 +33,305 @@ const STEP_ICONS: Record<string, React.ElementType> = {
   Sparkles,
 };
 
-// ─── KPI Metric Card ─────────────────────────────────────────────────────────
-
-interface MetricCardProps {
-  label: string;
-  value: string;
-  icon: React.ElementType;
-  accentColor: string;
-  borderColor: string;
-  trend?: { value: string; positive: boolean };
-}
-
-function MetricCard({ label, value, icon: Icon, accentColor, borderColor, trend }: MetricCardProps) {
-  return (
-    <div
-      className={cn(
-        "relative overflow-hidden rounded-xl border border-slate-700/50 bg-slate-900/80 p-5 transition-all duration-300 hover:border-slate-600/50 hover:shadow-lg",
-        borderColor
-      )}
-    >
-      {/* Subtle glow background */}
-      <div className={cn("absolute -right-4 -top-4 h-24 w-24 rounded-full opacity-[0.07] blur-2xl", accentColor)} />
-
-      <div className="flex items-start justify-between">
-        <div>
-          <p className="text-xs font-medium uppercase tracking-wider text-slate-500">{label}</p>
-          <p className="mt-2 text-2xl font-bold text-slate-100">{value}</p>
-          {trend && (
-            <div className="mt-1.5 flex items-center gap-1">
-              {trend.positive ? (
-                <TrendingUp className="h-3 w-3 text-emerald-400" />
-              ) : (
-                <TrendingDown className="h-3 w-3 text-rose-400" />
-              )}
-              <span
-                className={cn(
-                  "text-xs font-medium",
-                  trend.positive ? "text-emerald-400" : "text-rose-400"
-                )}
-              >
-                {trend.value}
-              </span>
-            </div>
-          )}
-        </div>
-        <div className={cn("flex h-10 w-10 items-center justify-center rounded-lg", accentColor.replace("bg-", "bg-") + "/10")}>
-          <Icon className={cn("h-5 w-5", accentColor.replace("bg-", "text-"))} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─── Status Badge ─────────────────────────────────────────────────────────────
-
-function StatusBadge({ status }: { status: string }) {
-  const styles: Record<string, string> = {
-    Available: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-    "Under Review": "bg-amber-500/10 text-amber-400 border-amber-500/20",
-    Shortlisted: "bg-cyan-500/10 text-cyan-400 border-cyan-500/20",
-  };
-  return (
-    <span className={cn("inline-flex rounded-full border px-2.5 py-0.5 text-[11px] font-medium", styles[status] || "")}>
-      {status}
-    </span>
-  );
-}
-
-// ─── Workflow Step Status Icon ────────────────────────────────────────────────
-
-function StepStatusIcon({ status }: { status: string }) {
-  switch (status) {
-    case "completed":
-      return <CheckCircle2 className="h-4 w-4 text-emerald-400" />;
-    case "active":
-      return <Loader2 className="h-4 w-4 animate-spin text-cyan-400" />;
-    default:
-      return <Circle className="h-4 w-4 text-slate-600" />;
-  }
-}
-
-// ─── Custom Tooltip for QAOA Chart ───────────────────────────────────────────
-
-function QAOATooltip({ active, payload }: any) {
-  if (!active || !payload?.length) return null;
-  const data = payload[0].payload;
-  return (
-    <div className="rounded-lg border border-slate-700/50 bg-slate-900 px-3 py-2 shadow-xl">
-      <p className="font-mono text-xs text-cyan-400">{data.bitstring}</p>
-      <p className="text-sm text-slate-300">
-        Probability: <span className="font-semibold text-slate-100">{(data.probability * 100).toFixed(1)}%</span>
-      </p>
-      {data.isOptimal && (
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-amber-400">★ Optimal</p>
-      )}
-    </div>
-  );
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════
-// DASHBOARD PAGE
-// ═══════════════════════════════════════════════════════════════════════════════
-
 export default function Dashboard() {
+  const [selectedParcel, setSelectedParcel] = useState<Parcel>(MOCK_PARCELS[0]);
+  const [activeStep, setActiveStep] = useState<number>(6);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+
+  const winningParcels = MOCK_QUANTUM_RESULT.selected_parcels;
+
+  const handleRunSimulation = () => {
+    setIsSimulating(true);
+    setTimeout(() => {
+      setIsSimulating(false);
+      setActiveStep(9);
+    }, 1500);
+  };
+
   return (
     <div className="space-y-6">
-      {/* ── Row 1: KPI Metric Cards ───────────────────────────── */}
+      {/* ─── Row 1: Tactical HUD Telemetry Cards ─────────────────────── */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <MetricCard
-          label="Total Parcels Analyzed"
-          value="8"
-          icon={MapPin}
-          accentColor="bg-emerald-400"
-          borderColor="border-l-2 border-l-emerald-400"
-          trend={{ value: "+2 this week", positive: true }}
-        />
-        <MetricCard
-          label="Active Quantum Jobs"
-          value="3"
-          icon={Cpu}
-          accentColor="bg-cyan-400"
-          borderColor="border-l-2 border-l-cyan-400"
-          trend={{ value: "2 queued", positive: true }}
-        />
-        <MetricCard
-          label="Benchmark Score"
-          value="0.87α"
-          icon={BarChart3}
-          accentColor="bg-amber-400"
-          borderColor="border-l-2 border-l-amber-400"
-          trend={{ value: "+0.05 vs baseline", positive: true }}
-        />
-        <MetricCard
-          label="Budget Utilization"
-          value="₹12.4 / 15.0 Cr"
-          icon={IndianRupee}
-          accentColor="bg-violet-400"
-          borderColor="border-l-2 border-l-violet-400"
-          trend={{ value: "82.7% utilized", positive: true }}
-        />
-      </div>
-
-      {/* ── Row 2: Parcels Table + QAOA Chart ─────────────────── */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        {/* LEFT: Pune Development Parcels Table */}
-        <div className="rounded-xl border border-slate-700/50 bg-slate-900/80 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200">Pune Development Parcels</h2>
-            <span className="rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] font-medium text-slate-400">
-              {MOCK_PARCELS.length} parcels
+        {/* Metric 1 */}
+        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
+              PMRDA Parcels Analyzed
+            </span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <MapPin className="h-4 w-4" />
             </span>
           </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead>
-                <tr className="border-b border-slate-700/50">
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Name</th>
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Area</th>
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Price</th>
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Infra</th>
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Return</th>
-                  <th className="pb-3 text-[11px] font-semibold uppercase tracking-wider text-slate-500">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/50">
-                {MOCK_PARCELS.map((parcel) => (
-                  <tr key={parcel.id} className="group transition-colors hover:bg-slate-800/30">
-                    <td className="py-3 pr-3">
-                      <div>
-                        <p className="font-medium text-slate-200 group-hover:text-cyan-400 transition-colors">{parcel.name}</p>
-                        <p className="text-[11px] text-slate-500">{parcel.location}</p>
-                      </div>
-                    </td>
-                    <td className="py-3 font-mono text-xs text-slate-300">{parcel.area_acres}ac</td>
-                    <td className="py-3 font-mono text-xs text-slate-300">₹{parcel.price_cr}Cr</td>
-                    <td className="py-3">
-                      {/* Mini infra score bar */}
-                      <div className="flex items-center gap-1.5">
-                        <div className="h-1.5 w-16 overflow-hidden rounded-full bg-slate-800">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-cyan-500 to-emerald-400"
-                            style={{ width: `${parcel.utility_score * 100}%` }}
-                          />
-                        </div>
-                        <span className="font-mono text-[11px] text-slate-400">
-                          {(parcel.utility_score * 100).toFixed(0)}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="py-3">
-                      <span className={cn("font-mono text-xs", parcel.return_pct >= 17 ? "text-emerald-400" : "text-slate-400")}>
-                        {parcel.return_pct}%
-                      </span>
-                    </td>
-                    <td className="py-3">
-                      <StatusBadge status={parcel.status} />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-display text-2xl font-bold text-white">8 Parcels</span>
+            <span className="font-mono text-[11px] font-medium text-emerald-400">100% Cadastral Verified</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
+            <span>Region: Pune Metro</span>
+            <span>Area: 42.1 Acres Total</span>
           </div>
         </div>
 
-        {/* RIGHT: QAOA Optimization Results */}
-        <div className="rounded-xl border border-slate-700/50 bg-slate-900/80 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-sm font-semibold text-slate-200">QAOA Optimization Results</h2>
-            <div className="flex items-center gap-1.5 rounded-full bg-cyan-500/10 px-2.5 py-0.5">
-              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-cyan-400" />
-              <span className="text-[11px] font-medium text-cyan-400">p=2 layers</span>
+        {/* Metric 2 */}
+        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
+              QAOA Approximation Ratio
+            </span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <Cpu className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-display text-2xl font-bold text-cyan-400 font-mono">0.999 &alpha;</span>
+            <span className="font-mono text-[11px] font-medium text-slate-400">vs Exact MILP</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
+            <span>Circuit: p=2 Layers</span>
+            <span className="text-cyan-400 font-semibold">COBYLA Optimized</span>
+          </div>
+        </div>
+
+        {/* Metric 3 */}
+        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
+              Target Budget Allocation
+            </span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <IndianRupee className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-display text-2xl font-bold text-white">₹14.6 / 15.0 Cr</span>
+            <span className="font-mono text-[11px] font-medium text-amber-400">97.3% Cap</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
+            <span>Remaining: ₹0.40 Cr</span>
+            <span className="text-emerald-400">Strictly Compliant</span>
+          </div>
+        </div>
+
+        {/* Metric 4 */}
+        <div className="relative overflow-hidden rounded-xl border border-slate-800 bg-slate-950/90 p-4 backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            <span className="font-mono text-xs uppercase tracking-wider text-slate-400">
+              Decisional Recommendation
+            </span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <Sparkles className="h-4 w-4" />
+            </span>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="font-display text-2xl font-bold text-white">READY TO EXEC</span>
+            <span className="font-mono text-[11px] font-medium text-emerald-400">Go Decision</span>
+          </div>
+          <div className="mt-2 flex items-center justify-between border-t border-slate-900 pt-2 font-mono text-[10px] text-slate-500">
+            <span>Confidence: 94.8%</span>
+            <span>RERA In-Principle</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Row 2: Split Cockpit: Geospatial GIS + Executive Briefing ─── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* Left Column: Interactive Pune GIS Studio (7 cols) */}
+        <div className="lg:col-span-7 flex flex-col rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4 text-emerald-400" />
+              <h2 className="font-display text-sm font-semibold text-white">
+                Pune PMRDA Spatial GIS Cockpit
+              </h2>
+            </div>
+            <div className="flex items-center gap-2 font-mono text-[11px]">
+              <span className="text-slate-400">Focus:</span>
+              <span className="text-cyan-400 font-semibold">{selectedParcel.name}</span>
             </div>
           </div>
 
-          {/* Optimal result callout */}
-          <div className="mb-4 rounded-lg border border-cyan-500/20 bg-cyan-500/5 px-4 py-3">
+          {/* Interactive Leaflet Map Canvas */}
+          <div className="h-[380px] w-full rounded-xl overflow-hidden">
+            <PuneMap
+              parcels={MOCK_PARCELS}
+              selectedParcelId={selectedParcel.id}
+              onSelectParcel={setSelectedParcel}
+              winningParcels={winningParcels}
+            />
+          </div>
+
+          {/* Focused Parcel Quick Telemetry */}
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 font-mono text-xs">
+            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
+              <span className="text-[10px] text-slate-500 block">Acquisition Cost:</span>
+              <span className="text-white font-bold text-sm">₹{selectedParcel.price_cr} Cr</span>
+            </div>
+            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
+              <span className="text-[10px] text-slate-500 block">Plot Area:</span>
+              <span className="text-white font-bold text-sm">{selectedParcel.area_acres} Acres</span>
+            </div>
+            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
+              <span className="text-[10px] text-slate-500 block">5-Yr Projected Return:</span>
+              <span className="text-emerald-400 font-bold text-sm">+{selectedParcel.return_pct}%</span>
+            </div>
+            <div className="rounded-lg bg-slate-900/60 p-2.5 border border-slate-800">
+              <span className="text-[10px] text-slate-500 block">Infra Readiness:</span>
+              <span className="text-cyan-400 font-bold text-sm">
+                {(selectedParcel.utility_score * 100).toFixed(0)}%
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Pune ₹15 Cr Case Study Executive Briefing (5 cols) */}
+        <div className="lg:col-span-5 flex flex-col justify-between rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
+          <div className="space-y-2 border-b border-slate-800 pb-3">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[11px] font-medium uppercase tracking-wider text-cyan-500">Optimal Bitstring</p>
-                <p className="mt-0.5 font-mono text-lg font-bold tracking-widest text-cyan-400">1 1 0 1 0 0 1 0</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500">Probability</p>
-                <p className="mt-0.5 text-lg font-bold text-slate-100">34.2%</p>
-              </div>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-cyan-400 font-bold">
+                [Golden Workflow: Pune ₹15 Cr Brief]
+              </span>
+              <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-mono text-emerald-400 border border-emerald-500/20">
+                PMRDA Jurisdictional Scope
+              </span>
+            </div>
+            <h2 className="font-display text-base font-bold text-white">
+              AI-Synthesized Development Brief
+            </h2>
+            <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-2.5 text-xs text-slate-300 italic">
+              "Find the best development opportunity within ₹15 crore around Pune, considering land price, water, electricity, sewage, road access and expected returns."
             </div>
           </div>
 
-          {/* Bitstring probability bar chart */}
-          <div className="h-[220px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={MOCK_BITSTRING_PROBS} margin={{ top: 5, right: 5, bottom: 5, left: -10 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
-                <XAxis
-                  dataKey="bitstring"
-                  tick={{ fontSize: 9, fill: "#64748b", fontFamily: "monospace" }}
-                  angle={-45}
-                  textAnchor="end"
-                  height={50}
-                  axisLine={{ stroke: "#334155" }}
-                  tickLine={false}
-                />
-                <YAxis
-                  tick={{ fontSize: 10, fill: "#64748b" }}
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(v: number) => `${(v * 100).toFixed(0)}%`}
-                />
-                <Tooltip content={<QAOATooltip />} />
-                <Bar dataKey="probability" radius={[4, 4, 0, 0]} maxBarSize={32}>
-                  {MOCK_BITSTRING_PROBS.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={entry.isOptimal ? "#22d3ee" : "#334155"}
-                      fillOpacity={entry.isOptimal ? 1 : 0.7}
-                    />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
+          {/* Optimal Portfolio Cards */}
+          <div className="space-y-2.5">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-mono text-slate-400">QAOA Optimal Selection Set:</span>
+              <span className="font-mono text-cyan-400 font-bold">|11010010⟩</span>
+            </div>
+
+            <div className="space-y-2">
+              {winningParcels.map((name, idx) => (
+                <div
+                  key={name}
+                  className="flex items-center justify-between rounded-lg border border-cyan-500/30 bg-cyan-950/20 px-3 py-2 text-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded bg-cyan-500/20 text-[10px] font-mono font-bold text-cyan-400">
+                      {idx + 1}
+                    </span>
+                    <span className="font-medium text-white">{name}</span>
+                  </div>
+                  <span className="font-mono text-cyan-300 font-semibold">Selected</span>
+                </div>
+              ))}
+            </div>
           </div>
+
+          {/* Synthesis Stats */}
+          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3 space-y-2 font-mono text-xs">
+            <div className="flex justify-between">
+              <span className="text-slate-400">Total Capital Committed:</span>
+              <span className="text-white font-bold">₹14.6 Cr</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Contingency Reserve:</span>
+              <span className="text-emerald-400 font-bold">₹0.40 Cr</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Water Demand (IS 1172):</span>
+              <span className="text-cyan-400">84,240 LPD</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-400">Estimated Power Load:</span>
+              <span className="text-amber-400">367.1 kVA</span>
+            </div>
+          </div>
+
+          {/* Trigger Button */}
+          <button
+            onClick={handleRunSimulation}
+            disabled={isSimulating}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 rounded-xl py-3 text-sm font-semibold transition-all",
+              isSimulating
+                ? "bg-slate-800 text-slate-400 cursor-not-allowed"
+                : "bg-cyan-500 hover:bg-cyan-400 text-slate-950 shadow-lg shadow-cyan-500/20 active:scale-[0.98]"
+            )}
+          >
+            {isSimulating ? (
+              <>
+                <Atom className="h-4 w-4 animate-spin text-cyan-400" />
+                Simulating QAOA Quantum Circuit...
+              </>
+            ) : (
+              <>
+                <Play className="h-4 w-4" />
+                Re-Run Pune Computational Pipeline
+              </>
+            )}
+          </button>
         </div>
       </div>
 
-      {/* ── Row 3: 9-Step Computational Workflow ──────────────── */}
-      <div className="rounded-xl border border-slate-700/50 bg-slate-900/80 p-5">
-        <div className="mb-5 flex items-center justify-between">
-          <div>
-            <h2 className="text-sm font-semibold text-slate-200">9-Step Computational Workflow</h2>
-            <p className="mt-0.5 text-xs text-slate-500">Pune ₹15 Cr Investment Pipeline</p>
+      {/* ─── Row 3: 9-Step Computational Heart Stepper ──────────────── */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-950/90 p-5 backdrop-blur-md space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-cyan-400" />
+            <h2 className="font-display text-sm font-semibold text-white">
+              The 9-Step Computational Heart
+            </h2>
           </div>
-          <div className="flex items-center gap-4 text-[11px]">
-            <span className="flex items-center gap-1.5 text-emerald-400">
-              <CheckCircle2 className="h-3 w-3" /> Completed
-            </span>
-            <span className="flex items-center gap-1.5 text-cyan-400">
-              <Loader2 className="h-3 w-3" /> Active
-            </span>
-            <span className="flex items-center gap-1.5 text-slate-500">
-              <Circle className="h-3 w-3" /> Pending
-            </span>
-          </div>
+          <span className="font-mono text-xs text-slate-400">
+            End-to-End Execution Sequence · Pune ₹15 Cr Case
+          </span>
         </div>
 
-        {/* Horizontal stepper */}
-        <div className="overflow-x-auto">
-          <div className="flex min-w-[900px] items-start gap-2">
-            {MOCK_WORKFLOW_STEPS.map((step, idx) => {
-              const Icon = STEP_ICONS[step.icon] || Circle;
-              const isCompleted = step.status === "completed";
-              const isActive = step.status === "active";
+        {/* Stepper Grid */}
+        <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 lg:grid-cols-9">
+          {MOCK_WORKFLOW_STEPS.map((step) => {
+            const Icon = STEP_ICONS[step.icon] || Cpu;
+            const isCompleted = step.step < activeStep;
+            const isActive = step.step === activeStep;
 
-              return (
-                <div key={step.step} className="flex flex-1 items-start">
-                  {/* Step card */}
-                  <div
+            return (
+              <div
+                key={step.step}
+                className={cn(
+                  "relative flex flex-col justify-between rounded-xl border p-3 transition-all",
+                  isActive
+                    ? "border-cyan-400 bg-cyan-950/30 shadow-[0_0_12px_rgba(34,211,238,0.15)]"
+                    : isCompleted
+                    ? "border-emerald-500/30 bg-emerald-950/10 text-slate-300"
+                    : "border-slate-800/80 bg-slate-900/40 text-slate-500 opacity-60"
+                )}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="font-mono text-[10px] font-bold">
+                    0{step.step}
+                  </span>
+                  <Icon
                     className={cn(
-                      "flex w-full flex-col items-center rounded-lg border p-3 transition-all",
+                      "h-4 w-4",
                       isActive
-                        ? "border-cyan-500/30 bg-cyan-500/5 shadow-[0_0_20px_rgba(6,182,212,0.1)]"
+                        ? "text-cyan-400 animate-pulse"
                         : isCompleted
-                          ? "border-emerald-500/20 bg-emerald-500/5"
-                          : "border-slate-700/30 bg-slate-800/30"
+                        ? "text-emerald-400"
+                        : "text-slate-600"
                     )}
-                  >
-                    <div
-                      className={cn(
-                        "mb-2 flex h-8 w-8 items-center justify-center rounded-lg",
-                        isActive
-                          ? "bg-cyan-500/20"
-                          : isCompleted
-                            ? "bg-emerald-500/20"
-                            : "bg-slate-700/30"
-                      )}
-                    >
-                      <Icon
-                        className={cn(
-                          "h-4 w-4",
-                          isActive
-                            ? "text-cyan-400"
-                            : isCompleted
-                              ? "text-emerald-400"
-                              : "text-slate-600"
-                        )}
-                      />
-                    </div>
-                    <StepStatusIcon status={step.status} />
-                    <p
-                      className={cn(
-                        "mt-1.5 text-center text-[11px] font-semibold",
-                        isActive ? "text-cyan-400" : isCompleted ? "text-emerald-400" : "text-slate-500"
-                      )}
-                    >
-                      {step.name}
-                    </p>
-                    <p className="mt-0.5 text-center text-[9px] leading-tight text-slate-600">
-                      {step.description}
-                    </p>
-                  </div>
-
-                  {/* Connector line */}
-                  {idx < MOCK_WORKFLOW_STEPS.length - 1 && (
-                    <div className="mt-7 flex w-4 shrink-0 items-center">
-                      <div
-                        className={cn(
-                          "h-[2px] w-full",
-                          isCompleted ? "bg-emerald-500/40" : "bg-slate-700/40"
-                        )}
-                      />
-                    </div>
-                  )}
+                  />
                 </div>
-              );
-            })}
-          </div>
+                <div>
+                  <h3 className="font-display text-xs font-bold text-white mb-1">
+                    {step.name}
+                  </h3>
+                  <p className="text-[10px] text-slate-400 line-clamp-2">
+                    {step.description}
+                  </p>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
