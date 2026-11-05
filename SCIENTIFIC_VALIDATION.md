@@ -1,7 +1,7 @@
 # QUANTUM ESTATE X — SCIENTIFIC & MATHEMATICAL VALIDATION MANUAL
 
-**Document Version:** 1.7.0  
-**Domain:** Geodesy, Civil & Environmental Engineering, Quantum Optimization (QAOA)  
+**Document Version:** 2.0.0  
+**Domain:** Geodesy, Civil & Environmental Engineering, Quantum Optimization (QAOA), Quantum Mechanics Foundation  
 **Standard Authority:** Bureau of Indian Standards (BIS), Indian Road Congress (IRC), Qiskit Aer, RFC 7946  
 
 ---
@@ -148,4 +148,48 @@ Across tests with depth $p=2$, the QAOA solver achieves $\alpha \ge 0.95$, valid
 | Risk Penalty Multiplier | $\lambda_2$ | $1.0$ | QUBO Formulation |
 | QAOA Circuit Depth | $p$ | $2\text{ layers}$ | Variational Ansatz |
 | Measurement Shots | $N_{\text{shots}}$ | $4096$ | Qiskit Aer |
+
+---
+
+## 5. Quantum Mechanics & Gate Specifications (Phase 02)
+
+### 5.1 Qubit State Representation & Dirac Notation
+A pure single-qubit quantum state lives in a two-dimensional Hilbert space $\mathcal{H}_2 \cong \mathbb{C}^2$:
+$$|\psi\rangle = \alpha |0\rangle + \beta |1\rangle = \begin{pmatrix} \alpha \\ \beta \end{pmatrix}, \quad \alpha, \beta \in \mathbb{C}, \quad |\alpha|^2 + |\beta|^2 = 1$$
+Parametrized on the Bloch sphere by polar angle $\theta \in [0, \pi]$ and azimuthal angle $\phi \in [0, 2\pi)$:
+$$|\psi\rangle = \cos\left(\frac{\theta}{2}\right) |0\rangle + e^{i\phi} \sin\left(\frac{\theta}{2}\right) |1\rangle$$
+
+### 5.2 Density Operator & Reduced Density Matrix
+For an $n$-qubit quantum system in state $|\psi\rangle$, the global density operator is:
+$$\rho = |\psi\rangle \langle\psi|$$
+When inspecting qubit $k$, the remaining $n-1$ qubits are traced out via the partial trace:
+$$\rho_k = \text{Tr}_{\bar{k}}(\rho) = \sum_{j} \langle j_{\bar{k}} | \rho | j_{\bar{k}} \rangle = \begin{pmatrix} \rho_{00} & \rho_{01} \\ \rho_{10} & \rho_{11} \end{pmatrix}$$
+
+### 5.3 Bloch Vector & State Purity
+The Bloch vector $\vec{r} = (r_x, r_y, r_z) \in \mathbb{R}^3$ of qubit $k$ is given by:
+$$r_x = \text{Tr}(\rho_k \sigma_x) = 2\,\text{Re}(\rho_{01})$$
+$$r_y = \text{Tr}(\rho_k \sigma_y) = 2\,\text{Im}(\rho_{10})$$
+$$r_z = \text{Tr}(\rho_k \sigma_z) = \rho_{00} - \rho_{11}$$
+The state purity $\gamma$ is:
+$$\gamma = \text{Tr}(\rho_k^2) = \frac{1 + |\vec{r}|^2}{2}$$
+- **Pure States ($\gamma = 1.0, |\vec{r}| = 1$):** Qubit is in a separable product state with zero entanglement. Visualized on the outer surface of the Bloch sphere.
+- **Mixed States ($0.5 \le \gamma < 1.0, |\vec{r}| < 1$):** Qubit is partially or maximally entangled with other qubits in the register.
+- **Maximally Mixed States ($\gamma = 0.5, |\vec{r}| = 0$):** Qubit is maximally entangled (e.g., in a Bell or GHZ state). Visualized at the exact center of the Bloch sphere.
+
+### 5.4 Exact Gate Unitary Matrices
+Every quantum gate $U$ satisfies $U^\dagger U = U U^\dagger = I$:
+- **Pauli-X:** $\begin{pmatrix} 0 & 1 \\ 1 & 0 \end{pmatrix}$
+- **Pauli-Y:** $\begin{pmatrix} 0 & -i \\ i & 0 \end{pmatrix}$
+- **Pauli-Z:** $\begin{pmatrix} 1 & 0 \\ 0 & -1 \end{pmatrix}$
+- **Hadamard ($H$):** $\frac{1}{\sqrt{2}}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}$
+- **Phase ($S$):** $\begin{pmatrix} 1 & 0 \\ 0 & i \end{pmatrix}$
+- **$T$ Gate:** $\begin{pmatrix} 1 & 0 \\ 0 & e^{i\pi/4} \end{pmatrix}$
+- **Rotation $R_x(\theta)$:** $\begin{pmatrix} \cos(\theta/2) & -i\sin(\theta/2) \\ -i\sin(\theta/2) & \cos(\theta/2) \end{pmatrix}$
+- **Rotation $R_y(\theta)$:** $\begin{pmatrix} \cos(\theta/2) & -\sin(\theta/2) \\ \sin(\theta/2) & \cos(\theta/2) \end{pmatrix}$
+- **Rotation $R_z(\phi)$:** $\begin{pmatrix} e^{-i\phi/2} & 0 \\ 0 & e^{i\phi/2} \end{pmatrix}$
+- **Controlled-NOT ($CX$):** $\begin{pmatrix} 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \end{pmatrix}$
+- **Controlled-Z ($CZ$):** $\text{diag}(1, 1, 1, -1)$
+- **SWAP:** Permutes $|01\rangle \leftrightarrow |10\rangle$
+- **Toffoli ($CCX$):** Controlled-Controlled-NOT, $\text{diag}(I_4, I_2, X)$
+
 

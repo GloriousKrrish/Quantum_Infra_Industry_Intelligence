@@ -228,6 +228,105 @@ export interface QUBOProblem {
   variable_names: string[];
 }
 
+export interface ComplexNumber {
+  real: number;
+  imag: number;
+}
+
+export interface GateSpec {
+  id: string;
+  name: string;
+  category: string;
+  num_qubits: number;
+  is_parameterized: boolean;
+  default_param?: number;
+  symbol: string;
+  latex: string;
+  description: string;
+  effect: string;
+  matrix: ComplexNumber[][];
+}
+
+export interface GateOperation {
+  gate: string;
+  targets: number[];
+  controls?: number[];
+  params?: Record<string, number> | number[] | number;
+}
+
+export interface StateAmplitude {
+  index: number;
+  bitstring: string;
+  ket: string;
+  real: number;
+  imag: number;
+  magnitude: number;
+  probability: number;
+  phase_rad: number;
+  phase_deg: number;
+}
+
+export interface MeasurementDistribution {
+  bitstring: string;
+  count: number;
+  frequency: number;
+  percentage: number;
+}
+
+export interface BlochVectorData {
+  x: number;
+  y: number;
+  z: number;
+  length: number;
+}
+
+export interface SphericalCoordsData {
+  theta_rad: number;
+  theta_pi: number;
+  phi_rad: number;
+  phi_pi: number;
+}
+
+export interface QubitBlochInfo {
+  qubit_index: number;
+  bloch_vector: BlochVectorData;
+  spherical_coords: SphericalCoordsData;
+  purity: number;
+  state_classification: "PURE" | "MIXED" | "MAXIMALLY_MIXED";
+  description: string;
+  prob_0: number;
+  prob_1: number;
+  density_matrix: ComplexNumber[][];
+}
+
+export interface CircuitSimulateResponse {
+  num_qubits: number;
+  num_clbits: number;
+  circuit_depth: number;
+  total_gate_count: number;
+  ops_breakdown: Record<string, number>;
+  is_entangled: boolean;
+  shots_requested: number;
+  execution_time_ms: number;
+  simulator_backend: string;
+  statevector: StateAmplitude[];
+  top_states: StateAmplitude[];
+  measurements: MeasurementDistribution[];
+  qubit_bloch_vectors: QubitBlochInfo[];
+}
+
+export interface ExperimentTemplate {
+  id: string;
+  name: string;
+  category: string;
+  num_qubits: number;
+  objective: string;
+  formula: string;
+  circuit: GateOperation[];
+  expected_state: string;
+  explanation: string;
+}
+
 export interface QAOAResult {
   optimal_bitstring: string;
   optimal_value: number;
@@ -489,6 +588,54 @@ export async function fetchOverpassAmenities(
   const { data } = await api.get(`/parcels/${encodeURIComponent(parcelId)}/overpass`, {
     params: { radius_meters: radiusMeters },
   });
+  return data;
+}
+
+/**
+ * Fetch catalog of supported quantum gates and their unitary matrices.
+ */
+export async function fetchQuantumGates(): Promise<GateSpec[]> {
+  const { data } = await api.get<GateSpec[]>("/quantum/gates");
+  return data;
+}
+
+/**
+ * Fetch specification for a single quantum gate by ID.
+ */
+export async function fetchQuantumGate(gateId: string): Promise<GateSpec> {
+  const { data } = await api.get<GateSpec>(`/quantum/gates/${encodeURIComponent(gateId)}`);
+  return data;
+}
+
+/**
+ * Execute custom quantum circuit on Qiskit Aer simulator.
+ */
+export async function simulateQuantumCircuit(params: {
+  num_qubits: number;
+  operations: GateOperation[];
+  shots?: number;
+}): Promise<CircuitSimulateResponse> {
+  const { data } = await api.post<CircuitSimulateResponse>("/quantum/circuit/simulate", {
+    num_qubits: params.num_qubits,
+    operations: params.operations,
+    shots: params.shots ?? 1024,
+  });
+  return data;
+}
+
+/**
+ * Fetch pre-loaded reproducible quantum experiments.
+ */
+export async function fetchQuantumExperiments(): Promise<ExperimentTemplate[]> {
+  const { data } = await api.get<ExperimentTemplate[]>("/quantum/experiments");
+  return data;
+}
+
+/**
+ * Fetch single quantum experiment template by ID.
+ */
+export async function fetchQuantumExperiment(expId: string): Promise<ExperimentTemplate> {
+  const { data } = await api.get<ExperimentTemplate>(`/quantum/experiments/${encodeURIComponent(expId)}`);
   return data;
 }
 

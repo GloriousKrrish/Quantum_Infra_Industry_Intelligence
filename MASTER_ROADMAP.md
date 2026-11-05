@@ -26,10 +26,10 @@
 | **1.5** | **Quantum Integration** | Qiskit Aer QAOA simulator, QUBO formulation, exact MILP benchmarking | **COMPLETED** |
 | **1.6** | **Real Estate Intelligence Studio** | Multi-criteria land search, master parcel profiles, modular feasibility & cash flow | **COMPLETED** |
 | **1.7** | **Data Integrity & Validation** | 7-tier Data Trust Framework, WGS-84 boundaries, Overpass API, mathematical safeguards | **COMPLETED** |
+| **02** | **Quantum Computing Foundation** | Qiskit Aer C++ engine, 1-8 qubit playground, 14-gate unitary library, Bloch sphere 3D with pure/mixed states, Bell & GHZ entanglement lab, 10 reproducible experiments | **COMPLETED** |
 | **1.8** | **Real Geographic Intelligence** | Real Pune GIS, cadastral layers, infrastructure vectors, real spatial datasets | **NEXT FOCUS** |
 | **1.9** | **AI Land Analyst** | Autonomous AI-powered property synthesis, site comparison & due diligence briefs | **QUEUED** |
-| **02** | **Quantum Computing Foundation** | Quantum gates, circuits, simulators, operator math, statevector inspections | **QUEUED** |
-| **03** | **Quantum Mechanics Research Lab** | Quantum states, superposition, entanglement, 3D interactive Bloch sphere | **QUEUED** |
+| **03** | **Quantum Mechanics Research Lab** | Multi-qubit density operators, noise models, decoherence simulation ($T_1, T_2$), quantum tomography | **QUEUED** |
 | **04** | **Advanced Quantum Optimization** | Multi-layer QAOA ($p \ge 3$), XY mixer Hamiltonians, higher-order QUBOs, penalty tuning | **PLANNED** |
 | **05** | **Quantum Machine Learning** | QNN, QSVM, quantum kernel estimation, land valuation classification | **PLANNED** |
 | **06** | **Infrastructure Intelligence** | Road networks, IS 1172 water, CPHEEO sewage, 220kV power grid, infrastructure gap index | **PLANNED** |

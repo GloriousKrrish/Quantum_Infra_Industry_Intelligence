@@ -155,12 +155,12 @@ async def get_parcel_infrastructure(
         ]
     ):
         custom_weights = {
-            "highway": weight_highway if weight_highway is not None else 25.0,
-            "hospital": weight_hospital if weight_hospital is not None else 20.0,
-            "commercial": weight_commercial if weight_commercial is not None else 20.0,
-            "railway": weight_railway if weight_railway is not None else 15.0,
-            "education": weight_education if weight_education is not None else 10.0,
-            "airport": weight_airport if weight_airport is not None else 10.0,
+            "highway": weight_highway if weight_highway is not None else 0.0,
+            "hospital": weight_hospital if weight_hospital is not None else 0.0,
+            "commercial": weight_commercial if weight_commercial is not None else 0.0,
+            "railway": weight_railway if weight_railway is not None else 0.0,
+            "education": weight_education if weight_education is not None else 0.0,
+            "airport": weight_airport if weight_airport is not None else 0.0,
         }
 
     return analyze_parcel_infrastructure(parcel, custom_weights)

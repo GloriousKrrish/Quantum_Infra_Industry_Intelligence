@@ -4,6 +4,39 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 02] — 2026-11-05
+### Added: Quantum Computing Foundation & Scientific Visual Laboratory
+- **Native Qiskit Aer C++ Engine Integration (`backend/app/engines/quantum/`)**:
+  - Integrated `qiskit 2.6.1` and `qiskit-aer 0.18.2` native C++ AerSimulator on Python 3.14 without fallbacks.
+  - Built `simulation_engine.py` delivering exact complex amplitudes ($\text{Re}, \text{Im}$, magnitude, phase $\phi \in [-\pi, \pi]$), probabilities $|\alpha_i|^2$, and shot-based measurement histograms ($N=1024, 2048, 4096$).
+  - Derived per-qubit reduced density matrices $\rho_k = \text{Tr}_{\bar{k}}(\rho)$ via partial tracing over the register.
+  - Calculated exact Bloch vector coordinates $\vec{r} = (2\text{Re}(\rho_{01}), 2\text{Im}(\rho_{10}), \rho_{00} - \rho_{11})$ and state purity $\gamma = \text{Tr}(\rho^2)$.
+- **Comprehensive Quantum Gate Library (`gate_library.py`)**:
+  - Implemented 14 unitary gates satisfying $U^\dagger U = I$:
+    - Single-qubit: $I, X, Y, Z, H, S, T, R_x(\theta), R_y(\theta), R_z(\phi)$.
+    - Multi-qubit: $CX, CZ, \text{SWAP}, \text{CCNOT}$ (Toffoli).
+  - Attached exact $2\times 2, 4\times 4, 8\times 8$ complex unitary matrices and LaTeX expressions to every gate.
+  - Published REST endpoints `GET /api/quantum/gates` and `GET /api/quantum/gates/{gate_id}`.
+- **Circuit Engine & Simulation Endpoint (`circuit_engine.py`, `routes_quantum.py`)**:
+  - Strict validation of 1–8 qubit circuits, operation order, control/target disjointness, and circuit depth calculations.
+  - Published circuit simulation endpoint `POST /api/quantum/circuit/simulate`.
+- **Pre-Loaded Reproducible Experiments (`experiment_library.py`)**:
+  - Cataloged 10 canonical experiments: Single-Qubit Superposition, Pauli-X Inversion, S/T Phase Shifts, Mach-Zehnder Interference ($H \to Z \to H$), 4 Bell states ($|\Phi^+\rangle, |\Phi^-\rangle, |\Psi^+\rangle, |\Psi^-\rangle$), GHZ state, and Bennett et al. Quantum Teleportation.
+  - Published endpoints `GET /api/quantum/experiments` and `GET /api/quantum/experiments/{id}`.
+- **Frontend Quantum Research Laboratory (`frontend/src/components/quantum/`, `pages/QuantumLab.tsx`)**:
+  - `BlochSphere3D.tsx`: Upgraded 3D Three.js sphere rendering pure states on the surface ($|\vec{r}|=1$), mixed states inside the sphere ($|\vec{r}|<1$), and maximally mixed states at the origin ($|\vec{r}|=0, \gamma=0.5$) with amber halo and scientific explanation.
+  - `CircuitBuilder.tsx`: Visual 1–8 qubit circuit grid with gate selection, target/control/parameter sliders, preset loader, and execution trigger.
+  - `EntanglementLab.tsx`: Interactive Bell & GHZ state generator with joint correlation histograms, measurement sampling, and individual qubit reduced state inspection.
+  - `QuantumMathExplorer.tsx`: Dirac bra-ket statevector table ($|\psi\rangle = \sum \alpha_i |i\rangle$), complex number breakdown, and gate unitary matrix explorer.
+  - `ExperimentLibraryModal.tsx`: Modal browser for 10 canonical experiments with one-click injection into the circuit builder.
+  - Preserved QAOA real estate optimizer and classical benchmarking tabs intact.
+- **Verification & Testing**:
+  - Created `backend/tests/test_quantum_foundation.py` with 32 unit and API tests.
+  - Complete backend test suite: **81 / 81 passed** in 11.95s.
+  - Frontend production build: **0 errors** in 2.63s.
+
+---
+
 ## [Phase 1.7] — 2026-11-05
 ### Added: Geospatial Data Integrity & Scientific Validation Framework
 - **Data Trust Framework (`backend/app/data/provenance/`)**:

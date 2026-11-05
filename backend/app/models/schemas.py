@@ -514,3 +514,143 @@ class WorkflowRequest(BaseModel):
     zone_filter: Optional[str] = Field(default=None)
     qaoa_p: int = Field(default=2, ge=1, le=10)
     qaoa_shots: int = Field(default=4096, ge=100)
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 5. PHASE 02 QUANTUM FOUNDATION SCHEMAS
+# ═══════════════════════════════════════════════════════════════════════
+
+class GateOperationSchema(BaseModel):
+    """Single quantum gate operation in a user-designed circuit."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    gate: str = Field(..., description="Gate identifier: H, X, Y, Z, S, T, RX, RY, RZ, CX, CZ, SWAP, CCX")
+    targets: List[int] = Field(default_factory=list, description="Target qubit indices (0-indexed)")
+    controls: List[int] = Field(default_factory=list, description="Control qubit indices (for controlled gates)")
+    params: Optional[Union[Dict[str, float], List[float], float]] = Field(
+        default=None, description="Angle parameter for rotation gates (Rx, Ry, Rz)"
+    )
+
+
+class CircuitSimulateRequest(BaseModel):
+    """Request to execute a quantum circuit on the Qiskit Aer simulator."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    num_qubits: int = Field(default=2, ge=1, le=8, description="Number of qubits (1 to 8)")
+    operations: List[GateOperationSchema] = Field(
+        default_factory=list, description="Sequential gate operations to execute"
+    )
+    shots: int = Field(default=1024, ge=100, le=10000, description="Measurement sampling shots")
+
+
+class ComplexNumber(BaseModel):
+    """Real and imaginary parts of a complex number."""
+    real: float
+    imag: float
+
+
+class StateAmplitude(BaseModel):
+    """Statevector computational basis amplitude element."""
+    index: int
+    bitstring: str
+    ket: str
+    real: float
+    imag: float
+    magnitude: float
+    probability: float
+    phase_rad: float
+    phase_deg: float
+
+
+class MeasurementDistribution(BaseModel):
+    """Shot-based measurement outcome count and frequency."""
+    bitstring: str
+    count: int
+    frequency: float
+    percentage: float
+
+
+class BlochVectorData(BaseModel):
+    """3D coordinates and magnitude of a Bloch vector."""
+    x: float
+    y: float
+    z: float
+    length: float
+
+
+class SphericalCoordsData(BaseModel):
+    """Spherical angles on the Bloch sphere."""
+    theta_rad: float
+    theta_pi: float
+    phi_rad: float
+    phi_pi: float
+
+
+class QubitBlochInfo(BaseModel):
+    """Bloch vector, purity, and reduced density matrix for an individual qubit."""
+    qubit_index: int
+    bloch_vector: BlochVectorData
+    spherical_coords: SphericalCoordsData
+    purity: float = Field(..., description="Tr(rho^2) in [0.5, 1.0]. 1.0=pure, 0.5=maximally mixed")
+    state_classification: str = Field(..., description="'PURE', 'MIXED', or 'MAXIMALLY_MIXED'")
+    description: str
+    prob_0: float
+    prob_1: float
+    density_matrix: List[List[ComplexNumber]]
+
+
+class CircuitSimulateResponse(BaseModel):
+    """Comprehensive quantum simulation results from Qiskit Aer."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    num_qubits: int
+    num_clbits: int
+    circuit_depth: int
+    total_gate_count: int
+    ops_breakdown: Dict[str, int]
+    is_entangled: bool
+    shots_requested: int
+    execution_time_ms: float
+    simulator_backend: str
+    statevector: List[StateAmplitude]
+    top_states: List[StateAmplitude]
+    measurements: List[MeasurementDistribution]
+    qubit_bloch_vectors: List[QubitBlochInfo]
+
+
+class GateSpec(BaseModel):
+    """Metadata specification for a registered quantum gate."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    category: str
+    num_qubits: int
+    is_parameterized: bool
+    default_param: Optional[float] = None
+    symbol: str
+    latex: str
+    description: str
+    effect: str
+    matrix: List[List[ComplexNumber]]
+
+
+class ExperimentTemplate(BaseModel):
+    """Pre-loaded reproducible quantum experiment template."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    id: str
+    name: str
+    category: str
+    num_qubits: int
+    objective: str
+    formula: str
+    circuit: List[Dict[str, Any]]
+    expected_state: str
+    explanation: str
+
