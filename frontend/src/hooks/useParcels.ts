@@ -10,7 +10,7 @@ import { MOCK_PARCELS } from "../lib/mockData";
 export function useParcels() {
   return useQuery<Parcel[]>({
     queryKey: ["parcels"],
-    queryFn: fetchParcels,
+    queryFn: () => fetchParcels(),
     placeholderData: MOCK_PARCELS,
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
