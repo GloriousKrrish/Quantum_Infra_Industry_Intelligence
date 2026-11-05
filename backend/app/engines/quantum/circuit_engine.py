@@ -210,3 +210,4 @@ def get_circuit_metrics(qc: QuantumCircuit) -> Dict[str, Any]:
         "ops_breakdown": ops_dict,
         "is_entangled": "cx" in ops_dict or "cz" in ops_dict or "swap" in ops_dict or "ccx" in ops_dict,
     }
+

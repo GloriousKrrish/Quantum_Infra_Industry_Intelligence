@@ -159,7 +159,7 @@ export default function QuantumLab() {
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 font-medium text-slate-700">
-              Simulator: <b>Qiskit Aer (C++ Native)</b>
+              Simulation Mode: <b>Classical C++ Emulation (Qiskit Aer)</b>
             </span>
             <button
               onClick={() => setIsExpModalOpen(true)}
@@ -169,6 +169,16 @@ export default function QuantumLab() {
               Experiment Library (10)
             </button>
           </div>
+        </div>
+
+        {/* Scientific Integrity Disclaimer */}
+        <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-amber-200/80 bg-amber-50/60 px-3.5 py-2 text-[11px] text-amber-900 leading-normal">
+          <span className="font-bold uppercase tracking-wider text-amber-800 text-[10px] bg-amber-100 px-1.5 py-0.5 rounded">
+            Classical Simulation Notice
+          </span>
+          <span>
+            Circuits execute via classical statevector simulation on local CPU using Qiskit Aer (C++). This is not execution on physical quantum hardware; zero quantum advantage or physical hardware execution is claimed.
+          </span>
         </div>
 
         {/* Global Error Banner */}
@@ -264,7 +274,7 @@ export default function QuantumLab() {
                       Sampled Measurement Outcomes ({playgroundSimResult.shots_requested} Shots)
                     </h3>
                     <span className="text-[11px] text-slate-500 font-mono">
-                      Qiskit Aer Execution: {playgroundSimResult.execution_time_ms} ms • Depth: {playgroundSimResult.circuit_depth} • Gates: {playgroundSimResult.total_gate_count}
+                      Qiskit Aer (Classical C++): {playgroundSimResult.execution_time_ms} ms • Depth: {playgroundSimResult.circuit_depth} • Gates: {playgroundSimResult.total_gate_count} • Basis: |q_{playgroundSimResult.num_qubits - 1}…q₀⟩ (rightmost = q₀)
                     </span>
                   </div>
                   <span className="text-xs font-mono text-blue-700 bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200 font-bold">

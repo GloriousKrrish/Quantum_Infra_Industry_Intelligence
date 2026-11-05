@@ -298,3 +298,4 @@ def get_all_gate_specs() -> List[Dict[str, Any]]:
 def get_gate_spec(gate_id: str) -> Optional[Dict[str, Any]]:
     """Return specification for a single gate by ID (case-insensitive)."""
     return GATE_CATALOG.get(gate_id.upper())
+

@@ -196,18 +196,25 @@ EXPERIMENT_CATALOG: Dict[str, Dict[str, Any]] = {
             # Create shared Bell pair between q1 (Alice) and q2 (Bob)
             {"gate": "H", "targets": [1], "controls": []},
             {"gate": "CX", "targets": [2], "controls": [1]},
-            # Alice performs Bell measurement on q0 and q1
+            # Alice performs Bell basis change on q0 and q1
             {"gate": "CX", "targets": [1], "controls": [0]},
             {"gate": "H", "targets": [0], "controls": []},
-            # Bob applies conditional recovery operations based on measurement
+            # Bob applies conditional recovery operations based on measurement outcomes.
+            # Under the Principle of Deferred Measurement (Nielsen & Chuang, Sec 4.4),
+            # classical feedforward X^(c1) and Z^(c0) is executed as coherent CX(1->2) and CZ(0->2)
+            # gates, preserving full statevector coherence while reproducing Bob's exact state.
             {"gate": "CX", "targets": [2], "controls": [1]},
             {"gate": "CZ", "targets": [2], "controls": [0]}
         ],
         "expected_state": "Bob's qubit q2 reproduces the initial state Ry(π/3)|0⟩ with fidelity = 1.0",
         "explanation": (
-            "The Quantum Teleportation protocol demonstrates the transmission of quantum information using entanglement and 2 classical bits. "
-            "Alice entangles the input qubit (q0) with her half of the EPR pair (q1) and performs a Bell measurement. "
-            "Bob then uses the 2 classical bits to apply Pauli-X and Pauli-Z corrections, reconstructing the exact original quantum state on q2."
+            "The Quantum Teleportation protocol (Bennett et al. 1993) transmits an unknown quantum state using "
+            "an entangled EPR pair and 2 classical bits of information. "
+            "Alice couples the unknown state |ψ⟩ (q0) with her EPR half (q1) and performs a Bell measurement. "
+            "Under the Principle of Deferred Measurement (Nielsen & Chuang, Theorem 4.4), classical feedforward "
+            "(applying Pauli-X if q1=1 and Pauli-Z if q0=1) is executed coherently via CX(1→2) and CZ(0→2) gates. "
+            "Tracing out Alice's qubits (q0, q1) proves Bob's reduced density matrix on q2 matches the exact "
+            "input state Ry(π/3)|0⟩ with fidelity F = 1.000, purity γ = 1.000, and identical Bloch vector."
         ),
     },
 }
@@ -221,3 +228,4 @@ def get_all_experiments() -> List[Dict[str, Any]]:
 def get_experiment_by_id(exp_id: str) -> Optional[Dict[str, Any]]:
     """Return a single experiment template by ID."""
     return EXPERIMENT_CATALOG.get(exp_id)
+

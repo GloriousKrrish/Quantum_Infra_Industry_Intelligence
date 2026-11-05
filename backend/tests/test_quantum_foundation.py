@@ -7,8 +7,10 @@ Tests:
 3. Multi-Qubit Entanglement (4 Bell States, 3-Qubit GHZ State)
 4. Statevector Probability Normalization (sum |alpha_i|^2 = 1.0)
 5. Reduced Density Matrix & Bloch Vector Calculations (Pure vs Entangled Mixed States)
-6. Quantum Teleportation Protocol
-7. Fastapi API Endpoints & Circuit Validation Guardrails
+6. Quantum Teleportation Protocol (Deferred Measurement Fidelity & Equivalence)
+7. Qubit Ordering Consistency (Qiskit Little-Endian |q_{n-1} ... q_0>)
+8. Complex Amplitudes & Phase Angles (Re, Im, Magnitude, Phase)
+9. FastAPI API Endpoints & Circuit Validation Guardrails
 """
 
 import math
@@ -187,7 +189,7 @@ def test_ghz_state():
 
 
 # ═══════════════════════════════════════════════════════════════════════
-# 4. PROBABILITY NORMALIZATION & QUANTUM TELEPORTATION
+# 4. PROBABILITY NORMALIZATION, ORDERING & TELEPORTATION
 # ═══════════════════════════════════════════════════════════════════════
 
 def test_probability_normalization():
@@ -203,17 +205,85 @@ def test_probability_normalization():
     assert math.isclose(total_prob, 1.0, abs_tol=1e-5)
 
 
+def test_qubit_ordering_little_endian():
+    """Verify Qiskit little-endian ordering |q_{n-1} ... q_0> across statevector and measurements."""
+    # Applying X only on qubit 0 should yield bitstring '001' (rightmost bit = 1)
+    res_q0 = simulate_circuit(num_qubits=3, operations=[{"gate": "X", "targets": [0]}], shots=100)
+    assert res_q0["statevector"][1]["bitstring"] == "001"
+    assert math.isclose(res_q0["statevector"][1]["probability"], 1.0, abs_tol=1e-6)
+    assert res_q0["measurements"][0]["bitstring"] == "001"
+
+    # Applying X only on qubit 2 should yield bitstring '100' (leftmost bit = 1)
+    res_q2 = simulate_circuit(num_qubits=3, operations=[{"gate": "X", "targets": [2]}], shots=100)
+    assert res_q2["statevector"][4]["bitstring"] == "100"
+    assert math.isclose(res_q2["statevector"][4]["probability"], 1.0, abs_tol=1e-6)
+    assert res_q2["measurements"][0]["bitstring"] == "100"
+
+
+def test_complex_amplitudes_and_phase_angles():
+    """Verify complex amplitude extraction (Re, Im, magnitude, phase)."""
+    # Create |+i> = (|0> + i|1>)/sqrt(2) via H then S on qubit 0
+    res = simulate_circuit(num_qubits=1, operations=[{"gate": "H", "targets": [0]}, {"gate": "S", "targets": [0]}])
+    s0 = res["statevector"][0]  # |0>
+    s1 = res["statevector"][1]  # |1>
+
+    assert math.isclose(s0["real"], 1.0 / math.sqrt(2), abs_tol=1e-4)
+    assert math.isclose(s0["imag"], 0.0, abs_tol=1e-4)
+    assert math.isclose(s0["magnitude"], 1.0 / math.sqrt(2), abs_tol=1e-4)
+    assert math.isclose(s0["phase_rad"], 0.0, abs_tol=1e-4)
+
+    assert math.isclose(s1["real"], 0.0, abs_tol=1e-4)
+    assert math.isclose(s1["imag"], 1.0 / math.sqrt(2), abs_tol=1e-4)
+    assert math.isclose(s1["magnitude"], 1.0 / math.sqrt(2), abs_tol=1e-4)
+    assert math.isclose(s1["phase_rad"], math.pi / 2.0, abs_tol=1e-4)
+    assert math.isclose(s1["phase_deg"], 90.0, abs_tol=1e-2)
+
+
+def test_reduced_density_matrix_mixed_vs_pure():
+    """Verify purity gamma = Tr(rho^2) = 1.0 for product states and gamma = 0.5 for Bell pairs."""
+    # Separable product state: |+> (x) |0>
+    res_sep = simulate_circuit(num_qubits=2, operations=[{"gate": "H", "targets": [0]}])
+    for q in res_sep["qubit_bloch_vectors"]:
+        assert q["state_classification"] == "PURE"
+        assert math.isclose(q["purity"], 1.0, abs_tol=1e-4)
+        assert math.isclose(q["bloch_vector"]["length"], 1.0, abs_tol=1e-4)
+
+    # Entangled Bell pair: (|00> + |11>)/sqrt(2)
+    res_ent = simulate_circuit(num_qubits=2, operations=[{"gate": "H", "targets": [0]}, {"gate": "CX", "targets": [1], "controls": [0]}])
+    for q in res_ent["qubit_bloch_vectors"]:
+        assert q["state_classification"] == "MAXIMALLY_MIXED"
+        assert math.isclose(q["purity"], 0.5, abs_tol=1e-4)
+        assert math.isclose(q["bloch_vector"]["length"], 0.0, abs_tol=1e-4)
+        assert math.isclose(q["prob_0"], 0.5, abs_tol=1e-4)
+        assert math.isclose(q["prob_1"], 0.5, abs_tol=1e-4)
+
+
 def test_quantum_teleportation_experiment():
-    """Verify teleportation experiment template runs successfully."""
+    """Verify teleportation reproduces Bob's qubit state with fidelity = 1.0."""
     exp = get_experiment_by_id("exp_quantum_teleportation")
     assert exp is not None
     res = simulate_circuit(
         num_qubits=exp["num_qubits"],
         operations=exp["circuit"],
-        shots=1024,
+        shots=2048,
     )
     assert res["num_qubits"] == 3
     assert len(res["statevector"]) == 8
+
+    # Bob's qubit is index 2
+    bob_bloch = res["qubit_bloch_vectors"][2]
+    assert bob_bloch["state_classification"] == "PURE"
+    assert math.isclose(bob_bloch["purity"], 1.0, abs_tol=1e-3)
+    assert math.isclose(bob_bloch["bloch_vector"]["length"], 1.0, abs_tol=1e-3)
+
+    # Input state was Ry(pi/3)|0> -> rx = sin(pi/3) = sqrt(3)/2 ~ 0.8660, rz = cos(pi/3) = 0.5
+    assert math.isclose(bob_bloch["bloch_vector"]["x"], math.sin(math.pi / 3.0), abs_tol=1e-3)
+    assert math.isclose(bob_bloch["bloch_vector"]["y"], 0.0, abs_tol=1e-3)
+    assert math.isclose(bob_bloch["bloch_vector"]["z"], math.cos(math.pi / 3.0), abs_tol=1e-3)
+
+    # Bob's measurement probabilities: P(0) = cos^2(pi/6) = 0.75, P(1) = sin^2(pi/6) = 0.25
+    assert math.isclose(bob_bloch["prob_0"], 0.75, abs_tol=1e-3)
+    assert math.isclose(bob_bloch["prob_1"], 0.25, abs_tol=1e-3)
 
 
 # ═══════════════════════════════════════════════════════════════════════

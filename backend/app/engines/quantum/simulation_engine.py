@@ -193,3 +193,4 @@ def simulate_circuit(
         "measurements": measurements,
         "qubit_bloch_vectors": qubit_bloch_vectors,
     }
+

@@ -68,9 +68,14 @@ export default function QuantumMathExplorer({
             </span>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200 font-bold">
-            <CheckCircle2 className="h-3.5 w-3.5" />
-            Normalization: ∑|αᵢ|² = 1.0000
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+              Qiskit Ordering: <b>|q_{numQubits - 1}…q₀⟩</b> (LSB rightmost = q₀)
+            </span>
+            <div className="flex items-center gap-1.5 text-xs font-mono text-emerald-700 bg-emerald-50 px-3 py-1 rounded-lg border border-emerald-200 font-bold">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              Normalization: ∑|αᵢ|² = 1.0000
+            </div>
           </div>
         </div>
 
@@ -209,3 +214,4 @@ export default function QuantumMathExplorer({
     </div>
   );
 }
+
