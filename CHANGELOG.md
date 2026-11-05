@@ -4,6 +4,42 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 1.8] — 2026-11-05
+### Added: Real Geographic Intelligence Engine (RGIE)
+- **Dual Geodetic & Metric Coordinate Systems (`coordinate_transform.py`)**:
+  - Implemented exact Transverse Mercator forward and inverse transformations between WGS-84 (EPSG:4326) and UTM Zone 43N (EPSG:32643) with sub-millimeter round-trip precision.
+  - Implemented metric Shoelace polygon area calculation (sq.m & acres), polygon centroid, and bounding box computation in pure Python + NumPy without requiring heavy C binaries (GDAL/PyProj).
+- **RFC 7946 Geometry Validation & Containment (`geometry_validation.py`)**:
+  - Linear ring closure verification ($P_0 \equiv P_n$, $\ge 4$ vertices).
+  - Enforced Counter-Clockwise (CCW) exterior ring orientation per the right-hand rule.
+  - Ray-casting point-in-polygon algorithm (Jordan Curve Theorem) for statutory boundary checking.
+  - True metric buffer polygon generation.
+- **Metric Spatial Indexing (`spatial_index.py`)**:
+  - Built 2D spatial index on `scipy.spatial.KDTree` over projected UTM 43N coordinates.
+  - Accelerated radius and $k$-nearest neighbor spatial queries to $O(\log N)$ performance.
+- **Topological Road Routing & IRC Speed Calibration (`network_analysis.py`)**:
+  - NetworkX directed arterial graph modeling Expressways, NH-48 Bypass, NH-60, SH-27, and Metro corridors.
+  - Dijkstra shortest path finding with Indian Road Congress (IRC-106) speed calibrations.
+  - Quantified Circuity Factor ($C_f = d_{\text{road}} / d_{\text{haversine}}$) revealing $20\%-55\%$ transit penalty in Pune topography.
+- **Statutory Regional Datasets & Boundaries (`government_data_ingestion.py`, `data_sources.py`)**:
+  - Authentic GeoJSON FeatureCollections for PMRDA (7,256 km²), PMC (516 km²), PCMC (181 km²), Mula-Mutha river system, and major planning corridors (Hinjawadi SEZ, Chakan MIDC, Bhosari MIDC, Kharadi IT, BDP Hills, and NDA Defence buffers).
+  - Catalog of 10 authentic regional data sources with licenses and limitations.
+- **Multi-Criteria Geographic Suitability Scoring (`suitability_scoring.py`)**:
+  - Exponential distance-decay modeling across 7 proximity factors.
+  - Statutory environmental penalty deductions (-20 pts floodline, -25 pts defence buffer).
+  - Transparent Data Completeness Index ($0 \to 100\%$) indicating verified data coverage.
+- **REST API Suite (`routes_geospatial.py`, `schemas/geospatial.py`)**:
+  - Mounted 11 REST endpoints under `/api/geospatial` (health, sources, datasets, boundaries, infrastructure, nearby, query, analyze, import/geojson, provenance).
+- **Frontend Upgrades (`PuneMap.tsx`, `ParcelProfileModal.tsx`, `LandStudio.tsx`)**:
+  - Layer toggle controls and client RFC 7946 GeoJSON importer in `PuneMap.tsx`.
+  - Upgraded Tab B ("Geographic Intelligence") in `ParcelProfileModal.tsx` rendering WGS-84/UTM 43N coordinates, administrative jurisdictions, floodline & defence buffers, circuity factor routing comparisons, and MCDA suitability scores.
+  - Dynamic imported parcel state injection in `LandStudio.tsx`.
+- **Validation & Testing**:
+  - Expanded backend test suite from 143 to **169 tests passed** across all 12 test suites.
+  - Verified frontend production build (`tsc -b && vite build`) with 0 errors.
+
+---
+
 ## [Phase 03 Audit] — 2026-11-05
 ### Certified: Phase 03 Scientific, Mathematical & Engineering Audit
 - **Scientific Audit Certification (`PHASE_03_SCIENTIFIC_AUDIT_REPORT.md`)**:

@@ -523,6 +523,10 @@ export default function LandStudio() {
               onSelectParcel={(p) => setSelectedParcel(p)}
               onOpenProfile={handleOpenModal}
               winningParcels={MOCK_QUANTUM_RESULT.decoded_solution.selected_parcels}
+              onUserParcelImported={(newP) => {
+                setAllParcels((prev) => [newP, ...prev]);
+                setSelectedParcel(newP);
+              }}
             />
           </div>
 

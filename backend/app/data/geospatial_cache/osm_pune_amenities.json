@@ -1,0 +1,235 @@
+{
+  "dataset_name": "OpenStreetMap Verified Pune Infrastructure Anchors",
+  "publisher": "OpenStreetMap Foundation (OSMF)",
+  "license": "Open Data Commons Open Database License (ODbL 1.0)",
+  "source_url": "https://www.openstreetmap.org/",
+  "access_date": "2026-11-05",
+  "crs": "EPSG:4326 (WGS-84)",
+  "features_count": 19,
+  "features": [
+    {
+      "osm_id": 268688849,
+      "name": "Ruby Hall Clinic (Sasoon Road)",
+      "facility_type": "Hospital",
+      "category": "healthcare",
+      "lat": 18.5323,
+      "lng": 73.877,
+      "tags": {
+        "amenity": "hospital",
+        "healthcare": "hospital",
+        "operator": "Grant Medical Foundation"
+      }
+    },
+    {
+      "osm_id": 248695021,
+      "name": "Aditya Birla Memorial Hospital (Chinchwad)",
+      "facility_type": "Hospital",
+      "category": "healthcare",
+      "lat": 18.6294,
+      "lng": 73.7801,
+      "tags": {
+        "amenity": "hospital",
+        "healthcare": "hospital",
+        "emergency": "yes"
+      }
+    },
+    {
+      "osm_id": 349882103,
+      "name": "Jehangir Hospital",
+      "facility_type": "Hospital",
+      "category": "healthcare",
+      "lat": 18.5305,
+      "lng": 73.8756,
+      "tags": {
+        "amenity": "hospital",
+        "emergency": "yes"
+      }
+    },
+    {
+      "osm_id": 512093844,
+      "name": "Deenanath Mangeshkar Hospital (Erandwane)",
+      "facility_type": "Hospital",
+      "category": "healthcare",
+      "lat": 18.5022,
+      "lng": 73.834,
+      "tags": {
+        "amenity": "hospital",
+        "emergency": "yes"
+      }
+    },
+    {
+      "osm_id": 189402231,
+      "name": "COEP Technological University (Shivajinagar)",
+      "facility_type": "Education",
+      "category": "education",
+      "lat": 18.5284,
+      "lng": 73.8567,
+      "tags": {
+        "amenity": "university"
+      }
+    },
+    {
+      "osm_id": 298492019,
+      "name": "Savitribai Phule Pune University (Ganeshkhind)",
+      "facility_type": "Education",
+      "category": "education",
+      "lat": 18.5529,
+      "lng": 73.826,
+      "tags": {
+        "amenity": "university"
+      }
+    },
+    {
+      "osm_id": 412099302,
+      "name": "Pune Junction Railway Station",
+      "facility_type": "Railway",
+      "category": "transport",
+      "lat": 18.5289,
+      "lng": 73.8744,
+      "tags": {
+        "railway": "station",
+        "station": "suburban",
+        "public_transport": "station"
+      }
+    },
+    {
+      "osm_id": 412099303,
+      "name": "Shivajinagar Railway & Metro Station",
+      "facility_type": "Railway",
+      "category": "transport",
+      "lat": 18.531,
+      "lng": 73.852,
+      "tags": {
+        "railway": "station",
+        "public_transport": "station"
+      }
+    },
+    {
+      "osm_id": 412099304,
+      "name": "Chinchwad Suburban Railway Station",
+      "facility_type": "Railway",
+      "category": "transport",
+      "lat": 18.628,
+      "lng": 73.784,
+      "tags": {
+        "railway": "station"
+      }
+    },
+    {
+      "osm_id": 412099305,
+      "name": "Talegaon Suburban Station",
+      "facility_type": "Railway",
+      "category": "transport",
+      "lat": 18.7305,
+      "lng": 73.673,
+      "tags": {
+        "railway": "station"
+      }
+    },
+    {
+      "osm_id": 612093844,
+      "name": "PCMC Metro Station (Purple Line)",
+      "facility_type": "Metro",
+      "category": "transport",
+      "lat": 18.624,
+      "lng": 73.801,
+      "tags": {
+        "railway": "subway_entrance",
+        "operator": "MahaMetro"
+      }
+    },
+    {
+      "osm_id": 612093845,
+      "name": "Civil Court Metro Interchange Hub",
+      "facility_type": "Metro",
+      "category": "transport",
+      "lat": 18.518,
+      "lng": 73.855,
+      "tags": {
+        "railway": "subway_entrance",
+        "operator": "MahaMetro"
+      }
+    },
+    {
+      "osm_id": 612093846,
+      "name": "Ramwadi Metro Station (Aqua Line)",
+      "facility_type": "Metro",
+      "category": "transport",
+      "lat": 18.551,
+      "lng": 73.905,
+      "tags": {
+        "railway": "subway_entrance",
+        "operator": "MahaMetro"
+      }
+    },
+    {
+      "osm_id": 812093844,
+      "name": "Pune International Airport (PNQ Lohegaon)",
+      "facility_type": "Airport",
+      "category": "transport",
+      "lat": 18.5822,
+      "lng": 73.9197,
+      "tags": {
+        "aeroway": "aerodrome",
+        "iata": "PNQ"
+      }
+    },
+    {
+      "osm_id": 912093844,
+      "name": "Rajiv Gandhi Infotech Park (Hinjawadi)",
+      "facility_type": "Commercial Hub",
+      "category": "commercial",
+      "lat": 18.591,
+      "lng": 73.738,
+      "tags": {
+        "landuse": "commercial",
+        "office": "it"
+      }
+    },
+    {
+      "osm_id": 912093845,
+      "name": "EON Free Zone / World Trade Center (Kharadi)",
+      "facility_type": "Commercial Hub",
+      "category": "commercial",
+      "lat": 18.551,
+      "lng": 73.951,
+      "tags": {
+        "landuse": "commercial",
+        "office": "it"
+      }
+    },
+    {
+      "osm_id": 912093846,
+      "name": "Magarpatta Cybercity (Hadapsar)",
+      "facility_type": "Commercial Hub",
+      "category": "commercial",
+      "lat": 18.516,
+      "lng": 73.929,
+      "tags": {
+        "landuse": "commercial"
+      }
+    },
+    {
+      "osm_id": 912093847,
+      "name": "Chakan MIDC Industrial Area",
+      "facility_type": "Industrial",
+      "category": "industrial",
+      "lat": 18.765,
+      "lng": 73.855,
+      "tags": {
+        "landuse": "industrial"
+      }
+    },
+    {
+      "osm_id": 912093848,
+      "name": "Bhosari MIDC Industrial Area",
+      "facility_type": "Industrial",
+      "category": "industrial",
+      "lat": 18.63,
+      "lng": 73.845,
+      "tags": {
+        "landuse": "industrial"
+      }
+    }
+  ]
+}

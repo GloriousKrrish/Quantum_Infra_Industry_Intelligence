@@ -14,6 +14,7 @@ from backend.app.core.config import settings
 from backend.app.api.routes_land import router as land_router
 from backend.app.api.routes_quantum import router as quantum_router
 from backend.app.api.routes_workflow import router as workflow_router
+from backend.app.api.routes_geospatial import router as geospatial_router
 
 # ═══════════════════════════════════════════════════════════════════════
 # APPLICATION FACTORY
@@ -40,6 +41,7 @@ app.add_middleware(
 app.include_router(land_router)
 app.include_router(quantum_router)
 app.include_router(workflow_router)
+app.include_router(geospatial_router)
 
 
 # ═══════════════════════════════════════════════════════════════════════

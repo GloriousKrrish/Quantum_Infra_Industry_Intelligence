@@ -670,6 +670,163 @@ export interface WorkflowResponse {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// PHASE 1.8 REAL GEOGRAPHIC INTELLIGENCE ENGINE (RGIE) SCHEMAS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface GeospatialSource {
+  id: string;
+  name: string;
+  publisher: string;
+  source_url: string;
+  date_accessed: string;
+  publication_date?: string;
+  geographic_coverage: string;
+  coordinate_reference_system: string;
+  projected_crs?: string;
+  license: string;
+  permitted_usage: string;
+  update_frequency: string;
+  provenance_tier: VerificationStatus;
+  confidence_level: number;
+  features_extracted: string[];
+  quality_limitations: string;
+}
+
+export interface GeospatialSourcesResponse {
+  sources_count: number;
+  sources: GeospatialSource[];
+}
+
+export interface GeospatialFeature {
+  type: "Feature";
+  id?: string;
+  geometry: {
+    type: string;
+    coordinates: any;
+  };
+  properties: Record<string, any>;
+}
+
+export interface GeospatialFeatureCollection {
+  type: "FeatureCollection";
+  features: GeospatialFeature[];
+  properties?: Record<string, any>;
+}
+
+export interface GeospatialInfrastructureResponse {
+  corridors: GeospatialFeatureCollection;
+  water_bodies: GeospatialFeatureCollection;
+  planning_zones: GeospatialFeatureCollection;
+}
+
+export interface GeospatialAnalyzeRequest {
+  lat: number;
+  lng: number;
+  parcel_id?: string;
+  parcel_name?: string;
+  custom_weights?: Record<string, number>;
+}
+
+export interface GeospatialAnalyzeResponse {
+  query_coordinates: { lat: number; lng: number };
+  utm_zone_43n?: {
+    easting_m: number;
+    northing_m: number;
+    crs: string;
+    description: string;
+  };
+  parcel_metadata: { parcel_id?: string; parcel_name?: string };
+  administrative_jurisdiction: {
+    within_pmrda_region: boolean;
+    within_pmc_corporation: boolean;
+    within_pcmc_corporation: boolean;
+    primary_planning_authority: string;
+    applicable_regulations: string;
+  };
+  environmental_and_zoning: {
+    intersected_planning_zones: string[];
+    within_floodline_zone: boolean;
+    within_defence_buffer: boolean;
+    clearance_recommendations: (string | null)[];
+  };
+  nearest_infrastructure: {
+    highway: any;
+    hospital: any;
+    education: any;
+    railway: any;
+    airport: any;
+    commercial_hub: any;
+  };
+  road_network_routing: {
+    to_nearest_highway?: {
+      straight_line_distance_km: number;
+      network_distance_km: number;
+      circuity_factor: number;
+      free_flow_time_minutes: number;
+      peak_travel_time_minutes: number;
+      route_path: string[];
+      methodology: string;
+    };
+    to_nearest_commercial_hub?: {
+      straight_line_distance_km: number;
+      network_distance_km: number;
+      circuity_factor: number;
+      free_flow_time_minutes: number;
+      peak_travel_time_minutes: number;
+      route_path: string[];
+      methodology: string;
+    };
+  };
+  geographic_suitability: {
+    final_suitability_score: number;
+    base_score_before_penalties: number;
+    classification: string;
+    data_completeness_percent: number;
+    is_data_complete: boolean;
+    factors: Array<{
+      factor_name: string;
+      weight: number;
+      input_distance_km: number | null;
+      normalized_score: number;
+      weighted_points: number;
+      data_available: boolean;
+    }>;
+    environmental_penalties: Array<{
+      constraint: string;
+      penalty_points: number;
+      regulatory_basis: string;
+      impact: string;
+    }>;
+    total_penalty_points: number;
+    methodology: {
+      model_type: string;
+      normalization: string;
+      disclaimer: string;
+    };
+  };
+  scientific_disclaimer: string;
+}
+
+export interface GeoJSONImportRequest {
+  geojson_data: Record<string, any>;
+  parcel_name?: string;
+  asking_price_crore?: number;
+  check_pmrda_boundary?: boolean;
+}
+
+export interface GeoJSONImportResponse {
+  is_valid: boolean;
+  parcel_id: string;
+  parcel_name: string;
+  centroid: [number, number];
+  area_acres: number;
+  area_sq_meters: number;
+  normalized_geojson: Record<string, any>;
+  provenance_tier: string;
+  statutory_warning: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // HELPER: Normalize LandParcel to ensure all computed UI fields are populated
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -1028,6 +1185,87 @@ export async function reconstructTomography(
   params: TomographyRequest
 ): Promise<TomographyResponse> {
   const { data } = await api.post<TomographyResponse>("/quantum/tomography/reconstruct", params);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE 1.8 REAL GEOGRAPHIC INTELLIGENCE ENGINE (RGIE) API CLIENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Health check for the Real Geographic Intelligence Engine.
+ */
+export async function getGeospatialHealth(): Promise<any> {
+  const { data } = await api.get("/geospatial/health");
+  return data;
+}
+
+/**
+ * List catalog of verified geographic data sources and statutory datasets.
+ */
+export async function getGeospatialSources(): Promise<GeospatialSourcesResponse> {
+  const { data } = await api.get<GeospatialSourcesResponse>("/geospatial/sources");
+  return data;
+}
+
+/**
+ * Get administrative boundary GeoJSON FeatureCollections (PMRDA, PMC, PCMC).
+ */
+export async function getGeospatialBoundaries(): Promise<GeospatialFeatureCollection> {
+  const { data } = await api.get<GeospatialFeatureCollection>("/geospatial/boundaries");
+  return data;
+}
+
+/**
+ * Get infrastructure corridors (Expressway, Metro), rivers, and planning zones.
+ */
+export async function getGeospatialInfrastructure(): Promise<GeospatialInfrastructureResponse> {
+  const { data } = await api.get<GeospatialInfrastructureResponse>("/geospatial/infrastructure");
+  return data;
+}
+
+/**
+ * Query features within radius meters of (lat, lng).
+ */
+export async function getNearbyGeospatialFeatures(
+  lat: number,
+  lng: number,
+  radiusMeters: number = 5000,
+  category?: string
+): Promise<any[]> {
+  const params: Record<string, any> = { lat, lng, radius_meters: radiusMeters };
+  if (category) params.category = category;
+  const { data } = await api.get<any[]>("/geospatial/features/nearby", { params });
+  return data;
+}
+
+/**
+ * Run comprehensive geographic intelligence analysis for a parcel or coordinates.
+ */
+export async function analyzeGeospatialLocation(
+  params: GeospatialAnalyzeRequest
+): Promise<GeospatialAnalyzeResponse> {
+  const { data } = await api.post<GeospatialAnalyzeResponse>("/geospatial/analyze", params);
+  return data;
+}
+
+/**
+ * Import, validate (RFC 7946), and normalize user-supplied GeoJSON parcel geometry.
+ */
+export async function importUserGeoJSON(
+  params: GeoJSONImportRequest
+): Promise<GeoJSONImportResponse> {
+  const { data } = await api.post<GeoJSONImportResponse>("/geospatial/import/geojson", params);
+  return data;
+}
+
+/**
+ * Lookup formal provenance record for any geographic feature.
+ */
+export async function getGeospatialProvenance(
+  featureId: string
+): Promise<ProvenanceRecord> {
+  const { data } = await api.get<ProvenanceRecord>(`/geospatial/provenance/${featureId}`);
   return data;
 }
 
