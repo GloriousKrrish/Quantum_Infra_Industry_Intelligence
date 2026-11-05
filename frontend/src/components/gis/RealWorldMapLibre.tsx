@@ -361,7 +361,7 @@ export default function RealWorldMapLibre({
     // ───────────────────────────────────────────────────────────────────────
     // CLICK INTERACTION & RAYCASTING
     // ───────────────────────────────────────────────────────────────────────
-    map.on("click", (e: maplibregl.MapLayerMouseEvent) => {
+    map.on("click", (e: any) => {
       const clickLngLat = [e.lngLat.lng, e.lngLat.lat] as [number, number];
       const bbox: [maplibregl.PointLike, maplibregl.PointLike] = [
         [e.point.x - 4, e.point.y - 4],
@@ -1033,3 +1033,4 @@ export default function RealWorldMapLibre({
     </div>
   );
 }
+

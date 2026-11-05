@@ -156,3 +156,4 @@ def test_map_optimization_workflow():
     comp = data["comparative_analysis"]
     assert comp["approximation_ratio"] >= 0.85
     assert len(data["winning_parcels_for_map"]) == len(q_res["selected_parcels"])
+

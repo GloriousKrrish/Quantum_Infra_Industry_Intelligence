@@ -1317,7 +1317,8 @@ export interface MapLayerItem {
   coverage: string;
   default_visible: boolean;
   provenance_tier: string;
-  '3d_capabilities'?: string;
+  "3d_capabilities"?: string;
+  capabilities_3d?: string;
 }
 
 export interface MapSearchLocality {

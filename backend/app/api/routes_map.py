@@ -290,6 +290,7 @@ async def get_map_layers() -> List[Dict[str, Any]]:
             "coverage": "Hinjewadi, Kharadi, Baner, Wakad, Chakan, Pune Central",
             "default_visible": True,
             "provenance_tier": "VERIFIED_OPEN_DATA",
+            "capabilities_3d": "Heights mapped where verified; optional 2D flat mode",
             "3d_capabilities": "Heights mapped where verified; optional 2D flat mode",
         },
         {
