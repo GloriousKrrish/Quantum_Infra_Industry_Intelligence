@@ -371,6 +371,274 @@ export interface OptimizationResponse {
   budget_crore: number;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE 03 ADVANCED QUANTUM MECHANICS & RESEARCH LAB TYPES
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface StateEvolutionRequest {
+  hamiltonian_type?: string;
+  initial_state_name?: string;
+  custom_initial_state?: ComplexNumber[];
+  omega?: number;
+  b_field?: { x: number; y: number; z: number };
+  j_coupling?: number;
+  total_time?: number;
+  num_steps?: number;
+}
+
+export interface StateEvolutionResponse {
+  num_qubits: number;
+  hamiltonian_type: string;
+  formula_latex: string;
+  energy_expectation: number;
+  eigenvalues: number[];
+  energy_gap: number;
+  recurrence_period: number | null;
+  total_time: number;
+  num_steps: number;
+  initial_overlap_final: number;
+  trajectory: Array<{
+    time: number;
+    probabilities: number[];
+    amplitudes: StateAmplitude[];
+    bloch_vector?: BlochVectorData;
+  }>;
+}
+
+export interface DensityMatrixAnalyzeRequest {
+  preset?: string;
+  matrix_data?: ComplexNumber[][];
+}
+
+export interface DensityMatrixAnalyzeResponse {
+  dimension: number;
+  num_qubits: number;
+  is_hermitian: boolean;
+  trace: number;
+  is_unit_trace: boolean;
+  is_positive_semidefinite: boolean;
+  eigenvalues: number[];
+  purity: number;
+  rank: number;
+  classification: "PURE" | "MIXED" | "MAXIMALLY_MIXED";
+  reduced_density_matrix_A?: ComplexNumber[][];
+  reduced_density_matrix_B?: ComplexNumber[][];
+  purity_subsystem_A?: number;
+  purity_subsystem_B?: number;
+  matrix: ComplexNumber[][];
+}
+
+export interface MeasurementExperimentRequest {
+  operations?: GateOperation[];
+  num_qubits?: number;
+  basis?: "Z" | "X" | "Y";
+  shots?: number;
+  simulate_collapse_outcome?: string;
+}
+
+export interface MeasurementExperimentResponse {
+  num_qubits: number;
+  basis: string;
+  theoretical_outcomes: Array<{ bitstring: string; theoretical_prob: number }>;
+  sampled_measurements: MeasurementDistribution[];
+  collapsed_outcome?: string;
+  collapsed_statevector?: StateAmplitude[];
+  post_measurement_bloch_vectors?: QubitBlochInfo[];
+}
+
+export interface InterferenceSimulateRequest {
+  phase_theta?: number;
+  shots?: number;
+  include_sweep?: boolean;
+  sweep_steps?: number;
+}
+
+export interface InterferenceSimulateResponse {
+  phase_theta_rad: number;
+  theoretical_probabilities: { "0": number; "1": number };
+  sampled_counts: { "0": number; "1": number };
+  interference_regime: "CONSTRUCTIVE" | "DESTRUCTIVE" | "INTERMEDIATE";
+  quantum_interference_contrast: number;
+  classical_expectation_p0: number;
+  sweep_curve?: Array<{
+    theta_rad: number;
+    theta_deg: number;
+    theoretical_p0: number;
+    sampled_p0: number;
+  }>;
+}
+
+export interface QuantumInformationRequest {
+  state_a_preset?: string;
+  state_b_preset?: string;
+  custom_state_a?: ComplexNumber[][];
+  custom_state_b?: ComplexNumber[][];
+}
+
+export interface QuantumInformationResponse {
+  state_A: {
+    name: string;
+    purity: number;
+    von_neumann_entropy: number;
+    shannon_entropy: number;
+    classification: string;
+    eigenvalues: number[];
+  };
+  state_B: {
+    name: string;
+    purity: number;
+    von_neumann_entropy: number;
+    shannon_entropy: number;
+    classification: string;
+    eigenvalues: number[];
+  };
+  relational_metrics: {
+    fidelity_F: number;
+    squared_fidelity_F: number;
+    trace_distance_D: number;
+    fuchs_van_de_graaf_bounds: {
+      lower_bound: number;
+      trace_distance: number;
+      upper_bound: number;
+      is_satisfied: boolean;
+    };
+  };
+}
+
+export interface EntanglementAnalyzeRequest {
+  preset?: string;
+  werner_parameter_p?: number;
+}
+
+export interface EntanglementAnalyzeResponse {
+  preset: string;
+  num_qubits: number;
+  schmidt_decomposition?: {
+    schmidt_rank: number;
+    schmidt_coefficients: number[];
+    entanglement_entropy: number;
+  };
+  concurrence: number;
+  negativity: number;
+  logarithmic_negativity: number;
+  entanglement_classification: "ENTANGLED" | "SEPARABLE" | "BOUND_ENTANGLED";
+  werner_critical_threshold?: number;
+  explanation: string;
+}
+
+export interface NoiseSimulateRequest {
+  operations?: GateOperation[];
+  num_qubits?: number;
+  noise_type?: string;
+  error_prob?: number;
+  gamma?: number;
+  lambda_param?: number;
+  shots?: number;
+}
+
+export interface NoiseSimulateResponse {
+  noise_type: string;
+  num_qubits: number;
+  shots: number;
+  ideal_measurements: MeasurementDistribution[];
+  noisy_measurements: MeasurementDistribution[];
+  total_variation_distance: number;
+  noisy_purity_estimate: number;
+  distribution_comparison: Array<{
+    bitstring: string;
+    ideal_frequency: number;
+    noisy_frequency: number;
+    delta: number;
+  }>;
+}
+
+export interface DecoherenceSimulateRequest {
+  initial_state_name?: string;
+  t1_us?: number;
+  t2_us?: number;
+  total_time_us?: number;
+  num_steps?: number;
+}
+
+export interface DecoherenceSimulateResponse {
+  initial_state: string;
+  t1_us: number;
+  t2_us: number;
+  physical_constraint_satisfied: boolean;
+  trajectory: Array<{
+    time_us: number;
+    bloch_vector: BlochVectorData;
+    purity: number;
+    von_neumann_entropy: number;
+    rho_00: number;
+    rho_11: number;
+    abs_rho_01: number;
+  }>;
+}
+
+export interface ErrorCorrectionRequest {
+  code_type?: "bit_flip" | "phase_flip";
+  error_qubit?: number | null;
+  initial_state_theta?: number;
+  shots?: number;
+}
+
+export interface ErrorCorrectionResponse {
+  code_type: string;
+  initial_state_theta_rad: number;
+  error_qubit_injected: number | null;
+  syndrome_measurements: Record<string, number>;
+  expected_syndrome: string;
+  syndrome_table: Record<string, string>;
+  is_corrected: boolean;
+  logical_fidelity: number;
+  circuit_steps: string[];
+}
+
+export interface QuantumChannelRequest {
+  channel_type?: string;
+  input_state_preset?: string;
+  param_p?: number;
+  gamma?: number;
+  lambda_param?: number;
+}
+
+export interface QuantumChannelResponse {
+  channel_type: string;
+  num_kraus_operators: number;
+  is_trace_preserving: boolean;
+  input_purity: number;
+  output_purity: number;
+  state_fidelity: number;
+  bloch_shrinkage: {
+    x_scale: number;
+    y_scale: number;
+    z_scale: number;
+    z_shift: number;
+  };
+  kraus_operators: ComplexNumber[][][];
+}
+
+export interface TomographyRequest {
+  operations?: GateOperation[];
+  shots?: number;
+}
+
+export interface TomographyResponse {
+  shots_per_basis: number;
+  pauli_measurements: {
+    x: { expected_val: number; prob_plus: number; prob_minus: number };
+    y: { expected_val: number; prob_plus_i: number; prob_minus_i: number };
+    z: { expected_val: number; prob_0: number; prob_1: number };
+  };
+  reconstructed_bloch_vector: BlochVectorData;
+  true_bloch_vector: BlochVectorData;
+  reconstructed_density_matrix: ComplexNumber[][];
+  fidelity_reconstructed: number;
+  purity_reconstructed: number;
+  trace_distance: number;
+}
+
 export interface WorkflowResponse {
   parcels_evaluated: LandParcel[];
   infrastructure_reports: InfrastructureReport[];
@@ -636,6 +904,120 @@ export async function fetchQuantumExperiments(): Promise<ExperimentTemplate[]> {
  */
 export async function fetchQuantumExperiment(expId: string): Promise<ExperimentTemplate> {
   const { data } = await api.get<ExperimentTemplate>(`/quantum/experiments/${encodeURIComponent(expId)}`);
+  return data;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PHASE 03 ADVANCED QUANTUM MECHANICS & RESEARCH LAB CLIENT FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Simulate continuous-time Hamiltonian state evolution U(t) = exp(-i H t / ħ).
+ */
+export async function simulateStateEvolution(
+  params: StateEvolutionRequest
+): Promise<StateEvolutionResponse> {
+  const { data } = await api.post<StateEvolutionResponse>("/quantum/evolution/simulate", params);
+  return data;
+}
+
+/**
+ * Validate and analyze density matrix spectral properties (Hermiticity, trace, purity, partial trace).
+ */
+export async function analyzeDensityMatrix(
+  params: DensityMatrixAnalyzeRequest
+): Promise<DensityMatrixAnalyzeResponse> {
+  const { data } = await api.post<DensityMatrixAnalyzeResponse>("/quantum/density/analyze", params);
+  return data;
+}
+
+/**
+ * Execute projective quantum measurement in Z, X, or Y basis with state collapse.
+ */
+export async function executeMeasurement(
+  params: MeasurementExperimentRequest
+): Promise<MeasurementExperimentResponse> {
+  const { data } = await api.post<MeasurementExperimentResponse>("/quantum/measurement/execute", params);
+  return data;
+}
+
+/**
+ * Simulate Mach-Zehnder wave interference with phase sweep fringe curves.
+ */
+export async function simulateInterference(
+  params: InterferenceSimulateRequest
+): Promise<InterferenceSimulateResponse> {
+  const { data } = await api.post<InterferenceSimulateResponse>("/quantum/interference/simulate", params);
+  return data;
+}
+
+/**
+ * Analyze quantum information: Von Neumann entropy, fidelity, trace distance, Fuchs-van de Graaf bounds.
+ */
+export async function analyzeQuantumInformation(
+  params: QuantumInformationRequest
+): Promise<QuantumInformationResponse> {
+  const { data } = await api.post<QuantumInformationResponse>("/quantum/information/analyze", params);
+  return data;
+}
+
+/**
+ * Advanced entanglement analysis: Schmidt decomposition, concurrence, and PPT negativity.
+ */
+export async function analyzeEntanglement(
+  params: EntanglementAnalyzeRequest
+): Promise<EntanglementAnalyzeResponse> {
+  const { data } = await api.post<EntanglementAnalyzeResponse>("/quantum/entanglement/analyze", params);
+  return data;
+}
+
+/**
+ * Simulate quantum circuit under Qiskit Aer noise models with ideal vs noisy comparison.
+ */
+export async function simulateNoise(
+  params: NoiseSimulateRequest
+): Promise<NoiseSimulateResponse> {
+  const { data } = await api.post<NoiseSimulateResponse>("/quantum/noise/simulate", params);
+  return data;
+}
+
+/**
+ * Simulate T1 relaxation and T2 dephasing trajectory on the Bloch sphere.
+ */
+export async function simulateDecoherence(
+  params: DecoherenceSimulateRequest
+): Promise<DecoherenceSimulateResponse> {
+  const { data } = await api.post<DecoherenceSimulateResponse>("/quantum/decoherence/simulate", params);
+  return data;
+}
+
+/**
+ * Execute 3-qubit bit-flip or phase-flip quantum error correction code.
+ */
+export async function executeErrorCorrection(
+  params: ErrorCorrectionRequest
+): Promise<ErrorCorrectionResponse> {
+  const { data } = await api.post<ErrorCorrectionResponse>("/quantum/error-correction/execute", params);
+  return data;
+}
+
+/**
+ * Apply completely positive trace-preserving (CPTP) quantum channel via Kraus operators.
+ */
+export async function applyQuantumChannel(
+  params: QuantumChannelRequest
+): Promise<QuantumChannelResponse> {
+  const { data } = await api.post<QuantumChannelResponse>("/quantum/channel/apply", params);
+  return data;
+}
+
+/**
+ * Perform single-qubit quantum state tomography via Pauli basis measurements.
+ */
+export async function reconstructTomography(
+  params: TomographyRequest
+): Promise<TomographyResponse> {
+  const { data } = await api.post<TomographyResponse>("/quantum/tomography/reconstruct", params);
   return data;
 }
 

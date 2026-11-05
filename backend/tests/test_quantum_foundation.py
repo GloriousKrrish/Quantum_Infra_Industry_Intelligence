@@ -284,8 +284,7 @@ def test_quantum_teleportation_experiment():
     # Bob's measurement probabilities: P(0) = cos^2(pi/6) = 0.75, P(1) = sin^2(pi/6) = 0.25
     assert math.isclose(bob_bloch["prob_0"], 0.75, abs_tol=1e-3)
     assert math.isclose(bob_bloch["prob_1"], 0.25, abs_tol=1e-3)
-
-
+   
 # ═══════════════════════════════════════════════════════════════════════
 # 5. CIRCUIT VALIDATION & ERROR GUARDS
 # ═══════════════════════════════════════════════════════════════════════

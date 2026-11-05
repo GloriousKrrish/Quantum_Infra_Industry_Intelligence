@@ -217,6 +217,88 @@ EXPERIMENT_CATALOG: Dict[str, Dict[str, Any]] = {
             "input state Ry(π/3)|0⟩ with fidelity F = 1.000, purity γ = 1.000, and identical Bloch vector."
         ),
     },
+
+    "exp_mach_zehnder_interference": {
+        "id": "exp_mach_zehnder_interference",
+        "name": "Mach-Zehnder Quantum Wave Interference",
+        "category": "Interference",
+        "num_qubits": 1,
+        "objective": "Demonstrate quantum wave interference: H -> Phase(π) -> H drives destructive interference on |0⟩.",
+        "formula": "H \\, P(\\pi) \\, H |0\\rangle = |1\\rangle \\quad (P(0)=0.0, P(1)=1.0)",
+        "circuit": [
+            {"gate": "H", "targets": [0], "controls": []},
+            {"gate": "RZ", "targets": [0], "controls": [], "params": math.pi},
+            {"gate": "H", "targets": [0], "controls": []},
+        ],
+        "expected_state": "|1⟩ with 100% certainty due to complete destructive wave interference",
+        "explanation": (
+            "Phase modulation inside the interferometer causes wave amplitudes to interfere destructively at the |0⟩ "
+            "output port and constructively at the |1⟩ output port. This directly demonstrates that quantum mechanics "
+            "adds complex probability amplitudes (α₁ + α₂) rather than classical probabilities (P₁ + P₂)."
+        ),
+    },
+
+    "exp_w_state_multipartite": {
+        "id": "exp_w_state_multipartite",
+        "name": "3-Qubit W-State Multipartite Entanglement",
+        "category": "Entanglement",
+        "num_qubits": 3,
+        "objective": "Prepare the 3-qubit W-state (|001⟩ + |010⟩ + |100⟩)/√3, resilient against single-qubit loss.",
+        "formula": "|W_3\\rangle = \\frac{|001\\rangle + |010\\rangle + |100\\rangle}{\\sqrt{3}}",
+        "circuit": [
+            {"gate": "RY", "targets": [0], "controls": [], "params": 2.0 * math.acos(1.0 / math.sqrt(3.0))},
+            {"gate": "H", "targets": [1], "controls": []},
+            {"gate": "CX", "targets": [2], "controls": [1]},
+            {"gate": "CX", "targets": [1], "controls": [0]},
+            {"gate": "CX", "targets": [2], "controls": [0]},
+        ],
+        "expected_state": "Equal superposition across single-excitation basis states (|001⟩, |010⟩, |100⟩)",
+        "explanation": (
+            "The W-state exhibits robust multipartite entanglement. Unlike the GHZ state (which collapses into a separable "
+            "mixture if any single qubit is traced out or lost), the W-state retains bipartite entanglement between the remaining "
+            "qubits with non-zero concurrence."
+        ),
+    },
+
+    "exp_bit_flip_error_correction": {
+        "id": "exp_bit_flip_error_correction",
+        "name": "3-Qubit Quantum Error Correction (Bit-Flip)",
+        "category": "Error Correction",
+        "num_qubits": 3,
+        "objective": "Demonstrate encoding, bit-flip error injection on q1, syndrome diagnosis, and coherent recovery.",
+        "formula": "|\\psi\\rangle \\to \\alpha|000\\rangle + \\beta|111\\rangle \\xrightarrow{X_1} \\alpha|010\\rangle + \\beta|101\\rangle \\to \\text{Recovered } |\\psi\\rangle",
+        "circuit": [
+            {"gate": "RY", "targets": [0], "controls": [], "params": math.pi / 3.0},
+            {"gate": "CX", "targets": [1], "controls": [0]},
+            {"gate": "CX", "targets": [2], "controls": [0]},
+            {"gate": "X", "targets": [1], "controls": []},  # Injected error
+            {"gate": "CX", "targets": [1], "controls": [0]},  # Parity 0-1
+            {"gate": "CX", "targets": [2], "controls": [1]},  # Parity 1-2
+        ],
+        "expected_state": "Logical state recovered with fidelity = 1.000",
+        "explanation": (
+            "Stabilizer quantum error correction distributes quantum information non-locally across 3 entangled physical qubits. "
+            "Measuring multi-qubit parities detects the exact error location without measuring the data amplitudes, bypassing the No-Cloning theorem."
+        ),
+    },
+
+    "exp_tomography_plus_i": {
+        "id": "exp_tomography_plus_i",
+        "name": "Quantum State Tomography on |+i⟩",
+        "category": "Tomography",
+        "num_qubits": 1,
+        "objective": "Reconstruct the complex state |+i⟩ = (|0⟩ + i|1⟩)/√2 via complete Pauli basis measurements (X, Y, Z).",
+        "formula": "\\rho = \\frac{1}{2} (I + \\langle\\sigma_x\\rangle\\sigma_x + \\langle\\sigma_y\\rangle\\sigma_y + \\langle\\sigma_z\\rangle\\sigma_z) \\approx |+i\\rangle\\langle+i|",
+        "circuit": [
+            {"gate": "H", "targets": [0], "controls": []},
+            {"gate": "S", "targets": [0], "controls": []},
+        ],
+        "expected_state": "⟨σ_x⟩ = 0.0, ⟨σ_y⟩ = +1.0, ⟨σ_z⟩ = 0.0 with fidelity > 0.999",
+        "explanation": (
+            "Complete state tomography measures ⟨σ_z⟩ directly in computational basis, ⟨σ_x⟩ via Hadamard rotation, "
+            "and ⟨σ_y⟩ via S†H rotation. The density operator is reconstructed faithfully from the 3 expectation values."
+        ),
+    },
 }
 
 

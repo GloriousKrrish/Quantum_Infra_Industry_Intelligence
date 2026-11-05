@@ -192,4 +192,69 @@ Every quantum gate $U$ satisfies $U^\dagger U = U U^\dagger = I$:
 - **SWAP:** Permutes $|01\rangle \leftrightarrow |10\rangle$
 - **Toffoli ($CCX$):** Controlled-Controlled-NOT, $\text{diag}(I_4, I_2, X)$
 
+---
+
+## 6. Advanced Quantum Mechanics & Open Systems (Phase 03)
+
+### 6.1 Continuous Hamiltonian State Evolution
+The continuous time evolution of a closed quantum system governed by a time-independent Hamiltonian $H$ is determined by the operator differential equation:
+$$i\hbar \frac{d}{dt} |\psi(t)\rangle = H |\psi(t)\rangle \implies |\psi(t)\rangle = \exp\left(-\frac{i H t}{\hbar}\right) |\psi(0)\rangle$$
+Where the unitary operator $U(t) = \exp(-i H t / \hbar)$ is computed via spectral matrix exponentiation:
+$$H = V \Lambda V^\dagger \implies U(t) = V \text{diag}\left(e^{-i \lambda_1 t / \hbar}, \dots, e^{-i \lambda_d t / \hbar}\right) V^\dagger$$
+Energy expectation is conserved at all times:
+$$\langle H \rangle = \langle \psi(t) | H | \psi(t)\rangle = \langle \psi(0) | U^\dagger(t) H U(t) | \psi(0)\rangle = \langle \psi(0) | H | \psi(0)\rangle$$
+
+### 6.2 Density Matrix Formalism & Partial Trace
+A general quantum state (pure or mixed) is described by a density operator $\rho \in \mathcal{S}(\mathcal{H})$ satisfying:
+1. **Hermiticity:** $\rho = \rho^\dagger$
+2. **Unit Trace:** $\text{Tr}(\rho) = 1$
+3. **Positive Semi-Definiteness:** $\langle \phi | \rho | \phi \rangle \ge 0 \quad \forall |\phi\rangle \in \mathcal{H} \iff \lambda_i \ge 0$
+
+State purity is $\gamma = \text{Tr}(\rho^2) \in [1/d, 1.0]$. For composite bipartite registers $\mathcal{H}_A \otimes \mathcal{H}_B$, the subsystem state is isolated via partial trace:
+$$\rho_A = \text{Tr}_B(\rho_{AB}) = \sum_j (I_A \otimes \langle j_B|) \rho_{AB} (I_A \otimes |j_B\rangle)$$
+If $\rho_{AB}$ is pure ($\text{Tr}(\rho_{AB}^2) = 1$) but $\rho_A$ is mixed ($\text{Tr}(\rho_A^2) < 1$), the composite system is necessarily entangled.
+
+### 6.3 Wave Interference & Mach-Zehnder Cross-Term
+For a state passing through a beam splitter (H), phase shifter $P(\theta)$, and second beam splitter (H):
+$$|\psi(\theta)\rangle = H P(\theta) H |0\rangle = \cos\left(\frac{\theta}{2}\right) |0\rangle - i \sin\left(\frac{\theta}{2}\right) |1\rangle$$
+The measurement probability in the computational basis oscillates as:
+$$P(|0\rangle) = \cos^2\left(\frac{\theta}{2}\right) = \frac{1 + \cos\theta}{2} = \frac{1}{2} + \text{Re}(\alpha_1^* \alpha_2)$$
+The phase-dependent term $\cos\theta$ represents the quantum interference cross-term, which vanishes in classical probabilistic mixture models where $P_{\text{classical}} = 0.50$ flat.
+
+### 6.4 Quantum Information, Entropy & Distances
+- **Von Neumann Entropy:** $S(\rho) = -\text{Tr}(\rho \log_2 \rho) = -\sum_i \lambda_i \log_2 \lambda_i$ (with $0 \log_2 0 \equiv 0$).
+- **Uhlmann-Jozsa Quantum Fidelity:**
+  $$F(\rho, \sigma) = \left(\text{Tr}\sqrt{\sqrt{\rho}\sigma\sqrt{\rho}}\right)^2$$
+- **Trace Distance:** $D(\rho, \sigma) = \frac{1}{2} \text{Tr}|\rho - \sigma| = \frac{1}{2} \sum_i |\mu_i|$, where $\mu_i$ are eigenvalues of $\rho - \sigma$.
+- **Fuchs-van de Graaf Inequality:** Every valid pair of density operators rigorously obeys:
+  $$1 - \sqrt{F(\rho, \sigma)} \le D(\rho, \sigma) \le \sqrt{1 - F(\rho, \sigma)}$$
+
+### 6.5 Advanced Entanglement Witnesses
+- **Schmidt Decomposition (Pure Bipartite):**
+  $$|\psi_{AB}\rangle = \sum_{k=1}^K \lambda_k |u_k\rangle |v_k\rangle, \quad \lambda_k > 0, \quad \sum_k \lambda_k^2 = 1$$
+  Where $K$ is the Schmidt rank. Entanglement requires $K \ge 2$.
+- **Wootters' Concurrence (Mixed Bipartite 2-Qubit):**
+  $$C(\rho) = \max\left(0, \mu_1 - \mu_2 - \mu_3 - \mu_4\right)$$
+  Where $\mu_i$ are the square roots of eigenvalues of $R = \rho (\sigma_y \otimes \sigma_y) \rho^* (\sigma_y \otimes \sigma_y)$ in descending order.
+- **Peres-Horodecki Positive Partial Transpose (PPT) Negativity:**
+  $$\mathcal{N}(\rho) = \frac{\|\rho^{T_B}\|_1 - 1}{2} = \sum_{\lambda_i < 0} |\lambda_i|$$
+  Where $\rho^{T_B}$ is the partial transpose across subsystem B. $\mathcal{N} > 0$ definitively witnesses non-separable entanglement.
+- **Werner State Critical Transition:** For $\rho_W(p) = p |\Phi^+\rangle\langle\Phi^+| + \frac{1-p}{4} I_4$, the state is entangled if and only if $p > \frac{1}{3}$.
+
+### 6.6 Open Quantum Systems, Decoherence & Kraus Maps
+Under Markovian environmental coupling, the state evolution follows the Lindblad master equation:
+$$\frac{d\rho}{dt} = -\frac{i}{\hbar}[H, \rho] + \sum_k \left( L_k \rho L_k^\dagger - \frac{1}{2}\{L_k^\dagger L_k, \rho\} \right)$$
+For longitudinal relaxation ($T_1$) and transverse dephasing ($T_2$):
+$$\rho_{00}(t) = 1 - (1 - \rho_{00}(0)) e^{-t / T_1}, \quad \rho_{11}(t) = \rho_{11}(0) e^{-t / T_1}, \quad \rho_{01}(t) = \rho_{01}(0) e^{-t / T_2}$$
+Governed by the fundamental physical inequality:
+$$\frac{1}{T_2} = \frac{1}{2T_1} + \frac{1}{T_\phi} \implies T_2 \le 2T_1$$
+Completely Positive Trace-Preserving (CPTP) maps admit the Kraus representation:
+$$\mathcal{E}(\rho) = \sum_{k=1}^M E_k \rho E_k^\dagger \quad \text{with} \quad \sum_{k=1}^M E_k^\dagger E_k = I$$
+
+### 6.7 Quantum Error Correction & State Tomography
+- **3-Qubit Bit-Flip / Phase-Flip Codes:** Protects logical qubits by encoding into entangled codewords ($|0_L\rangle = |000\rangle$, $|1_L\rangle = |111\rangle$). Stabilizers $S = \langle Z_0 Z_1, Z_1 Z_2 \rangle$ allow non-demolition syndrome extraction $s = (s_1, s_2)$ detecting any single physical bit flip without disturbing the encoded logical quantum state.
+- **Quantum State Tomography:** Complete reconstruction of an unknown density matrix $\rho$ from Pauli projective expectation values $\langle \sigma_x \rangle, \langle \sigma_y \rangle, \langle \sigma_z \rangle$:
+  $$\rho = \frac{1}{2}\left(I + \langle \sigma_x \rangle \sigma_x + \langle \sigma_y \rangle \sigma_y + \langle \sigma_z \rangle \sigma_z\right)$$
+  Followed by positive semi-definite projection to preserve physical quantum state axioms under finite shot noise.
+
 

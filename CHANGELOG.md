@@ -4,6 +4,65 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 03] — 2026-11-05
+### Added: Advanced Quantum Mechanics & Scientific Research Laboratory
+- **Continuous Hamiltonian State Evolution (`state_evolution.py`)**:
+  - Implemented exact continuous-time unitary evolution $U(t) = \exp(-i H t / \hbar)$ via spectral matrix exponentiation $V \text{diag}(e^{-i \lambda_k t / \hbar}) V^\dagger$.
+  - Supported Hamiltonians: Pauli ($X, Y, Z$), general magnetic field $\vec{B} \cdot \vec{\sigma}$, 2-qubit Ising $Z \otimes Z$, exchange coupling $XX + YY$, and isotropic Heisenberg $XXX$ ($XX + YY + ZZ$).
+  - Continuous trajectory tracking of basis probabilities, complex amplitudes, energy expectation $\langle H \rangle$ conservation, energy gap $\Delta E$, recurrence periods, and 3D Bloch trajectories.
+  - Published REST endpoint `POST /api/quantum/evolution/simulate`.
+- **Quantum Density Operator & Subsystem Reduction (`density_matrix.py`)**:
+  - Full density matrix analysis verifying fundamental quantum axioms: Hermiticity ($\rho = \rho^\dagger$), unit trace ($\text{Tr}(\rho) = 1.0$), and positive semi-definiteness ($\lambda_i \ge -\epsilon$).
+  - Spectral decomposition, rank, purity $\gamma = \text{Tr}(\rho^2)$, mixedness, and canonical classification (`PURE`, `MIXED`, `MAXIMALLY_MIXED`).
+  - Implemented 2-qubit partial trace $\rho_A = \text{Tr}_B(\rho_{AB})$ and $\rho_B = \text{Tr}_A(\rho_{AB})$ demonstrating quantum entanglement witness via subsystem purity degradation.
+  - Published REST endpoint `POST /api/quantum/density/analyze`.
+- **Measurement Theory & State Collapse (`measurement_theory.py`)**:
+  - Generalized projective measurements across $Z, X, Y$ Pauli bases.
+  - Theoretical Born probabilities $P(m) = \langle \psi | \Pi_m | \psi \rangle$ vs Qiskit Aer shot-based Monte Carlo sampling.
+  - State collapse projection (Lüders theorem) computing post-measurement statevector and collapsed Bloch vectors.
+  - Published REST endpoint `POST /api/quantum/measurement/execute`.
+- **Mach-Zehnder Wave Interference (`interference.py`)**:
+  - Continuous phase sweep $\theta \in [0, 2\pi]$ for the interferometer topology $|0\rangle \to H \to P(\theta) \to H \to \text{Measure}$.
+  - Sinusoidal fringe curve $P(|0\rangle) = \cos^2(\theta/2)$ contrasting the quantum amplitude cross-term $2\,\text{Re}(\alpha_1^* \alpha_2) = \cos\theta$ against classical flat probability ($0.50$).
+  - Published REST endpoint `POST /api/quantum/interference/simulate`.
+- **Quantum Information, Entropy & Fidelity (`quantum_information.py`)**:
+  - Von Neumann entropy $S(\rho) = -\text{Tr}(\rho \log_2 \rho)$ computed via spectral decomposition with zero-eigenvalue stability.
+  - Uhlmann-Jozsa quantum fidelity $F(\rho, \sigma) = (\text{Tr}\sqrt{\sqrt{\rho}\sigma\sqrt{\rho}})^2$ using positive semidefinite square roots.
+  - Trace distance $D(\rho, \sigma) = \frac{1}{2}\text{Tr}|\rho - \sigma|$ with automated validation of the Fuchs-van de Graaf inequality: $1 - \sqrt{F} \le D \le \sqrt{1 - F}$.
+  - Published REST endpoint `POST /api/quantum/information/analyze`.
+- **Advanced Entanglement & Werner States (`entanglement_analysis.py`)**:
+  - Schmidt decomposition (SVD) for bipartite pure states $|\psi_{AB}\rangle = \sum \lambda_k |u_k\rangle |v_k\rangle$ with Schmidt rank and entanglement entropy.
+  - Wootters' concurrence $C(\rho) \in [0, 1]$ for arbitrary 2-qubit mixed states.
+  - Peres-Horodecki Positive Partial Transpose (PPT) negativity $\mathcal{N}(\rho)$ and logarithmic negativity $E_N(\rho)$.
+  - Werner state analysis $\rho_W(p) = p |\Phi^+\rangle\langle\Phi^+| + \frac{1-p}{4} I_4$, demonstrating the sharp non-separability phase transition at $p > 1/3$.
+  - Published REST endpoint `POST /api/quantum/entanglement/analyze`.
+- **Quantum Noise Models & Open Systems (`noise_models.py`, `decoherence.py`, `quantum_channels.py`)**:
+  - Qiskit Aer noise model simulation: Depolarizing, bit-flip, phase-flip, amplitude damping, phase damping, and thermal relaxation.
+  - Side-by-side ideal vs noisy measurement distributions with Total Variation Distance (TVD) and purity degradation.
+  - Continuous $T_1$ relaxation and $T_2$ dephasing trajectory enforcing the fundamental physical bound $T_2 \le 2T_1$.
+  - Completely positive trace-preserving (CPTP) quantum channels via Kraus operators $\mathcal{E}(\rho) = \sum E_k \rho E_k^\dagger$ verifying completeness $\sum E_k^\dagger E_k = I$ and affine Bloch shrinkage.
+  - Published REST endpoints `POST /api/quantum/noise/simulate`, `POST /api/quantum/decoherence/simulate`, `POST /api/quantum/channel/apply`.
+- **Quantum Error Correction & State Tomography (`error_correction.py`, `tomography.py`)**:
+  - 3-qubit bit-flip and phase-flip repetition codes with non-local stabilizer encoding, arbitrary single-qubit error injection, non-demolition ancilla syndrome extraction ($Z_0 Z_1, Z_1 Z_2$), and coherent recovery achieving $F = 1.000$.
+  - Quantum state tomography (QST) reconstructing an unknown single-qubit density matrix $\rho$ from multi-basis Pauli expectation values $\langle\sigma_x\rangle, \langle\sigma_y\rangle, \langle\sigma_z\rangle$ with physical positive semidefinite projection.
+  - Published REST endpoints `POST /api/quantum/error-correction/execute` and `POST /api/quantum/tomography/reconstruct`.
+- **Frontend Research Suite Components (`frontend/src/components/quantum/`)**:
+  - `StateEvolutionLab.tsx`: Interactive continuous Hamiltonian evolution with time scrubber and energy conservation cards.
+  - `DensityMatrixLab.tsx`: Axiom checks, spectral decomposition table, and partial trace subsystem viewer.
+  - `InterferenceLab.tsx`: Mach-Zehnder phase slider, theoretical fringe curve vs sampled shots, and quantum contrast card.
+  - `EntropyInformationLab.tsx`: Von Neumann vs Shannon entropy comparison, fidelity calculation, and Fuchs-van de Graaf inequality visualization.
+  - `AdvancedEntanglementLab.tsx`: Schmidt rank, concurrence gauge, PPT negativity, and Werner state parameter slider ($p \in [0, 1]$).
+  - `NoiseDecoherenceLab.tsx`: 3-in-1 tabbed lab covering Aer noise models, $T_1/T_2$ continuous decay, and Kraus CPTP channels.
+  - `ErrorCorrectionLab.tsx`: 3-qubit bit/phase-flip QEC with error injection button, ancilla syndrome indicators, and coherent recovery verification.
+  - `TomographyLab.tsx`: Multi-basis Pauli measurement histograms ($X, Y, Z$) and real-time state density matrix reconstructor.
+  - `QuantumLab.tsx`: Master navigation bar integrating all 12 research labs and real estate optimization tabs.
+- **Verification & Testing**:
+  - Created 4 dedicated pytest suites: `test_quantum_advanced_a.py`, `b.py`, `c.py`, `d.py`, and `test_quantum_advanced_api.py`.
+  - Backend test suite expanded from 81 tests to **130 / 130 passing tests** in 10.90s.
+  - Frontend production build verified: **0 errors** in 3.37s.
+
+---
+
 ## [Phase 02] — 2026-11-05
 ### Added: Quantum Computing Foundation & Scientific Visual Laboratory
 - **Native Qiskit Aer C++ Engine Integration (`backend/app/engines/quantum/`)**:

@@ -14,6 +14,13 @@ import {
   TrendingUp,
   CheckCircle2,
   Info,
+  Activity,
+  Layers,
+  Waves,
+  Scale,
+  ShieldAlert,
+  ShieldCheck,
+  Scan,
 } from "lucide-react";
 import {
   BarChart,
@@ -34,6 +41,14 @@ import CircuitBuilder from "../components/quantum/CircuitBuilder";
 import EntanglementLab from "../components/quantum/EntanglementLab";
 import QuantumMathExplorer from "../components/quantum/QuantumMathExplorer";
 import ExperimentLibraryModal from "../components/quantum/ExperimentLibraryModal";
+import StateEvolutionLab from "../components/quantum/StateEvolutionLab";
+import DensityMatrixLab from "../components/quantum/DensityMatrixLab";
+import InterferenceLab from "../components/quantum/InterferenceLab";
+import EntropyInformationLab from "../components/quantum/EntropyInformationLab";
+import AdvancedEntanglementLab from "../components/quantum/AdvancedEntanglementLab";
+import NoiseDecoherenceLab from "../components/quantum/NoiseDecoherenceLab";
+import ErrorCorrectionLab from "../components/quantum/ErrorCorrectionLab";
+import TomographyLab from "../components/quantum/TomographyLab";
 import {
   MOCK_QUANTUM_RESULT,
   MOCK_BENCHMARK,
@@ -48,10 +63,22 @@ import {
   type ExperimentTemplate,
 } from "../lib/api";
 
+type QuantumTab =
+  | "playground"
+  | "evolution"
+  | "density_matrix"
+  | "interference"
+  | "advanced_entanglement"
+  | "information"
+  | "noise_decoherence"
+  | "error_correction"
+  | "tomography"
+  | "math_explorer"
+  | "qaoa_optimizer"
+  | "benchmarks";
+
 export default function QuantumLab() {
-  const [activeTab, setActiveTab] = useState<
-    "playground" | "entanglement" | "math_explorer" | "qaoa_optimizer" | "benchmarks"
-  >("playground");
+  const [activeTab, setActiveTab] = useState<QuantumTab>("playground");
 
   // Playground simulation state
   const [playgroundSimResult, setPlaygroundSimResult] = useState<CircuitSimulateResponse | null>(null);
@@ -146,14 +173,14 @@ export default function QuantumLab() {
             <div className="flex items-center gap-2 mb-1">
               <span className="flex h-2 w-2 rounded-full bg-blue-600 animate-pulse" />
               <span className="font-mono text-[11px] font-bold uppercase tracking-wider text-blue-700">
-                Phase 02 • Quantum Computing Research Foundation
+                Phase 03 • Advanced Quantum Mechanics & Research Laboratory
               </span>
             </div>
             <h1 className="font-display text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
-              Quantum Intelligence Laboratory
+              Advanced Quantum Intelligence & Research Suite
             </h1>
-            <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
-              Design and execute custom quantum circuits on Qiskit Aer, inspect 3D Bloch spheres with reduced density matrices, explore multi-qubit entanglement, and benchmark QAOA portfolio optimization.
+            <p className="text-xs text-slate-500 mt-1 max-w-3xl leading-relaxed">
+              Continuous Hamiltonian state evolution, density operator analysis, wave interference fringes, entanglement concurrence and Werner transitions, Von Neumann entropy, Qiskit Aer noise channels, open system decoherence, stabilizer error correction, and state tomography.
             </p>
           </div>
 
@@ -166,7 +193,7 @@ export default function QuantumLab() {
               className="flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50 px-3.5 py-1.5 font-bold text-blue-700 hover:bg-blue-100 transition-colors shadow-2xs"
             >
               <BookOpen className="h-4 w-4" />
-              Experiment Library (10)
+              Experiment Library (14)
             </button>
           </div>
         </div>
@@ -177,7 +204,7 @@ export default function QuantumLab() {
             Classical Simulation Notice
           </span>
           <span>
-            Circuits execute via classical statevector simulation on local CPU using Qiskit Aer (C++). This is not execution on physical quantum hardware; zero quantum advantage or physical hardware execution is claimed.
+            Simulations execute via classical statevector and density-matrix emulation on local CPU using Qiskit Aer (C++). This is not execution on physical quantum hardware; zero quantum advantage or physical hardware execution is claimed.
           </span>
         </div>
 
@@ -190,66 +217,151 @@ export default function QuantumLab() {
         )}
 
         {/* ── Navigation Tabs ───────────────────────────────────────── */}
-        <div className="mt-6 flex flex-wrap border-b border-slate-100 gap-2 overflow-x-auto text-xs font-bold">
+        <div className="mt-6 flex flex-wrap border-b border-slate-100 gap-1.5 overflow-x-auto text-xs font-bold pb-1">
+          {/* Group 1: Foundations */}
           <button
             onClick={() => setActiveTab("playground")}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-4 py-2.5 transition-all whitespace-nowrap",
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
               activeTab === "playground"
-                ? "border-blue-600 text-blue-600"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             )}
           >
-            <Cpu className="h-4 w-4" />
-            Quantum Circuit Playground
+            <Cpu className="h-3.5 w-3.5" />
+            Circuit Playground
           </button>
           <button
-            onClick={() => setActiveTab("entanglement")}
+            onClick={() => setActiveTab("evolution")}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-4 py-2.5 transition-all whitespace-nowrap",
-              activeTab === "entanglement"
-                ? "border-blue-600 text-blue-600"
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "evolution"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             )}
           >
-            <Sparkles className="h-4 w-4" />
-            Entanglement & Bell States
+            <Activity className="h-3.5 w-3.5" />
+            State Evolution U(t)
+          </button>
+          <button
+            onClick={() => setActiveTab("density_matrix")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "density_matrix"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Layers className="h-3.5 w-3.5" />
+            Density Matrix ρ
+          </button>
+          <button
+            onClick={() => setActiveTab("interference")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "interference"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Waves className="h-3.5 w-3.5" />
+            Wave Interference
+          </button>
+          <button
+            onClick={() => setActiveTab("advanced_entanglement")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "advanced_entanglement"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            Entanglement & Werner
+          </button>
+          <button
+            onClick={() => setActiveTab("information")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "information"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Scale className="h-3.5 w-3.5" />
+            Entropy S(ρ) & Fidelity
+          </button>
+          <button
+            onClick={() => setActiveTab("noise_decoherence")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "noise_decoherence"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <ShieldAlert className="h-3.5 w-3.5" />
+            Noise & Decoherence
+          </button>
+          <button
+            onClick={() => setActiveTab("error_correction")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "error_correction"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <ShieldCheck className="h-3.5 w-3.5" />
+            Error Correction (QEC)
+          </button>
+          <button
+            onClick={() => setActiveTab("tomography")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "tomography"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Scan className="h-3.5 w-3.5" />
+            State Tomography
           </button>
           <button
             onClick={() => setActiveTab("math_explorer")}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-4 py-2.5 transition-all whitespace-nowrap",
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
               activeTab === "math_explorer"
-                ? "border-blue-600 text-blue-600"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             )}
           >
-            <Calculator className="h-4 w-4" />
-            Statevector Mathematics
+            <Calculator className="h-3.5 w-3.5" />
+            State Math
           </button>
           <button
             onClick={() => setActiveTab("qaoa_optimizer")}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-4 py-2.5 transition-all whitespace-nowrap",
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
               activeTab === "qaoa_optimizer"
-                ? "border-blue-600 text-blue-600"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             )}
           >
-            <Atom className="h-4 w-4" />
-            QAOA Land Optimizer (Pune)
+            <Atom className="h-3.5 w-3.5" />
+            QAOA Land Optimizer
           </button>
           <button
             onClick={() => setActiveTab("benchmarks")}
             className={cn(
-              "flex items-center gap-2 border-b-2 px-4 py-2.5 transition-all whitespace-nowrap",
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
               activeTab === "benchmarks"
-                ? "border-blue-600 text-blue-600"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg"
                 : "border-transparent text-slate-500 hover:text-slate-800"
             )}
           >
-            <BarChart3 className="h-4 w-4" />
-            Classical vs Quantum Verification
+            <BarChart3 className="h-3.5 w-3.5" />
+            Benchmarks
           </button>
         </div>
       </div>
@@ -364,10 +476,17 @@ export default function QuantumLab() {
         </div>
       )}
 
-      {/* ── TAB 2: ENTANGLEMENT LAB ───────────────────────────────────── */}
-      {activeTab === "entanglement" && <EntanglementLab />}
+      {/* ── PHASE 03 ADVANCED LABS ────────────────────────────────────── */}
+      {activeTab === "evolution" && <StateEvolutionLab />}
+      {activeTab === "density_matrix" && <DensityMatrixLab />}
+      {activeTab === "interference" && <InterferenceLab />}
+      {activeTab === "advanced_entanglement" && <AdvancedEntanglementLab />}
+      {activeTab === "information" && <EntropyInformationLab />}
+      {activeTab === "noise_decoherence" && <NoiseDecoherenceLab />}
+      {activeTab === "error_correction" && <ErrorCorrectionLab />}
+      {activeTab === "tomography" && <TomographyLab />}
 
-      {/* ── TAB 3: MATHEMATICAL STATE EXPLORER ────────────────────────── */}
+      {/* ── TAB: MATHEMATICAL STATE EXPLORER ────────────────────────── */}
       {activeTab === "math_explorer" && (
         <QuantumMathExplorer
           statevector={playgroundSimResult?.statevector || []}

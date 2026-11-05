@@ -58,7 +58,7 @@ export default function ExperimentLibraryModal({
                 Reproducible Quantum Experiment Library
               </h2>
               <span className="text-xs text-slate-500 font-mono">
-                10 Canonical Quantum Foundations, Entanglement, and Algorithm Experiments
+                {experiments.length} Verified Quantum Experiments & Foundational Circuits
               </span>
             </div>
           </div>

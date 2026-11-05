@@ -654,3 +654,121 @@ class ExperimentTemplate(BaseModel):
     expected_state: str
     explanation: str
 
+
+# ═══════════════════════════════════════════════════════════════════════
+# 6. PHASE 03 ADVANCED QUANTUM MECHANICS SCHEMAS
+# ═══════════════════════════════════════════════════════════════════════
+
+class StateEvolutionRequest(BaseModel):
+    """Request for continuous Hamiltonian time evolution."""
+    model_config = ConfigDict(from_attributes=True)
+
+    hamiltonian_type: str = Field(default="pauli_x", description="pauli_x, pauli_y, pauli_z, hadamard, general_b_field, ising_zz, exchange_xy, heisenberg_xxx")
+    initial_state_name: str = Field(default="zero", description="zero, one, plus, minus, plus_i, minus_i, 00, 01, 10, 11, bell_phi_plus")
+    omega: float = Field(default=1.0, ge=0.01, le=100.0)
+    b_field: Optional[Dict[str, float]] = None
+    j_coupling: float = Field(default=1.0, ge=0.01, le=100.0)
+    total_time: float = Field(default=6.2831853, ge=0.1, le=50.0)
+    num_steps: int = Field(default=50, ge=5, le=200)
+
+
+class DensityMatrixAnalyzeRequest(BaseModel):
+    """Request to inspect and decompose a density matrix."""
+    model_config = ConfigDict(from_attributes=True)
+
+    preset: Optional[str] = Field(default="bell_phi_plus", description="pure_zero, pure_plus, maximally_mixed_1q, bell_phi_plus, maximally_mixed_2q")
+    matrix_data: Optional[List[List[Dict[str, float]]]] = None
+
+
+class MeasurementExperimentRequest(BaseModel):
+    """Request to execute measurement in Z, X, or Y basis with state collapse."""
+    model_config = ConfigDict(from_attributes=True)
+
+    operations: List[GateOperationSchema] = Field(default_factory=list)
+    num_qubits: int = Field(default=1, ge=1, le=4)
+    basis: str = Field(default="Z", description="Z, X, or Y")
+    shots: int = Field(default=1024, ge=100, le=10000)
+    simulate_collapse_outcome: Optional[str] = None
+
+
+class InterferenceSimulateRequest(BaseModel):
+    """Request for Mach-Zehnder wave interference simulation."""
+    model_config = ConfigDict(from_attributes=True)
+
+    phase_theta: float = Field(default=0.0, description="Phase shift θ in radians")
+    shots: int = Field(default=1024, ge=100, le=10000)
+    include_sweep: bool = Field(default=True)
+    sweep_steps: int = Field(default=36, ge=10, le=72)
+
+
+class QuantumInformationRequest(BaseModel):
+    """Request to compare quantum entropy, fidelity, and trace distance."""
+    model_config = ConfigDict(from_attributes=True)
+
+    state_a_preset: str = Field(default="pure_zero")
+    state_b_preset: str = Field(default="pure_plus")
+    custom_state_a: Optional[List[List[Dict[str, float]]]] = None
+    custom_state_b: Optional[List[List[Dict[str, float]]]] = None
+
+
+class EntanglementAnalyzeRequest(BaseModel):
+    """Request to calculate Schmidt decomposition, concurrence, and PPT negativity."""
+    model_config = ConfigDict(from_attributes=True)
+
+    preset: str = Field(default="bell_phi_plus", description="bell_phi_plus, bell_psi_minus, w_state_3q, ghz_state_3q, werner_state, classical_correlated_separable")
+    werner_parameter_p: float = Field(default=1.0, ge=0.0, le=1.0)
+
+
+class NoiseSimulateRequest(BaseModel):
+    """Request to simulate circuit under Qiskit Aer noise model."""
+    model_config = ConfigDict(from_attributes=True)
+
+    operations: List[GateOperationSchema] = Field(default_factory=list)
+    num_qubits: int = Field(default=2, ge=1, le=4)
+    noise_type: str = Field(default="depolarizing", description="depolarizing, bit_flip, phase_flip, amplitude_damping, phase_damping, thermal_relaxation")
+    error_prob: float = Field(default=0.05, ge=0.0, le=0.5)
+    gamma: float = Field(default=0.05, ge=0.0, le=0.5)
+    lambda_param: float = Field(default=0.05, ge=0.0, le=0.5)
+    shots: int = Field(default=2048, ge=100, le=10000)
+
+
+class DecoherenceSimulateRequest(BaseModel):
+    """Request to simulate T1 relaxation and T2 dephasing trajectory."""
+    model_config = ConfigDict(from_attributes=True)
+
+    initial_state_name: str = Field(default="plus", description="plus, one, plus_i, zero")
+    t1_us: float = Field(default=50.0, ge=1.0, le=1000.0)
+    t2_us: float = Field(default=30.0, ge=0.5, le=2000.0)
+    total_time_us: float = Field(default=100.0, ge=1.0, le=5000.0)
+    num_steps: int = Field(default=50, ge=10, le=200)
+
+
+class ErrorCorrectionRequest(BaseModel):
+    """Request to execute 3-qubit bit-flip or phase-flip error correction code."""
+    model_config = ConfigDict(from_attributes=True)
+
+    code_type: str = Field(default="bit_flip", description="bit_flip or phase_flip")
+    error_qubit: Optional[int] = Field(default=1, ge=0, le=2, description="0, 1, 2 or None")
+    initial_state_theta: float = Field(default=1.04719755)
+    shots: int = Field(default=1024, ge=100, le=10000)
+
+
+class QuantumChannelRequest(BaseModel):
+    """Request to apply a CPTP quantum channel."""
+    model_config = ConfigDict(from_attributes=True)
+
+    channel_type: str = Field(default="depolarizing", description="identity, bit_flip, phase_flip, bit_phase_flip, depolarizing, amplitude_damping, phase_damping")
+    input_state_preset: str = Field(default="pure_plus")
+    param_p: float = Field(default=0.1, ge=0.0, le=1.0)
+    gamma: float = Field(default=0.1, ge=0.0, le=1.0)
+    lambda_param: float = Field(default=0.1, ge=0.0, le=1.0)
+
+
+class TomographyRequest(BaseModel):
+    """Request to perform single-qubit quantum state tomography."""
+    model_config = ConfigDict(from_attributes=True)
+
+    operations: List[GateOperationSchema] = Field(default_factory=list)
+    shots: int = Field(default=2048, ge=200, le=10000)
+
+
