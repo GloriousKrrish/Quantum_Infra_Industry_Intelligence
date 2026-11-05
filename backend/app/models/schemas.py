@@ -97,6 +97,9 @@ class QAOAResult(BaseModel):
     execution_time_ms: float = Field(..., ge=0)
     circuit_depth: int = Field(..., ge=0)
     num_qubits: int = Field(..., gt=0)
+    optimal_parameters: Optional[Dict[str, List[float]]] = Field(
+        default=None, description="Optimal variational parameters: gammas and betas"
+    )
 
 
 class ClassicalResult(BaseModel):

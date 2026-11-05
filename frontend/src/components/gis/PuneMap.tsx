@@ -4,7 +4,7 @@ import type { Parcel } from "../../lib/api";
 
 interface PuneMapProps {
   parcels: Parcel[];
-  selectedParcelId: number | null;
+  selectedParcelId: string | number | null;
   onSelectParcel: (parcel: Parcel) => void;
   winningParcels?: string[];
 }
@@ -48,13 +48,13 @@ export default function PuneMap({
         zoomControl: true,
       });
 
-      // CartoDB Dark Matter tile layer
+      // OpenStreetMap clean tile layer without watermark
       L.tileLayer(
-        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-          attribution: '&copy; <a href="https://carto.com/">CARTO</a> | PMRDA Cadastral Data',
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors | PMRDA Cadastral Data',
           maxZoom: 19,
-          subdomains: "abcd",
+          subdomains: ["a", "b", "c"],
         }
       ).addTo(map);
 
@@ -70,7 +70,7 @@ export default function PuneMap({
     // Add parcel markers
     parcels.forEach((parcel) => {
       const coords = PARCEL_COORDS[parcel.name] || [18.5204, 73.8567];
-      const isSelected = selectedParcelId === parcel.id;
+      const isSelected = selectedParcelId !== null && String(selectedParcelId) === String(parcel.id);
       const isWinner = winningParcels.includes(parcel.name);
 
       const color = isWinner ? "#22d3ee" : isSelected ? "#10b981" : "#64748b";

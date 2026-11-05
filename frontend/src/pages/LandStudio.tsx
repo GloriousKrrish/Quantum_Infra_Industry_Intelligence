@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   MapPin,
   Droplets,
@@ -12,12 +12,14 @@ import {
   LayoutGrid,
   Columns,
   Cpu,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import { MOCK_PARCELS, MOCK_QUANTUM_RESULT } from "../lib/mockData";
 import CityTwin3D from "../components/3d/CityTwin3D";
-import type { Parcel } from "../lib/api";
+import { fetchParcels, type LandParcel } from "../lib/api";
 
 // ─── Infrastructure Score Bar (Clean Light Theme) ─────────────────────────────
 
@@ -57,11 +59,11 @@ function ParcelCard({
   isSelected,
   onSelect,
 }: {
-  parcel: Parcel;
+  parcel: LandParcel;
   isSelected: boolean;
-  onSelect: (p: Parcel) => void;
+  onSelect: (p: LandParcel) => void;
 }) {
-  const isWinner = MOCK_QUANTUM_RESULT.selected_parcels.includes(parcel.name);
+  const isWinner = MOCK_QUANTUM_RESULT.decoded_solution.selected_parcels.includes(parcel.name);
 
   return (
     <div
@@ -91,7 +93,7 @@ function ParcelCard({
           </p>
         </div>
         <span className="font-mono text-xs font-bold text-slate-900 bg-slate-50 px-2 py-1 rounded-lg border border-slate-200">
-          ₹{parcel.price_cr} Cr
+          ₹{parcel.price_crore.toFixed(1)} Cr
         </span>
       </div>
 
@@ -103,15 +105,15 @@ function ParcelCard({
         </div>
         <div>
           <span className="text-[10px] text-slate-400 block uppercase">Proj. Return</span>
-          <span className="font-semibold text-emerald-600">+{parcel.return_pct}%</span>
+          <span className="font-semibold text-emerald-600">+{parcel.projected_return_pct}%</span>
         </div>
       </div>
 
       {/* Infrastructure Mini Bars */}
       <div className="space-y-1.5">
-        <InfraBar label="Water" value={parcel.infra_scores.water} icon={Droplets} color="text-sky-500" />
-        <InfraBar label="Power" value={parcel.infra_scores.power} icon={Zap} color="text-amber-500" />
-        <InfraBar label="Road" value={parcel.infra_scores.road} icon={Route} color="text-emerald-500" />
+        <InfraBar label="Water" value={parcel.water_score} icon={Droplets} color="text-sky-500" />
+        <InfraBar label="Power" value={parcel.electricity_score} icon={Zap} color="text-amber-500" />
+        <InfraBar label="Road" value={parcel.road_score} icon={Route} color="text-emerald-500" />
       </div>
     </div>
   );
@@ -119,7 +121,7 @@ function ParcelCard({
 
 // ─── Detail Sidebar Panel (Clean Light Theme) ─────────────────────────────────
 
-function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void }) {
+function DetailPanel({ parcel, onClose }: { parcel: LandParcel; onClose: () => void }) {
   const navigate = useNavigate();
 
   return (
@@ -127,7 +129,7 @@ function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void 
       <div className="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
           <span className="text-[9px] font-bold uppercase tracking-wider text-blue-600">
-            PMRDA Record #{parcel.id}
+            {parcel.id} • {parcel.zone_type}
           </span>
           <h2 className="font-display text-base font-bold text-slate-900 mt-0.5">{parcel.name}</h2>
           <p className="text-xs text-slate-500">{parcel.location}</p>
@@ -143,7 +145,7 @@ function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void 
       <div className="grid grid-cols-2 gap-3 text-xs">
         <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
           <span className="text-[10px] text-slate-500 block">Acquisition Price</span>
-          <span className="text-sm font-bold text-slate-900">₹{parcel.price_cr} Cr</span>
+          <span className="text-sm font-bold text-slate-900">₹{parcel.price_crore.toFixed(1)} Cr</span>
         </div>
         <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
           <span className="text-[10px] text-slate-500 block">Total Area</span>
@@ -156,10 +158,10 @@ function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void 
         <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
           Deterministic IS 1172 Breakdown
         </span>
-        <InfraBar label="Water Supply" value={parcel.infra_scores.water} icon={Droplets} color="text-sky-500" />
-        <InfraBar label="Power Grid" value={parcel.infra_scores.power} icon={Zap} color="text-amber-500" />
-        <InfraBar label="Road Access" value={parcel.infra_scores.road} icon={Route} color="text-emerald-500" />
-        <InfraBar label="Sewage Net" value={parcel.infra_scores.sewage} icon={Pipette} color="text-indigo-500" />
+        <InfraBar label="Water Supply" value={parcel.water_score} icon={Droplets} color="text-sky-500" />
+        <InfraBar label="Power Grid" value={parcel.electricity_score} icon={Zap} color="text-amber-500" />
+        <InfraBar label="Road Access" value={parcel.road_score} icon={Route} color="text-emerald-500" />
+        <InfraBar label="Sewage Net" value={parcel.sewage_score} icon={Pipette} color="text-indigo-500" />
       </div>
 
       <div className="border-t border-slate-100 pt-3 flex gap-2">
@@ -180,25 +182,75 @@ function DetailPanel({ parcel, onClose }: { parcel: Parcel; onClose: () => void 
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export default function LandStudio() {
-  const [budget, setBudget] = useState(15.0);
+  const [allParcels, setAllParcels] = useState<LandParcel[]>(MOCK_PARCELS);
+  const [budget, setBudget] = useState(40.0); // Baseline demonstration budget
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedParcel, setSelectedParcel] = useState<Parcel | null>(MOCK_PARCELS[0]);
+  const [selectedParcel, setSelectedParcel] = useState<LandParcel | null>(MOCK_PARCELS[0]);
   const [viewMode, setViewMode] = useState<"split" | "map" | "grid">("split");
+  const [isLive, setIsLive] = useState<boolean>(false);
 
-  // Filter parcels
+  // Fetch live parcels from FastAPI
+  useEffect(() => {
+    let isMounted = true;
+    async function load() {
+      try {
+        const live = await fetchParcels();
+        if (isMounted && live && live.length > 0) {
+          setAllParcels(live);
+          setSelectedParcel(live[0]);
+          setIsLive(true);
+        }
+      } catch (e) {
+        console.warn("FastAPI parcels endpoint unreachable, using fallback:", e);
+        setIsLive(false);
+      }
+    }
+    load();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Filter parcels by individual price <= budget
   const filteredParcels = useMemo(() => {
-    return MOCK_PARCELS.filter((p) => {
-      const withinBudget = p.price_cr <= budget;
+    return allParcels.filter((p) => {
+      const withinBudget = p.price_crore <= budget;
       const matchesSearch =
         !searchQuery ||
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.location.toLowerCase().includes(searchQuery.toLowerCase());
       return withinBudget && matchesSearch;
     });
-  }, [budget, searchQuery]);
+  }, [allParcels, budget, searchQuery]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+      {/* ── Connectivity Banner ────────────────────────────────────────── */}
+      <div className="flex items-center justify-between rounded-xl border px-4 py-2 text-xs bg-white shadow-xs">
+        <div className="flex items-center gap-2">
+          {isLive ? (
+            <>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <Wifi className="h-4 w-4 text-emerald-600" />
+              <span className="font-semibold text-slate-800">
+                Connected to FastAPI Land Intelligence Engine (Port 8000)
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500" />
+              <WifiOff className="h-4 w-4 text-amber-600" />
+              <span className="font-medium text-slate-600">
+                Offline Demonstration Mode (Using labelled synthetic Pune dataset)
+              </span>
+            </>
+          )}
+        </div>
+        <span className="font-mono text-[11px] text-slate-500">
+          Source: {allParcels[0]?.data_provenance}
+        </span>
+      </div>
+
       {/* ── Top Controls: Budget Slider + Search + View Mode ──────────────── */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -215,17 +267,17 @@ export default function LandStudio() {
             </div>
             <input
               type="range"
-              min={5}
-              max={25}
-              step={0.5}
+              min={10}
+              max={60}
+              step={1}
               value={budget}
               onChange={(e) => setBudget(parseFloat(e.target.value))}
               className="w-full accent-blue-600 cursor-pointer"
             />
             <div className="mt-1 flex justify-between font-mono text-[10px] text-slate-400">
-              <span>₹5 Cr (Entry)</span>
-              <span>₹15 Cr (PMRDA Baseline)</span>
-              <span>₹25 Cr (Megasite)</span>
+              <span>₹10 Cr (Single Plot)</span>
+              <span>₹40 Cr (Baseline Demonstration)</span>
+              <span>₹60 Cr (Multi-Zone Portfolio)</span>
             </div>
           </div>
 
@@ -301,7 +353,7 @@ export default function LandStudio() {
               parcels={filteredParcels}
               selectedParcelId={selectedParcel?.id ?? null}
               onSelectParcel={setSelectedParcel}
-              winningParcels={MOCK_QUANTUM_RESULT.selected_parcels}
+              winningParcels={MOCK_QUANTUM_RESULT.decoded_solution.selected_parcels}
             />
           </div>
 
@@ -327,7 +379,7 @@ export default function LandStudio() {
             parcels={filteredParcels}
             selectedParcelId={selectedParcel?.id ?? null}
             onSelectParcel={setSelectedParcel}
-            winningParcels={MOCK_QUANTUM_RESULT.selected_parcels}
+            winningParcels={MOCK_QUANTUM_RESULT.decoded_solution.selected_parcels}
           />
         </div>
       )}

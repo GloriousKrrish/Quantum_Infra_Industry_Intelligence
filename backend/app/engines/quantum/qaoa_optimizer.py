@@ -382,7 +382,14 @@ def _run_qaoa_qiskit(
 
     t_elapsed = (time.perf_counter() - t_start) * 1000.0
 
-    return _process_counts(counts, Q, num_qubits, p, shots, t_elapsed)
+    opt_params = {
+        "gammas": [round(float(g), 4) for g in gammas_opt],
+        "betas": [round(float(b), 4) for b in betas_opt],
+    }
+
+    return _process_counts(
+        counts, Q, num_qubits, p, shots, t_elapsed, optimal_parameters=opt_params
+    )
 
 
 def _run_qaoa_numpy_fallback(
@@ -469,7 +476,13 @@ def _run_qaoa_numpy_fallback(
             counts[bs] = int(round(probs[idx] * shots))
 
     t_elapsed = (time.perf_counter() - t_start) * 1000.0
-    return _process_counts(counts, Q, num_qubits, p, shots, t_elapsed)
+    opt_params = {
+        "gammas": [round(float(g), 4) for g in gammas_opt],
+        "betas": [round(float(b), 4) for b in betas_opt],
+    }
+    return _process_counts(
+        counts, Q, num_qubits, p, shots, t_elapsed, optimal_parameters=opt_params
+    )
 
 
 def _matrix_exp(M: np.ndarray) -> np.ndarray:
@@ -495,6 +508,7 @@ def _process_counts(
     p: int,
     shots: int,
     execution_time_ms: float,
+    optimal_parameters: Optional[Dict[str, List[float]]] = None,
 ) -> QAOAResult:
     """Convert raw measurement counts into a structured QAOAResult."""
     total = sum(counts.values()) or 1
@@ -528,6 +542,7 @@ def _process_counts(
         execution_time_ms=round(execution_time_ms, 2),
         circuit_depth=2 * p * (num_qubits + 1),  # Approximate depth
         num_qubits=num_qubits,
+        optimal_parameters=optimal_parameters,
     )
 
 

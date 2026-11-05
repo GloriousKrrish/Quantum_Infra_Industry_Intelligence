@@ -220,8 +220,8 @@ export default function BlochSphere3D({
       <div className="absolute top-3 left-3 flex items-center gap-2 rounded-xl bg-white/95 px-3 py-1.5 backdrop-blur-sm border border-slate-200/80 shadow-xs">
         <Atom className="h-4 w-4 text-blue-600" />
         <div>
-          <span className="text-xs font-bold text-slate-800">3D Qubit Bloch Sphere</span>
-          <span className="text-[10px] text-slate-500 block">Single-Qubit State Vector $|\psi\rangle$</span>
+          <span className="text-xs font-bold text-slate-800">1-Qubit Bloch Sphere</span>
+          <span className="text-[10px] text-slate-500 block">Single-Qubit Model (SU(2)) • Educational Subsystem</span>
         </div>
       </div>
 

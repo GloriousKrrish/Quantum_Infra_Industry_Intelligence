@@ -15,7 +15,7 @@ import type { Parcel } from "../../lib/api";
 
 interface CityTwin3DProps {
   parcels: Parcel[];
-  selectedParcelId: number | null;
+  selectedParcelId: string | number | null;
   onSelectParcel: (parcel: Parcel) => void;
   winningParcels?: string[];
   showInfrastructure?: boolean;
@@ -37,9 +37,13 @@ const PUNE_3D_LAYOUT: Record<
   "Wakad Central": { x: -3.2, z: -1.2, height: 3.5, type: "residential", color: 0x0284c7 },
   "Baner Hilltop": { x: -2.0, z: 2.2, height: 3.0, type: "residential", color: 0x4f46e5 },
   "Kharadi IT Park": { x: 5.8, z: -1.5, height: 4.6, type: "tech", color: 0x1d4ed8 },
+  "Kharadi IT Hub": { x: 5.8, z: -1.5, height: 4.6, type: "tech", color: 0x1d4ed8 },
   "Wagholi East": { x: 7.2, z: 2.4, height: 2.4, type: "residential", color: 0x059669 },
   "Hadapsar Growth Zone": { x: 4.2, z: 4.8, height: 2.8, type: "industrial", color: 0x0d9488 },
   "Hadapsar Extension": { x: 4.2, z: 4.8, height: 2.8, type: "industrial", color: 0x0d9488 },
+  "Talegaon Dabhade": { x: -7.5, z: -6.0, height: 2.6, type: "residential", color: 0x10b981 },
+  "Pirangut Corridor": { x: -6.0, z: 4.5, height: 2.4, type: "residential", color: 0x6366f1 },
+  "Mamurdi PCMC": { x: -4.5, z: -5.2, height: 3.0, type: "commercial", color: 0x0284c7 },
   "Viman Nagar Premium": { x: 3.4, z: -3.6, height: 3.8, type: "commercial", color: 0x7c3aed },
   "Undri Greenfield": { x: 1.8, z: 6.5, height: 2.0, type: "residential", color: 0x16a34a },
   "Chakan Industrial": { x: -0.5, z: -7.5, height: 2.6, type: "industrial", color: 0xd97706 },
@@ -164,9 +168,9 @@ export default function CityTwin3D({
     // 8. 3D Buildings & Cadastral Parcels
     const interactiveObjects: THREE.Object3D[] = [];
 
-    parcels.forEach((parcel) => {
+    parcels.forEach((parcel, idx) => {
       const cfg = PUNE_3D_LAYOUT[parcel.name] || {
-        x: (parcel.id - 4) * 3,
+        x: (idx - 4) * 3,
         z: 0,
         height: 3.0,
         type: "tech",
@@ -174,7 +178,7 @@ export default function CityTwin3D({
       };
 
       const isWinner = winningParcels.includes(parcel.name);
-      const isSelected = selectedParcelId === parcel.id;
+      const isSelected = selectedParcelId !== null && (String(selectedParcelId) === String(parcel.id) || selectedParcelId === parcel.name);
 
       const group = new THREE.Group();
       group.position.set(cfg.x, 0, cfg.z);
@@ -462,7 +466,7 @@ export default function CityTwin3D({
             Pune PMRDA 3D Digital Twin
           </span>
           <span className="text-[10px] text-slate-500 font-mono">
-            8 Cadastral Parcels • ₹15 Cr Budget Study
+            8 Cadastral Parcels • Illustrative Spatial Mesh
           </span>
         </div>
       </div>

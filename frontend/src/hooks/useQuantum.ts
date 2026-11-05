@@ -8,7 +8,7 @@ import { MOCK_QUANTUM_RESULT, MOCK_BENCHMARK } from "../lib/mockData";
  */
 export function useQuantumOptimization() {
   return useMutation({
-    mutationFn: (budget: number) => runQuantumOptimization(budget),
+    mutationFn: (budget: number) => runQuantumOptimization({ budget_crore: budget }),
   });
 }
 
@@ -26,7 +26,7 @@ export function useBenchmark() {
  */
 export function useWorkflow() {
   return useMutation({
-    mutationFn: (budget: number) => runPuneWorkflow(budget),
+    mutationFn: (budget: number) => runPuneWorkflow({ budget_crore: budget }),
   });
 }
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IndianRupee,
   Cpu,
@@ -9,61 +9,158 @@ import {
   Droplets,
   Zap,
   Building2,
-  SlidersHorizontal,
-  Layers,
-  ArrowUpRight,
-  ShieldAlert,
+  Wifi,
+  WifiOff,
+  AlertCircle,
+  Timer,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import CityTwin3D from "../components/3d/CityTwin3D";
 import {
   MOCK_PARCELS,
   MOCK_QUANTUM_RESULT,
-  MOCK_BENCHMARK,
 } from "../lib/mockData";
-import type { Parcel } from "../lib/api";
+import {
+  fetchParcels,
+  runQuantumOptimization,
+  type LandParcel,
+  type OptimizationResponse,
+} from "../lib/api";
 
 export default function Dashboard() {
-  const [selectedParcel, setSelectedParcel] = useState<Parcel>(MOCK_PARCELS[0]);
-  const [budgetCap, setBudgetCap] = useState<number>(15.0);
+  const [parcels, setParcels] = useState<LandParcel[]>(MOCK_PARCELS);
+  const [selectedParcel, setSelectedParcel] = useState<LandParcel>(MOCK_PARCELS[0]);
+  const [budgetCap, setBudgetCap] = useState<number>(40.0); // Standardized demonstration baseline
   const [isOptimizing, setIsOptimizing] = useState<boolean>(false);
-  const [showNotification, setShowNotification] = useState<boolean>(false);
+  const [optimizationResult, setOptimizationResult] = useState<OptimizationResponse>(MOCK_QUANTUM_RESULT);
+  const [notification, setNotification] = useState<{ type: "success" | "error"; message: string } | null>(null);
+  const [isLiveBackend, setIsLiveBackend] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Dynamic winning parcels based on budget
-  const winningParcels = MOCK_QUANTUM_RESULT.selected_parcels;
+  // Fetch real parcel data from FastAPI on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function loadData() {
+      try {
+        const liveParcels = await fetchParcels();
+        if (isMounted && liveParcels && liveParcels.length > 0) {
+          setParcels(liveParcels);
+          setSelectedParcel(liveParcels[0]);
+          setIsLiveBackend(true);
+        }
+      } catch (err) {
+        console.warn("Backend unavailable, using synthetic demonstration fallback:", err);
+        if (isMounted) {
+          setIsLiveBackend(false);
+          setParcels(MOCK_PARCELS);
+        }
+      }
+    }
+    loadData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-  const handleRunQAOA = () => {
+  // Winning parcels from live backend optimization
+  const winningParcels = optimizationResult.decoded_solution.selected_parcels;
+  const totalCost = optimizationResult.decoded_solution.total_cost_crore;
+  const reserveBuffer = Math.max(0, budgetCap - totalCost);
+  const isBudgetCompliant = optimizationResult.decoded_solution.budget_compliant;
+
+  // Real QAOA execution trigger
+  const handleRunQAOA = async () => {
     setIsOptimizing(true);
-    setTimeout(() => {
+    setErrorMessage(null);
+
+    try {
+      const res = await runQuantumOptimization({
+        budget_crore: budgetCap,
+        qaoa_p: 2,
+        qaoa_shots: 4096,
+      });
+
+      setOptimizationResult(res);
+      setIsLiveBackend(true);
+      setNotification({
+        type: "success",
+        message: `QAOA simulation converged in ${res.qaoa_result.execution_time_ms.toFixed(0)}ms: ${res.decoded_solution.selected_parcels.length} parcels selected (Energy: ${res.qaoa_result.optimal_value.toFixed(4)}).`,
+      });
+      setTimeout(() => setNotification(null), 6000);
+    } catch (err: any) {
+      console.error("Live QAOA optimization failed:", err);
+      const msg = err.response?.data?.detail || err.message || "Failed to connect to FastAPI QAOA engine.";
+      setErrorMessage(msg);
+      setNotification({
+        type: "error",
+        message: `QAOA Execution Error: ${msg}. Preserving baseline data.`,
+      });
+    } finally {
       setIsOptimizing(false);
-      setShowNotification(true);
-      setTimeout(() => setShowNotification(false), 5000);
-    }, 900);
+    }
   };
 
   const isSelectedWinning = winningParcels.includes(selectedParcel.name);
 
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12">
-      {/* ── Success Banner on QAOA Execution ──────────────────────────── */}
-      {showNotification && (
-        <div className="flex items-center justify-between rounded-2xl bg-emerald-50 border border-emerald-200/90 p-4 text-emerald-900 shadow-xs animate-fadeIn">
+      {/* ── Backend Connectivity Status Banner ────────────────────────── */}
+      <div className="flex items-center justify-between rounded-xl border px-4 py-2 text-xs bg-white shadow-xs">
+        <div className="flex items-center gap-2">
+          {isLiveBackend ? (
+            <>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+              <Wifi className="h-4 w-4 text-emerald-600" />
+              <span className="font-semibold text-slate-800">
+                Connected to FastAPI Backend (Qiskit Aer QAOA Engine on Port 8000)
+              </span>
+            </>
+          ) : (
+            <>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-amber-500" />
+              <WifiOff className="h-4 w-4 text-amber-600" />
+              <span className="font-medium text-slate-600">
+                Offline Demonstration Mode (Using labelled synthetic Pune dataset)
+              </span>
+            </>
+          )}
+        </div>
+        <div className="flex items-center gap-2 font-mono text-[11px] text-slate-500">
+          <span>Baseline Demonstration Budget: <b>₹40.0 Cr</b></span>
+        </div>
+      </div>
+
+      {/* ── Notification Banner on QAOA Execution ──────────────────────────── */}
+      {notification && (
+        <div
+          className={cn(
+            "flex items-center justify-between rounded-2xl p-4 shadow-xs animate-fadeIn border",
+            notification.type === "success"
+              ? "bg-emerald-50 border-emerald-200 text-emerald-900"
+              : "bg-rose-50 border-rose-200 text-rose-900"
+          )}
+        >
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs">
-              <CheckCircle2 className="h-5 w-5" />
+            <div
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-xl text-white shadow-xs",
+                notification.type === "success" ? "bg-emerald-600" : "bg-rose-600"
+              )}
+            >
+              {notification.type === "success" ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
             </div>
             <div>
               <div className="text-sm font-bold">
-                QAOA Quantum Simulation Converged: 4 Parcels Selected
+                {notification.type === "success" ? "Quantum Execution Successful" : "Execution Notification"}
               </div>
-              <div className="text-xs text-emerald-700">
-                Total Committed: ₹14.6 Cr • Reserve: ₹0.40 Cr • Classical Approximation Ratio $\alpha = 0.999$
-              </div>
+              <div className="text-xs opacity-90">{notification.message}</div>
             </div>
           </div>
-          <span className="font-mono text-xs bg-emerald-200/60 px-3 py-1 rounded-full text-emerald-900 font-bold">
-            Ground State |11010010⟩
-          </span>
+          {notification.type === "success" && (
+            <span className="font-mono text-xs bg-emerald-200/60 px-3 py-1 rounded-full text-emerald-900 font-bold">
+              |{optimizationResult.qaoa_result.optimal_bitstring}⟩
+            </span>
+          )}
         </div>
       )}
 
@@ -73,7 +170,7 @@ export default function Dashboard() {
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-              Target Budget Allocation
+              Capital Budget Allocation
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
               <IndianRupee className="h-4 w-4" />
@@ -81,15 +178,21 @@ export default function Dashboard() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-3xl font-bold text-slate-900">
-              ₹14.6 Cr
+              ₹{totalCost.toFixed(1)} Cr
             </span>
             <span className="text-xs text-slate-500">of ₹{budgetCap.toFixed(1)} Cr Cap</span>
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
-            <span className="text-emerald-700 font-semibold flex items-center gap-1">
-              <CheckCircle2 className="h-3.5 w-3.5" /> Budget Compliant
+            <span
+              className={cn(
+                "font-semibold flex items-center gap-1",
+                isBudgetCompliant ? "text-emerald-700" : "text-rose-700"
+              )}
+            >
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              {isBudgetCompliant ? "Budget Compliant" : "Budget Exceeded"}
             </span>
-            <span className="text-slate-400 font-mono">Buffer: ₹0.40 Cr</span>
+            <span className="text-slate-400 font-mono">Reserve: ₹{reserveBuffer.toFixed(2)} Cr</span>
           </div>
         </div>
 
@@ -97,7 +200,7 @@ export default function Dashboard() {
         <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs transition-all hover:border-slate-300">
           <div className="flex items-center justify-between text-slate-500 mb-2">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-              Optimal Portfolio Pick
+              QAOA Optimal Selection
             </span>
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
               <Sparkles className="h-4 w-4" />
@@ -105,15 +208,20 @@ export default function Dashboard() {
           </div>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-3xl font-bold text-slate-900">
-              4 Parcels
+              {winningParcels.length} Parcels
             </span>
             <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60 font-mono">
-              +18.4% Projected ROI
+              Utility: {optimizationResult.decoded_solution.total_utility.toFixed(3)}
             </span>
           </div>
           <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-xs">
-            <span className="text-slate-600">Total Land: 18.7 Acres</span>
-            <span className="text-blue-600 font-medium">Cadastral Verified</span>
+            <span className="text-slate-600">
+              Bitstring: <code className="font-mono text-blue-600">|{optimizationResult.qaoa_result.optimal_bitstring}⟩</code>
+            </span>
+            <span className="text-slate-400 font-mono flex items-center gap-1">
+              <Timer className="h-3 w-3" />
+              {optimizationResult.qaoa_result.execution_time_ms.toFixed(0)}ms
+            </span>
           </div>
         </div>
 
@@ -149,7 +257,7 @@ export default function Dashboard() {
               Pune Metropolitan Region • 3D Real Estate Digital Twin
             </h2>
             <p className="text-xs text-slate-500">
-              Interact directly with 8 cadastral parcels in 3D. Click any building to inspect utilities or run QAOA allocation.
+              Directly connected to FastAPI & Qiskit Aer. Adjust budget and click optimize to run the live variational algorithm.
             </p>
           </div>
 
@@ -161,12 +269,12 @@ export default function Dashboard() {
               </span>
               <input
                 type="range"
-                min="10"
-                max="25"
-                step="0.5"
+                min="20"
+                max="60"
+                step="1"
                 value={budgetCap}
                 onChange={(e) => setBudgetCap(parseFloat(e.target.value))}
-                className="w-24 accent-blue-600 cursor-pointer"
+                className="w-28 accent-blue-600 cursor-pointer"
               />
             </div>
 
@@ -184,12 +292,12 @@ export default function Dashboard() {
               {isOptimizing ? (
                 <>
                   <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
-                  <span>Computing QAOA...</span>
+                  <span>Computing Qiskit QAOA...</span>
                 </>
               ) : (
                 <>
                   <Play className="h-4 w-4 fill-white" />
-                  <span>Optimize ₹{budgetCap.toFixed(1)} Cr Portfolio</span>
+                  <span>Execute QAOA Optimization</span>
                 </>
               )}
             </button>
@@ -198,7 +306,7 @@ export default function Dashboard() {
 
         {/* 3D Model Component */}
         <CityTwin3D
-          parcels={MOCK_PARCELS}
+          parcels={parcels}
           selectedParcelId={selectedParcel.id}
           onSelectParcel={setSelectedParcel}
           winningParcels={winningParcels}
@@ -214,12 +322,12 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg border border-blue-200/60">
-                  Parcel #{selectedParcel.id}
+                  {selectedParcel.id}
                 </span>
                 {isSelectedWinning && (
                   <span className="flex items-center gap-1 font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200">
                     <Sparkles className="h-3 w-3 text-emerald-600" />
-                    QAOA Winning Portfolio Pick
+                    QAOA Selected Winning Parcel
                   </span>
                 )}
               </div>
@@ -228,7 +336,7 @@ export default function Dashboard() {
               </h3>
               <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                 <MapPin className="h-3.5 w-3.5 text-slate-400" />
-                {selectedParcel.location} • PMRDA Cadastral Zone
+                {selectedParcel.location} • {selectedParcel.data_provenance}
               </p>
             </div>
 
@@ -237,7 +345,7 @@ export default function Dashboard() {
                 Acquisition Cost
               </span>
               <span className="font-display text-2xl font-bold text-slate-900">
-                ₹{selectedParcel.price_cr} Cr
+                ₹{selectedParcel.price_crore.toFixed(1)} Cr
               </span>
             </div>
           </div>
@@ -254,10 +362,10 @@ export default function Dashboard() {
             </div>
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
               <span className="text-[10px] text-slate-500 uppercase font-semibold block">
-                Projected 4-Yr Return
+                Projected Return
               </span>
               <span className="font-display text-base font-bold text-emerald-600">
-                +{selectedParcel.expected_roi_pct ?? selectedParcel.return_pct}%
+                +{selectedParcel.projected_return_pct}%
               </span>
             </div>
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
@@ -265,7 +373,7 @@ export default function Dashboard() {
                 Infra Readiness
               </span>
               <span className="font-display text-base font-bold text-blue-600">
-                {(((selectedParcel.infrastructure_index ?? selectedParcel.utility_score)) * 100).toFixed(0)}%
+                {(selectedParcel.infrastructure_index * 100).toFixed(0)}%
               </span>
             </div>
             <div className="bg-slate-50 p-3 rounded-xl border border-slate-200/60">
@@ -273,7 +381,7 @@ export default function Dashboard() {
                 Permissible FSI
               </span>
               <span className="font-display text-base font-bold text-slate-900">
-                {selectedParcel.max_fsi ?? 2.5}
+                {selectedParcel.max_fsi ?? 2.0}
               </span>
             </div>
           </div>
@@ -292,7 +400,7 @@ export default function Dashboard() {
                 <div>
                   <span className="font-semibold text-slate-800 block">Water Supply Score</span>
                   <span className="text-slate-500 font-mono text-[11px]">
-                    {(((selectedParcel.water_supply_score ?? selectedParcel.infra_scores.water)) * 100).toFixed(0)}% Municipal Pipeline Connected
+                    {(selectedParcel.water_score * 100).toFixed(0)}% Municipal Pipeline Connected
                   </span>
                 </div>
               </div>
@@ -304,7 +412,7 @@ export default function Dashboard() {
                 <div>
                   <span className="font-semibold text-slate-800 block">Power Grid Reliability</span>
                   <span className="text-slate-500 font-mono text-[11px]">
-                    {(((selectedParcel.electricity_score ?? selectedParcel.infra_scores.power)) * 100).toFixed(0)}% (220kV Substation Feed)
+                    {(selectedParcel.electricity_score * 100).toFixed(0)}% (220kV Substation Feed)
                   </span>
                 </div>
               </div>
@@ -320,18 +428,18 @@ export default function Dashboard() {
                 <h3 className="font-display text-base font-bold text-slate-900">
                   QAOA Winning Allocation
                 </h3>
-                <span className="text-xs text-slate-500">
-                  Hamiltonian Global Minimum Statevector |11010010⟩
+                <span className="text-xs text-slate-500 font-mono">
+                  Statevector Ground State |{optimizationResult.qaoa_result.optimal_bitstring}⟩
                 </span>
               </div>
               <span className="font-mono text-xs font-bold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-xl border border-emerald-200">
-                ₹14.6 Cr
+                ₹{totalCost.toFixed(1)} Cr
               </span>
             </div>
 
-            {/* List of 4 winning parcels */}
+            {/* List of winning parcels */}
             <div className="space-y-2">
-              {MOCK_PARCELS.filter((p) => winningParcels.includes(p.name)).map((parcel) => (
+              {parcels.filter((p) => winningParcels.includes(p.name)).map((parcel) => (
                 <div
                   key={parcel.id}
                   onClick={() => setSelectedParcel(parcel)}
@@ -349,12 +457,12 @@ export default function Dashboard() {
                         {parcel.name}
                       </span>
                       <span className="text-[10px] text-slate-500">
-                        {parcel.area_acres} Acres • +{parcel.expected_roi_pct}% Return
+                        {parcel.area_acres} Acres • +{parcel.projected_return_pct}% Return
                       </span>
                     </div>
                   </div>
                   <span className="font-mono text-xs font-bold text-slate-800">
-                    ₹{parcel.price_cr} Cr
+                    ₹{parcel.price_crore.toFixed(1)} Cr
                   </span>
                 </div>
               ))}
@@ -364,12 +472,12 @@ export default function Dashboard() {
           {/* Bottom Summary Callout */}
           <div className="mt-4 pt-3 border-t border-slate-100">
             <div className="flex items-center justify-between text-xs font-medium text-slate-600">
-              <span>Remaining Contingency:</span>
-              <span className="font-mono font-bold text-slate-900">₹0.40 Crore</span>
+              <span>Remaining Contingency Reserve:</span>
+              <span className="font-mono font-bold text-slate-900">₹{reserveBuffer.toFixed(2)} Cr</span>
             </div>
             <div className="flex items-center justify-between text-xs font-medium text-slate-600 mt-1">
-              <span>Cumulative Expected Yield:</span>
-              <span className="font-mono font-bold text-emerald-600">+18.4% Net</span>
+              <span>Optimization Method:</span>
+              <span className="font-mono font-bold text-emerald-600">Qiskit Aer QAOA (p=2)</span>
             </div>
           </div>
         </div>
