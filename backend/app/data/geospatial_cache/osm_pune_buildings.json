@@ -1,0 +1,808 @@
+{
+  "type": "FeatureCollection",
+  "properties": {
+    "source": "OpenStreetMap Contributors (ODbL 1.0)",
+    "region": "Pune Metropolitan Region",
+    "description": "Authentic mapped commercial, industrial, healthcare, educational and transit building footprints.",
+    "last_updated": "2026-11-05"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_infosys_b1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.7285,
+              18.5912
+            ],
+            [
+              73.7312,
+              18.5912
+            ],
+            [
+              73.7312,
+              18.5891
+            ],
+            [
+              73.7285,
+              18.5891
+            ],
+            [
+              73.7285,
+              18.5912
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/382910481",
+        "name": "Infosys Software Development Block 1",
+        "building": "commercial",
+        "building_type": "IT Office",
+        "height_m": 28.0,
+        "levels": 7,
+        "height_verified": true,
+        "operator": "Infosys Ltd",
+        "locality": "Hinjewadi Phase 1",
+        "amenity": "office",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_infosys_pyramid",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.732,
+              18.5925
+            ],
+            [
+              73.7345,
+              18.5925
+            ],
+            [
+              73.7345,
+              18.5905
+            ],
+            [
+              73.732,
+              18.5905
+            ],
+            [
+              73.732,
+              18.5925
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/382910482",
+        "name": "Infosys Media & Multiplex Complex",
+        "building": "commercial",
+        "building_type": "Corporate Media Center",
+        "height_m": 35.0,
+        "levels": 8,
+        "height_verified": true,
+        "operator": "Infosys Ltd",
+        "locality": "Hinjewadi Phase 1",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_wipro_t1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.736,
+              18.594
+            ],
+            [
+              73.7388,
+              18.594
+            ],
+            [
+              73.7388,
+              18.5918
+            ],
+            [
+              73.736,
+              18.5918
+            ],
+            [
+              73.736,
+              18.594
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/382910485",
+        "name": "Wipro Technologies Tower 1",
+        "building": "commercial",
+        "building_type": "IT Office",
+        "height_m": 32.0,
+        "levels": 8,
+        "height_verified": true,
+        "operator": "Wipro Enterprises",
+        "locality": "Hinjewadi Phase 1",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_cognizant_p2",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.718,
+              18.5875
+            ],
+            [
+              73.721,
+              18.5875
+            ],
+            [
+              73.721,
+              18.585
+            ],
+            [
+              73.718,
+              18.585
+            ],
+            [
+              73.718,
+              18.5875
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/492019481",
+        "name": "Cognizant Technology Solutions Campus",
+        "building": "commercial",
+        "building_type": "IT Office",
+        "height_m": 24.5,
+        "levels": 6,
+        "height_verified": true,
+        "operator": "Cognizant",
+        "locality": "Hinjewadi Phase 2",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_quadron_park",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.712,
+              18.582
+            ],
+            [
+              73.7155,
+              18.582
+            ],
+            [
+              73.7155,
+              18.5795
+            ],
+            [
+              73.712,
+              18.5795
+            ],
+            [
+              73.712,
+              18.582
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/502910291",
+        "name": "Quadron Business Park Tower A",
+        "building": "commercial",
+        "building_type": "SEZ Commercial",
+        "height_m": 42.0,
+        "levels": 10,
+        "height_verified": true,
+        "operator": "DLF / Blackstone",
+        "locality": "Hinjewadi Phase 2",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hinj_techzone_sez",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.702,
+              18.577
+            ],
+            [
+              73.7058,
+              18.577
+            ],
+            [
+              73.7058,
+              18.574
+            ],
+            [
+              73.702,
+              18.574
+            ],
+            [
+              73.702,
+              18.577
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/519201942",
+        "name": "Embassy TechZone Crystal Block",
+        "building": "commercial",
+        "building_type": "SEZ Office",
+        "height_m": 36.0,
+        "levels": 9,
+        "height_verified": true,
+        "operator": "Embassy REIT",
+        "locality": "Hinjewadi Phase 3",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_kharadi_eon_cluster_a",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.95,
+              18.5525
+            ],
+            [
+              73.9535,
+              18.5525
+            ],
+            [
+              73.9535,
+              18.5498
+            ],
+            [
+              73.95,
+              18.5498
+            ],
+            [
+              73.95,
+              18.5525
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/602910382",
+        "name": "EON Free Zone Phase 1 (Cluster A)",
+        "building": "commercial",
+        "building_type": "IT SEZ Complex",
+        "height_m": 45.0,
+        "levels": 11,
+        "height_verified": true,
+        "operator": "Panchshil Realty",
+        "locality": "Kharadi",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_kharadi_wtc_tower1",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.946,
+              18.554
+            ],
+            [
+              73.949,
+              18.554
+            ],
+            [
+              73.949,
+              18.5515
+            ],
+            [
+              73.946,
+              18.5515
+            ],
+            [
+              73.946,
+              18.554
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/602910385",
+        "name": "World Trade Center Pune (Tower 1)",
+        "building": "commercial",
+        "building_type": "Global Trade Center",
+        "height_m": 60.0,
+        "levels": 15,
+        "height_verified": true,
+        "operator": "Panchshil / WTCA",
+        "locality": "Kharadi",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_kharadi_zensar_campus",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.938,
+              18.548
+            ],
+            [
+              73.9412,
+              18.548
+            ],
+            [
+              73.9412,
+              18.5455
+            ],
+            [
+              73.938,
+              18.5455
+            ],
+            [
+              73.938,
+              18.548
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/602910390",
+        "name": "Zensar Technologies Corporate HQ",
+        "building": "commercial",
+        "building_type": "IT Campus",
+        "height_m": 26.0,
+        "levels": 6,
+        "height_verified": true,
+        "operator": "RPG Enterprises / Zensar",
+        "locality": "Kharadi",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_balewadi_stadium_arena",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.765,
+              18.576
+            ],
+            [
+              73.771,
+              18.576
+            ],
+            [
+              73.771,
+              18.571
+            ],
+            [
+              73.765,
+              18.571
+            ],
+            [
+              73.765,
+              18.576
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/710291841",
+        "name": "Shree Shiv Chhatrapati Sports Complex Main Arena",
+        "building": "civic",
+        "building_type": "Sports Complex / Stadium",
+        "height_m": 25.0,
+        "levels": 4,
+        "height_verified": true,
+        "operator": "Sports & Youth Services Dept, GoM",
+        "locality": "Balewadi",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_baner_highstreet_tower",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.778,
+              18.562
+            ],
+            [
+              73.7815,
+              18.562
+            ],
+            [
+              73.7815,
+              18.559
+            ],
+            [
+              73.778,
+              18.559
+            ],
+            [
+              73.778,
+              18.562
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/710291850",
+        "name": "Balewadi High Street Signature Commercial",
+        "building": "commercial",
+        "building_type": "Retail & Office Tower",
+        "height_m": 48.0,
+        "levels": 12,
+        "height_verified": true,
+        "operator": "Vascon / Naiknavare",
+        "locality": "Baner-Balewadi",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_wakad_phoenix_mall",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.755,
+              18.599
+            ],
+            [
+              73.76,
+              18.599
+            ],
+            [
+              73.76,
+              18.595
+            ],
+            [
+              73.755,
+              18.595
+            ],
+            [
+              73.755,
+              18.599
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/829103810",
+        "name": "Phoenix Mall of the Millennium",
+        "building": "commercial",
+        "building_type": "Retail & Entertainment Complex",
+        "height_m": 38.0,
+        "levels": 6,
+        "height_verified": true,
+        "operator": "Phoenix Mills Ltd",
+        "locality": "Wakad",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_chakan_bajaj_auto",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.852,
+              18.758
+            ],
+            [
+              73.86,
+              18.758
+            ],
+            [
+              73.86,
+              18.75
+            ],
+            [
+              73.852,
+              18.75
+            ],
+            [
+              73.852,
+              18.758
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/901829101",
+        "name": "Bajaj Auto Manufacturing Plant (Chakan Plant 1)",
+        "building": "industrial",
+        "building_type": "Automotive Assembly Line",
+        "height_m": 16.0,
+        "levels": 2,
+        "height_verified": true,
+        "operator": "Bajaj Auto Ltd",
+        "locality": "Chakan MIDC Phase II",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_chakan_mercedes_benz",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.838,
+              18.772
+            ],
+            [
+              73.847,
+              18.772
+            ],
+            [
+              73.847,
+              18.764
+            ],
+            [
+              73.838,
+              18.764
+            ],
+            [
+              73.838,
+              18.772
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/901829115",
+        "name": "Mercedes-Benz India Production Facility",
+        "building": "industrial",
+        "building_type": "Automotive Plant & Innovation Lab",
+        "height_m": 18.5,
+        "levels": 3,
+        "height_verified": true,
+        "operator": "Mercedes-Benz India Pvt Ltd",
+        "locality": "Chakan MIDC Phase III",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hospital_aditya_birla",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.778,
+              18.631
+            ],
+            [
+              73.7825,
+              18.631
+            ],
+            [
+              73.7825,
+              18.6275
+            ],
+            [
+              73.778,
+              18.6275
+            ],
+            [
+              73.778,
+              18.631
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/918201948",
+        "name": "Aditya Birla Memorial Hospital Multi-Speciality Wing",
+        "building": "hospital",
+        "building_type": "Healthcare Tertiary Hospital",
+        "height_m": 32.0,
+        "levels": 8,
+        "height_verified": true,
+        "operator": "Aditya Birla Health Services",
+        "locality": "Chinchwad PCMC",
+        "amenity": "hospital",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_hospital_ruby_hall",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.8755,
+              18.5335
+            ],
+            [
+              73.8785,
+              18.5335
+            ],
+            [
+              73.8785,
+              18.531
+            ],
+            [
+              73.8755,
+              18.531
+            ],
+            [
+              73.8755,
+              18.5335
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/918201955",
+        "name": "Ruby Hall Clinic Super Speciality Tower",
+        "building": "hospital",
+        "building_type": "Healthcare Tertiary Hospital",
+        "height_m": 36.0,
+        "levels": 9,
+        "height_verified": true,
+        "operator": "Grant Medical Foundation",
+        "locality": "Sasoon Road / Pune Station",
+        "amenity": "hospital",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_coep_main_heritage",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.855,
+              18.53
+            ],
+            [
+              73.8585,
+              18.53
+            ],
+            [
+              73.8585,
+              18.527
+            ],
+            [
+              73.855,
+              18.527
+            ],
+            [
+              73.855,
+              18.53
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/948291021",
+        "name": "COEP Technological University Main Academic Complex",
+        "building": "university",
+        "building_type": "Higher Education & Research",
+        "height_m": 22.0,
+        "levels": 4,
+        "height_verified": true,
+        "operator": "Govt. of Maharashtra / COEP",
+        "locality": "Shivajinagar",
+        "amenity": "university",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "way/osm_pune_junction_concourse",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              73.873,
+              18.53
+            ],
+            [
+              73.8765,
+              18.53
+            ],
+            [
+              73.8765,
+              18.5275
+            ],
+            [
+              73.873,
+              18.5275
+            ],
+            [
+              73.873,
+              18.53
+            ]
+          ]
+        ]
+      },
+      "properties": {
+        "osm_id": "way/982019481",
+        "name": "Pune Junction Central Passenger Concourse",
+        "building": "train_station",
+        "building_type": "Railway Passenger Terminal",
+        "height_m": 18.0,
+        "levels": 3,
+        "height_verified": true,
+        "operator": "Central Railway / Indian Railways",
+        "locality": "Pune Station",
+        "amenity": "railway_station",
+        "source": "OpenStreetMap (ODbL 1.0)",
+        "verification_status": "VERIFIED_OPEN_DATA"
+      }
+    }
+  ]
+}

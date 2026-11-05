@@ -19,9 +19,9 @@ interface NavItem {
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { label: "3D City Twin & Portfolio", path: "/", icon: Boxes, badge: "3D" },
-  { label: "3D Quantum Lab", path: "/quantum", icon: Atom, badge: "Qiskit" },
-  { label: "Land & Infrastructure", path: "/land", icon: Building2, badge: "IS 1172" },
+  { label: "Geospatial Digital Twin", path: "/", icon: Boxes, badge: "3D GIS" },
+  { label: "3D Quantum Lab", path: "/quantum", icon: Atom, badge: "Qiskit Aer" },
+  { label: "Land Intelligence Studio", path: "/land", icon: Building2, badge: "IS 1172" },
 ];
 
 export default function Sidebar() {

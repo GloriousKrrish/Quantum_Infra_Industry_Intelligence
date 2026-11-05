@@ -1269,4 +1269,233 @@ export async function getGeospatialProvenance(
   return data;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// REAL-WORLD MAPLIBRE GL JS & DIGITAL TWIN CLIENT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface MapConfigResponse {
+  engine: string;
+  default_view: {
+    center: [number, number];
+    zoom: number;
+    min_zoom: number;
+    max_zoom: number;
+    pitch: number;
+    max_pitch: number;
+    bearing: number;
+  };
+  coordinate_reference_systems: {
+    geographic: string;
+    projected_metric: string;
+  };
+  styles: Array<{
+    id: string;
+    name: string;
+    description: string;
+    attribution: string;
+    url?: string;
+    raster_tiles?: string[];
+    is_default: boolean;
+  }>;
+  statutory_attribution: string;
+}
+
+export interface MapHealthResponse {
+  status: string;
+  map_renderer: string;
+  cached_building_footprints: number;
+  geocoding_localities_count: number;
+  administrative_layers_available: boolean;
+  infrastructure_corridors_available: boolean;
+}
+
+export interface MapLayerItem {
+  id: string;
+  name: string;
+  type: string;
+  source: string;
+  coverage: string;
+  default_visible: boolean;
+  provenance_tier: string;
+  '3d_capabilities'?: string;
+}
+
+export interface MapSearchLocality {
+  name: string;
+  coordinates: [number, number]; // [lng, lat]
+  lat: number;
+  lng: number;
+  type: string;
+  jurisdiction: string;
+  source: string;
+  suggested_zoom: number;
+}
+
+export interface MapFeatureInspectRequest {
+  lat: number;
+  lng: number;
+  feature_id?: string;
+  feature_name?: string;
+  feature_type?: string;
+}
+
+export interface MapFeatureInspectResponse {
+  feature_identity: {
+    feature_id: string;
+    name: string;
+    feature_type: string;
+    provenance_status: string;
+    data_source: string;
+  };
+  coordinates: {
+    wgs84: { lat: number; lng: number };
+    utm_zone_43n: {
+      easting_m: number;
+      northing_m: number;
+      crs: string;
+      projection: string;
+    };
+  };
+  administrative_jurisdiction: {
+    within_pmrda_region: boolean;
+    within_pmc_corporation: boolean;
+    within_pcmc_corporation: boolean;
+    primary_planning_authority: string;
+    applicable_regulations: string;
+  };
+  environmental_constraints: {
+    intersected_planning_zones: string[];
+    within_floodline_zone: boolean;
+    within_defence_buffer: boolean;
+    clearance_recommendations: (string | null)[];
+  };
+  nearest_infrastructure: {
+    highway: any;
+    hospital: any;
+    education: any;
+    railway: any;
+    commercial_hub: any;
+  };
+  road_network_routing: {
+    to_nearest_highway?: any;
+    to_nearest_commercial_hub?: any;
+  };
+  data_notice: {
+    is_cadastral_title: boolean;
+    disclaimer: string;
+  };
+}
+
+export interface MapOptimizationRequest {
+  budget_crore: number;
+  candidate_parcel_ids?: string[];
+  qaoa_p?: number;
+  qaoa_shots?: number;
+}
+
+export interface MapOptimizationResponse {
+  optimization_metadata: {
+    budget_crore: number;
+    qaoa_layers_p: number;
+    shots: number;
+    candidate_count: number;
+  };
+  quantum_qaoa_result: {
+    optimal_bitstring: string;
+    optimal_energy: number;
+    execution_time_ms: number;
+    selected_parcels: string[];
+    total_investment_crore: number;
+    remaining_budget_crore: number;
+    portfolio_utility: number;
+    budget_compliant: boolean;
+    engine: string;
+  };
+  classical_baseline_result: {
+    method: string;
+    optimal_bitstring: string;
+    optimal_energy: number;
+    execution_time_ms: number;
+    selected_parcels: string[];
+    total_investment_crore: number;
+  };
+  comparative_analysis: {
+    approximation_ratio: number;
+    ratio_percentage: number;
+    agreement_with_classical: boolean;
+    scientific_disclosure: string;
+  };
+  winning_parcels_for_map: Array<{
+    id: string;
+    name: string;
+    lat: number;
+    lng: number;
+    price_crore: number;
+    area_acres: number;
+    projected_return_pct: number;
+    utility_score: number;
+    zone_type: string;
+  }>;
+}
+
+/**
+ * Fetch MapLibre GL configuration and styles.
+ */
+export async function getMapConfig(): Promise<MapConfigResponse> {
+  const { data } = await api.get<MapConfigResponse>("/map/config");
+  return data;
+}
+
+/**
+ * Fetch MapLibre engine health status.
+ */
+export async function getMapHealth(): Promise<MapHealthResponse> {
+  const { data } = await api.get<MapHealthResponse>("/map/health");
+  return data;
+}
+
+/**
+ * Fetch available map layers catalog.
+ */
+export async function getMapLayers(): Promise<MapLayerItem[]> {
+  const { data } = await api.get<MapLayerItem[]>("/map/layers");
+  return data;
+}
+
+/**
+ * Fetch authentic OpenStreetMap-aligned building footprints for Pune.
+ */
+export async function getMapBuildings(): Promise<GeospatialFeatureCollection> {
+  const { data } = await api.get<GeospatialFeatureCollection>("/map/buildings");
+  return data;
+}
+
+/**
+ * Perform genuine geocoding search for Pune localities.
+ */
+export async function searchMapLocalities(query: string): Promise<MapSearchLocality[]> {
+  const { data } = await api.get<MapSearchLocality[]>("/map/search", { params: { q: query } });
+  return data;
+}
+
+/**
+ * Deeply inspect a clicked map feature or coordinate location.
+ */
+export async function inspectMapFeature(
+  params: MapFeatureInspectRequest
+): Promise<MapFeatureInspectResponse> {
+  const { data } = await api.post<MapFeatureInspectResponse>("/map/features/inspect", params);
+  return data;
+}
+
+/**
+ * Execute map-driven comparative classical vs QAOA optimization.
+ */
+export async function executeMapOptimization(
+  params: MapOptimizationRequest
+): Promise<MapOptimizationResponse> {
+  const { data } = await api.post<MapOptimizationResponse>("/map/optimization/workflow", params);
+  return data;
+}
+
 export default api;

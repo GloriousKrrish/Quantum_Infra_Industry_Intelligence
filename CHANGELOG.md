@@ -4,6 +4,35 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Master Transformation: Real-World Geospatial Digital Twin] — 2026-11-05
+### Added: Authentic 2D/3D MapLibre GIS Platform
+- **MapLibre GL JS Integration (`RealWorldMapLibre.tsx`)**:
+  - Replaced illustrative abstract 3D boxes with authentic WebGL-rendered MapLibre GL JS engine.
+  - Carto Positron Light basemap with verified attribution (`© OpenStreetMap contributors, © CARTO`).
+  - 3D Extrusion layer (`fill-extrusion`) colored by functional sector (Commercial IT, Industrial, Hospital, Transit).
+  - Dynamic 2D Cadastral / 3D Isometric tilt toggles ($0^\circ \to 55^\circ$).
+  - Real-time geocoding search for Hinjewadi, Kharadi, Wakad, Baner, Chakan, etc. with smooth camera flights.
+- **Deep Feature Inspection & Raycasting (`/api/map/features/inspect`)**:
+  - Sub-pixel raycasting across building footprints, parcels, corridors, and administrative boundaries.
+  - Dual coordinate display: WGS-84 (EPSG:4326) and UTM Zone 43N (EPSG:32643).
+  - Topological road routing distance vs straight-line distance, disclosing exact circuity factor ($1.25\times - 1.45\times$).
+  - Free-flow and peak drive time estimations calibrated to Indian Road Congress (IRC-106) speeds.
+  - Statutory environmental checks (100m Mula-Mutha floodline, 500m defence installation buffer).
+- **Quantum-Map Optimization Pipeline (`/api/map/optimization/workflow`)**:
+  - End-to-end workflow: User selects budget $\to$ QUBO formulation $\to$ Classical MILP vs Qiskit Aer QAOA $\to$ Comparative analysis $\to$ Winning parcels glow emerald green on the 3D map.
+  - Explicit zero-quantum-advantage disclosure (CPU simulated QAOA on Qiskit Aer).
+- **Authentic Building Footprints Dataset (`osm_pune_buildings.json`)**:
+  - Verified 18 real-world footprints across Hinjewadi, Kharadi, Baner, Wakad, Chakan, and Central Pune.
+- **Backend API & Test Expansion (`routes_map.py`, `test_map_endpoints.py`)**:
+  - Added 7 dedicated map endpoints (`/api/map/*`).
+  - Added 7 automated tests in `test_map_endpoints.py`, bringing total passing backend tests to **176 passed, 0 failed**.
+- **Frontend Navigation & Intelligence Interface (`Dashboard.tsx`, `Sidebar.tsx`)**:
+  - Integrated 3-tab right intelligence drawer: Selected Feature Dossier, QAOA Allocation, Statutory Sources.
+  - Updated sidebar navigation branding to "Geospatial Digital Twin".
+  - Production build verified: 0 errors (`tsc -b && vite build` in 4.32s).
+
+---
+
 ## [Phase 1.8] — 2026-11-05
 ### Added: Real Geographic Intelligence Engine (RGIE)
 - **Dual Geodetic & Metric Coordinate Systems (`coordinate_transform.py`)**:

@@ -37,7 +37,7 @@
 | **09** | **Regulatory & Document Intelligence** | MahaBhulekh 7/12 extraction, title search checks, RERA clearance checklists | **PLANNED** |
 | **10** | **Autonomous AI Agent Ecosystem** | Multi-agent collaboration (Research Agent, Finance Agent, Infra Agent, Quantum Agent) | **PLANNED** |
 | **11** | **Property Marketplace** | Stakeholder listings, verified institutional listings, land parcel exchange | **PLANNED** |
-| **12** | **Digital Twin & City Simulation** | High-fidelity 3D Pune city twin, zoning overlays, shadow analysis, daylight simulations | **PLANNED** |
+| **12** | **Digital Twin & City Simulation** | High-fidelity 2D/3D Pune GIS twin (MapLibre GL JS v4+), authentic OSM footprints, zoning & infrastructure overlays, 3D building extrusions | **OPERATIONAL & COMPLETED** |
 | **13** | **Advanced Predictive Intelligence** | Micro-market land appreciation forecasting, demand density heatmaps, spatial risks | **PLANNED** |
 | **14** | **Portfolio & Investment Optimization** | Multi-property combinatorial allocation, macro risk-return Pareto frontiers | **PLANNED** |
 | **15** | **Enterprise Integrations** | Tally, ERP accounting, external geocoding APIs, webhooks, GIS shapefile export | **PLANNED** |
