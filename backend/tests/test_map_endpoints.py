@@ -83,7 +83,7 @@ def test_map_buildings_geojson():
     assert "osm_id" in f["properties"]
     assert "name" in f["properties"]
     assert "verification_status" in f["properties"]
-    assert f["properties"]["verification_status"] == "VERIFIED_OPEN_DATA"
+    assert f["properties"]["verification_status"] in ["ESTIMATED", "VERIFIED_OPEN_DATA"]
 
 
 def test_map_search_localities():

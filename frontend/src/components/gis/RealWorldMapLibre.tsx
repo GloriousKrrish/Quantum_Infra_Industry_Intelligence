@@ -415,10 +415,13 @@ export default function RealWorldMapLibre({
         if (onSelectFeature) onSelectFeature(featureInfo);
 
         // Highlight with popup or camera centering
+        const heightNotice = props?.height_m
+          ? `<br/><span class="text-amber-700 text-[10px] font-mono">Height: ${props.height_m}m (Modeled: ${props.levels || 4} levels)</span>`
+          : "";
         new maplibregl.Popup({ closeButton: false, offset: 15, className: "text-xs font-sans" })
           .setLngLat(e.lngLat)
           .setHTML(
-            `<div class="p-1.5"><b class="text-slate-900">${featureName}</b><br/><span class="text-slate-500 font-mono text-[10px]">${featureType}</span></div>`
+            `<div class="p-1.5"><b class="text-slate-900">${featureName}</b><br/><span class="text-slate-500 font-mono text-[10px]">${featureType}</span>${heightNotice}</div>`
           )
           .addTo(map);
       } else {

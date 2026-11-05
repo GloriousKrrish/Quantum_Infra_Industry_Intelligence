@@ -435,13 +435,31 @@ async def inspect_map_feature(req: MapInspectRequest) -> Dict[str, Any]:
         cm = nearest_commercial[0]
         commercial_routing = road_net.calculate_road_route(req.lat, req.lng, cm["lat"], cm["lng"])
 
+    # Determine rigorous provenance tier
+    f_id = req.feature_id or f"POINT_{round(req.lat, 4)}_{round(req.lng, 4)}"
+    if f_id.startswith("USER-") or f_id.startswith("PARCEL_USER_") or req.feature_type == "user_parcel":
+        provenance_status = "USER_PROVIDED"
+        data_source = "Client GeoJSON Submission (Unverified Title)"
+    elif f_id.startswith("way/osm_") or "osm" in f_id.lower():
+        provenance_status = "ESTIMATED"
+        data_source = "Campus Bounding Envelope at Verified Pune Geodetic Coordinates"
+    elif f_id.startswith("PARCEL_"):
+        provenance_status = "VERIFIED_OFFICIAL"
+        data_source = "PMRDA Regional Cadastre & Land Studio Records"
+    elif f_id.startswith("POINT_"):
+        provenance_status = "ESTIMATED"
+        data_source = "Empirical Coordinate Inspection (Calculated Geometry)"
+    else:
+        provenance_status = "UNVERIFIED"
+        data_source = "Unverified Geographic Feature"
+
     return {
         "feature_identity": {
-            "feature_id": req.feature_id or f"POINT_{round(req.lat, 4)}_{round(req.lng, 4)}",
+            "feature_id": f_id,
             "name": req.feature_name or "Mapped Geographic Feature",
             "feature_type": req.feature_type,
-            "provenance_status": "VERIFIED_OPEN_DATA",
-            "data_source": "OpenStreetMap (ODbL 1.0) & PMRDA Regional Cadastre",
+            "provenance_status": provenance_status,
+            "data_source": data_source,
         },
         "coordinates": {
             "wgs84": {"lat": round(req.lat, 6), "lng": round(req.lng, 6)},

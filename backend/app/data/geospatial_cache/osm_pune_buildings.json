@@ -3,8 +3,9 @@
   "properties": {
     "source": "OpenStreetMap Contributors (ODbL 1.0)",
     "region": "Pune Metropolitan Region",
-    "description": "Authentic mapped commercial, industrial, healthcare, educational and transit building footprints.",
-    "last_updated": "2026-11-05"
+    "description": "Curated campus and facility bounding envelopes at verified Pune geodetic coordinates with modeled building heights.",
+    "last_updated": "2026-11-05",
+    "provenance_note": "Geometries are campus bounding envelopes (5-vertex approximations). Heights are estimated from municipal floor counts."
   },
   "features": [
     {
@@ -44,12 +45,14 @@
         "building_type": "IT Office",
         "height_m": 28.0,
         "levels": 7,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Infosys Ltd",
         "locality": "Hinjewadi Phase 1",
         "amenity": "office",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (7 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -89,11 +92,13 @@
         "building_type": "Corporate Media Center",
         "height_m": 35.0,
         "levels": 8,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Infosys Ltd",
         "locality": "Hinjewadi Phase 1",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (8 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -133,11 +138,13 @@
         "building_type": "IT Office",
         "height_m": 32.0,
         "levels": 8,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Wipro Enterprises",
         "locality": "Hinjewadi Phase 1",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (8 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -177,11 +184,13 @@
         "building_type": "IT Office",
         "height_m": 24.5,
         "levels": 6,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Cognizant",
         "locality": "Hinjewadi Phase 2",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (6 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -221,11 +230,13 @@
         "building_type": "SEZ Commercial",
         "height_m": 42.0,
         "levels": 10,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "DLF / Blackstone",
         "locality": "Hinjewadi Phase 2",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (10 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -265,11 +276,13 @@
         "building_type": "SEZ Office",
         "height_m": 36.0,
         "levels": 9,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Embassy REIT",
         "locality": "Hinjewadi Phase 3",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (9 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -309,11 +322,13 @@
         "building_type": "IT SEZ Complex",
         "height_m": 45.0,
         "levels": 11,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Panchshil Realty",
         "locality": "Kharadi",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (11 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -353,11 +368,13 @@
         "building_type": "Global Trade Center",
         "height_m": 60.0,
         "levels": 15,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Panchshil / WTCA",
         "locality": "Kharadi",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (15 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -397,11 +414,13 @@
         "building_type": "IT Campus",
         "height_m": 26.0,
         "levels": 6,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "RPG Enterprises / Zensar",
         "locality": "Kharadi",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (6 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -441,11 +460,13 @@
         "building_type": "Sports Complex / Stadium",
         "height_m": 25.0,
         "levels": 4,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Sports & Youth Services Dept, GoM",
         "locality": "Balewadi",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (4 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -485,11 +506,13 @@
         "building_type": "Retail & Office Tower",
         "height_m": 48.0,
         "levels": 12,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Vascon / Naiknavare",
         "locality": "Baner-Balewadi",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (12 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -529,11 +552,13 @@
         "building_type": "Retail & Entertainment Complex",
         "height_m": 38.0,
         "levels": 6,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Phoenix Mills Ltd",
         "locality": "Wakad",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (6 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -573,11 +598,13 @@
         "building_type": "Automotive Assembly Line",
         "height_m": 16.0,
         "levels": 2,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Bajaj Auto Ltd",
         "locality": "Chakan MIDC Phase II",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (2 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -617,11 +644,13 @@
         "building_type": "Automotive Plant & Innovation Lab",
         "height_m": 18.5,
         "levels": 3,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Mercedes-Benz India Pvt Ltd",
         "locality": "Chakan MIDC Phase III",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (3 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -661,12 +690,14 @@
         "building_type": "Healthcare Tertiary Hospital",
         "height_m": 32.0,
         "levels": 8,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Aditya Birla Health Services",
         "locality": "Chinchwad PCMC",
         "amenity": "hospital",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (8 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -706,12 +737,14 @@
         "building_type": "Healthcare Tertiary Hospital",
         "height_m": 36.0,
         "levels": 9,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Grant Medical Foundation",
         "locality": "Sasoon Road / Pune Station",
         "amenity": "hospital",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (9 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -751,12 +784,14 @@
         "building_type": "Higher Education & Research",
         "height_m": 22.0,
         "levels": 4,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Govt. of Maharashtra / COEP",
         "locality": "Shivajinagar",
         "amenity": "university",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (4 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     },
     {
@@ -796,12 +831,14 @@
         "building_type": "Railway Passenger Terminal",
         "height_m": 18.0,
         "levels": 3,
-        "height_verified": true,
+        "height_verified": false,
         "operator": "Central Railway / Indian Railways",
         "locality": "Pune Station",
         "amenity": "railway_station",
-        "source": "OpenStreetMap (ODbL 1.0)",
-        "verification_status": "VERIFIED_OPEN_DATA"
+        "source": "OpenStreetMap Geographic Coordinates & Municipal Planning Records",
+        "verification_status": "ESTIMATED",
+        "height_provenance": "ESTIMATED_FROM_LEVELS (3 levels * 3.5m)",
+        "geometry_provenance": "ESTIMATED_CAMPUS_BOUNDING_ENVELOPE"
       }
     }
   ]

@@ -348,8 +348,14 @@ export default function Dashboard() {
                     <span className="font-mono text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
                       {selectedFeature?.feature_id || selectedParcel.id}
                     </span>
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 font-bold text-[10px] text-emerald-800 border border-emerald-200">
-                      VERIFIED OPEN DATA
+                    <span className={`rounded-full px-2.5 py-0.5 font-bold text-[10px] border ${
+                      (featureInspection?.feature_identity.provenance_status || selectedFeature?.properties?.verification_status) === "USER_PROVIDED"
+                        ? "bg-purple-50 text-purple-800 border-purple-200"
+                        : (featureInspection?.feature_identity.provenance_status || selectedFeature?.properties?.verification_status) === "ESTIMATED"
+                        ? "bg-amber-50 text-amber-800 border-amber-200"
+                        : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                    }`}>
+                      {featureInspection?.feature_identity.provenance_status || selectedFeature?.properties?.verification_status || (selectedFeature?.is_parcel ? "VERIFIED_OFFICIAL" : "ESTIMATED")}
                     </span>
                   </div>
                   <h3 className="font-display text-lg font-bold text-slate-900 mt-1.5">
@@ -408,19 +414,27 @@ export default function Dashboard() {
                         <div className="flex justify-between font-semibold text-slate-800">
                           <span>Nearest Highway:</span>
                           <span className="font-mono text-blue-600">
-                            {featureInspection?.road_network_routing.to_nearest_highway?.network_distance_km ?? 3.5} km (Road)
+                            {featureInspection?.road_network_routing.to_nearest_highway
+                              ? `${featureInspection.road_network_routing.to_nearest_highway.network_distance_km} km (Road)`
+                              : "DATA UNAVAILABLE"}
                           </span>
                         </div>
-                        <div className="flex justify-between text-[11px] text-slate-500">
-                          <span>Straight-Line: {featureInspection?.road_network_routing.to_nearest_highway?.straight_line_distance_km ?? 2.8} km</span>
-                          <span className="font-semibold text-amber-700">
-                            Circuity: {featureInspection?.road_network_routing.to_nearest_highway?.circuity_factor.toFixed(2) ?? "1.25"}x
-                          </span>
-                        </div>
-                        <div className="flex justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-200">
-                          <span>Free-flow: {featureInspection?.road_network_routing.to_nearest_highway?.free_flow_time_minutes ?? 5} min</span>
-                          <span>Peak: {featureInspection?.road_network_routing.to_nearest_highway?.peak_travel_time_minutes ?? 10} min</span>
-                        </div>
+                        {featureInspection?.road_network_routing.to_nearest_highway ? (
+                          <>
+                            <div className="flex justify-between text-[11px] text-slate-500">
+                              <span>Straight-Line: {featureInspection.road_network_routing.to_nearest_highway.straight_line_distance_km} km</span>
+                              <span className="font-semibold text-amber-700">
+                                Circuity: {featureInspection.road_network_routing.to_nearest_highway.circuity_factor.toFixed(2)}x
+                              </span>
+                            </div>
+                            <div className="flex justify-between text-[10px] text-slate-500 pt-1 border-t border-slate-200">
+                              <span>Free-flow: {featureInspection.road_network_routing.to_nearest_highway.free_flow_time_minutes} min</span>
+                              <span>Peak: {featureInspection.road_network_routing.to_nearest_highway.peak_travel_time_minutes} min</span>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-[10px] text-slate-400 italic">No direct highway node within graph threshold</div>
+                        )}
                       </div>
 
                       {/* Commercial Hub Proximity */}
@@ -428,15 +442,21 @@ export default function Dashboard() {
                         <div className="flex justify-between font-semibold text-slate-800">
                           <span>Nearest IT/Commercial Hub:</span>
                           <span className="font-mono text-indigo-600">
-                            {featureInspection?.road_network_routing.to_nearest_commercial_hub?.network_distance_km ?? 4.2} km (Road)
+                            {featureInspection?.road_network_routing.to_nearest_commercial_hub
+                              ? `${featureInspection.road_network_routing.to_nearest_commercial_hub.network_distance_km} km (Road)`
+                              : "DATA UNAVAILABLE"}
                           </span>
                         </div>
-                        <div className="flex justify-between text-[11px] text-slate-500">
-                          <span>Straight-Line: {featureInspection?.road_network_routing.to_nearest_commercial_hub?.straight_line_distance_km ?? 3.1} km</span>
-                          <span className="font-semibold text-amber-700">
-                            Circuity: {featureInspection?.road_network_routing.to_nearest_commercial_hub?.circuity_factor.toFixed(2) ?? "1.35"}x
-                          </span>
-                        </div>
+                        {featureInspection?.road_network_routing.to_nearest_commercial_hub ? (
+                          <div className="flex justify-between text-[11px] text-slate-500">
+                            <span>Straight-Line: {featureInspection.road_network_routing.to_nearest_commercial_hub.straight_line_distance_km} km</span>
+                            <span className="font-semibold text-amber-700">
+                              Circuity: {featureInspection.road_network_routing.to_nearest_commercial_hub.circuity_factor.toFixed(2)}x
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="text-[10px] text-slate-400 italic">No commercial hub vertex within graph threshold</div>
+                        )}
                       </div>
                     </div>
 
