@@ -148,3 +148,4 @@ Across tests with depth $p=2$, the QAOA solver achieves $\alpha \ge 0.95$, valid
 | Risk Penalty Multiplier | $\lambda_2$ | $1.0$ | QUBO Formulation |
 | QAOA Circuit Depth | $p$ | $2\text{ layers}$ | Variational Ansatz |
 | Measurement Shots | $N_{\text{shots}}$ | $4096$ | Qiskit Aer |
+

@@ -106,3 +106,4 @@ def get_osm_provenance(facility_name: str, facility_type: str) -> ProvenanceReco
             f"grounded in OpenStreetMap public geodatabase under ODbL 1.0 license."
         ),
     )
+

@@ -382,4 +382,6 @@ def get_parcel_detailed_profile(parcel_id: str) -> Optional[ParcelDetailedProfil
         quantum_participation=quantum_info,
         provenance_audit=audit_summary,
         data_trust_tier=VerificationStatus.ESTIMATED,
+        provenance_audit=audit_summary,
+        data_trust_tier=VerificationStatus.ESTIMATED,
  

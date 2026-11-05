@@ -128,3 +128,4 @@ The frontend production build (`npm run build --prefix frontend`) passed with **
 ## 7. Compliance Statement
 
 QUANTUM ESTATE X complies fully with the data transparency and scientific integrity directives of Phase 1.7. All synthetic values are accurately labeled as demonstration models, all geodetic calculations cite their WGS-84 baseline and IRC benchmarks, and the system delivers reliable, auditable intelligence for real estate and infrastructure decision makers.
+

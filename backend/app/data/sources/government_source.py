@@ -103,3 +103,4 @@ def get_government_provenance(key: str) -> ProvenanceRecord:
         confidence_level=std["confidence_level"],
         methodology_notes=f"{std['title']}. {std['methodology']}",
     )
+

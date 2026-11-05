@@ -55,3 +55,4 @@ def get_synthetic_provenance(key: str) -> ProvenanceRecord:
         confidence_level=None,  # Do not assign confidence scores to synthetic data
         methodology_notes=f"{entry['description']} Purpose: {entry['purpose']}. Disclaimer: {entry['disclaimer']}",
     )
+

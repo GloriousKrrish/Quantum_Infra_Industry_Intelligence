@@ -299,3 +299,4 @@ def test_api_infrastructure_custom_weights():
     assert data["is_official_rating"] is False
     assert data["nearest_highway"]["distance_methodology"] == DistanceMethodology.HAVERSINE_STRAIGHT_LINE.value
     assert data["nearest_highway"]["distance_label"] == "Straight-line distance estimate (Haversine)"
+
