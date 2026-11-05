@@ -4,6 +4,35 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 1.7] — 2026-11-05
+### Added: Geospatial Data Integrity & Scientific Validation Framework
+- **Data Trust Framework (`backend/app/data/provenance/`)**:
+  - Implemented 7 formal data verification tiers: `VERIFIED_OFFICIAL`, `VERIFIED_OPEN_DATA`, `USER_PROVIDED`, `ESTIMATED`, `SYNTHETIC`, `UNVERIFIED`, `UNAVAILABLE`.
+  - Added structured `ProvenanceRecord` metadata across all land parcels, infrastructure proximity points, feasibility scenarios, and financial forecasts.
+  - Published platform-wide provenance audit endpoint (`GET /api/parcels/provenance/audit`).
+- **OpenStreetMap Overpass API Integration (`backend/app/data/sources/osm_source.py`)**:
+  - Integrated public Overpass API client with 1-hour in-memory TTL caching.
+  - 3.5-second connection timeout and rate-limit handling with automatic offline fallback to verified local geodetic anchors.
+  - Added live amenities query endpoint (`GET /api/parcels/{id}/overpass`).
+- **Geodetic & Geospatial Accuracy**:
+  - Implemented WGS-84 coordinate range checks and PMRDA bounding box validation.
+  - Hardened Haversine formula against floating-point antipodal domain errors.
+  - Explicitly labeled all straight-line calculations as "Straight-line distance estimate (Haversine WGS-84)" and distinguished from actual road network routing.
+  - Added Indian Road Congress (IRC) transit benchmarks (30–45 km/h) for urban drive-time estimation.
+  - Added RFC 7946 GeoJSON approximate bounding footprint generation for parcel geometries.
+  - Supported configurable accessibility scoring weights via API query parameters with automated normalization.
+- **Feasibility & Financial Mathematical Safeguards**:
+  - Enforced input boundary guards: non-positive area ($\le 0$) and negative price ($< 0$) raise HTTP 422.
+  - Added zero-division protections across all GDV, margin, and ROI formulas.
+  - Attached statutory regulatory notes citing Maharashtra UDCPR 2020 and ROW road width dependencies.
+- **Documentation & Verification**:
+  - Published `PHASE_1_7_DATA_INTEGRITY_REPORT.md` and `SCIENTIFIC_VALIDATION.md`.
+  - Added `backend/tests/test_geospatial_integrity.py` with 22 rigorous tests.
+  - Total test suite expanded to 49 tests (100% pass rate).
+  - Production frontend build validated with 0 errors.
+
+---
+
 ## [Phase 1.6] — 2026-11-05
 ### Added: Land Intelligence Studio & Geospatial Proximity Engine
 - **Dedicated Real Estate Intelligence Experience**:

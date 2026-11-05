@@ -33,10 +33,20 @@
 - Multi-tier financial scenario modeling and 3-year phased cash flow schedules.
 - Enhanced OpenStreetMap GIS mapping with toggleable regional infrastructure layers.
 
+### Phase 1.7 — Geospatial Data Integrity & Scientific Validation [COMPLETED]
+- Implement 7-tier Data Trust Framework (`VerificationStatus`, `ProvenanceRecord`).
+- OpenStreetMap Overpass API integration with 1-hr TTL caching, rate-limit resilience, and offline fallback.
+- Geodetic WGS-84 coordinate validation and PMRDA bounding box boundary enforcement.
+- Numerical stabilization of Haversine formulas against antipodal domain errors.
+- Explicit disclosure of straight-line distance estimates vs. road network routing with IRC speed benchmarks.
+- Mathematical safeguards: Non-positive area, negative price, and division-by-zero protection.
+- RFC 7946 GeoJSON approximate bounding footprint generation.
+- Full scientific validation documentation (`PHASE_1_7_DATA_INTEGRITY_REPORT.md` and `SCIENTIFIC_VALIDATION.md`).
+- 49/49 automated pytest regression suite passing.
+
 ### Phase 2.0 — Cadastral GIS & Multi-Source Land Registry Ingestion [UPCOMING]
-- Ingestion of live GeoJSON shapefiles from PMRDA / MahaBhulekh.
-- Parcel boundary polygon raycasting in 3D City Twin (replacing procedural massings).
-- Integration of live Overpass API for real-time OSM infrastructure querying.
+- Ingestion of live vector shapefiles from MahaBhulekh 7/12 & PMRDA DP.
+- Raycasting over legal survey polygons in 3D City Twin (augmenting procedural envelopes).
 - Multi-city expansion (Mumbai Metropolitan Region, Bengaluru Outer Ring Road).
 
 ### Phase 2.5 — Institutional Financial & Capital Stack Engine [PLANNED]

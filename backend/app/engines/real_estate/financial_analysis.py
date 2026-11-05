@@ -6,7 +6,10 @@ Simulates three investment scenarios:
 - Baseline (PMRDA micro-market empirical averages)
 - Optimistic (Premium absorption rate, value-engineered construction)
 
-Generates 3-year phased cash flow schedules and break-even sales absorption thresholds.
+Phase 1.7 Data Trust Framework:
+- Division-by-zero safeguards on margin and break-even calculations
+- Documented cash flow distribution phasing
+- Full data lineage and methodological provenance tracking
 """
 
 from __future__ import annotations
@@ -21,7 +24,10 @@ from backend.app.models.schemas import (
     FinancialAnalysisResponse,
     FinancialScenarioItem,
     LandParcel,
+    ProvenanceRecord,
+    VerificationStatus,
 )
+from backend.app.data.provenance.data_registry import get_financial_model_provenance
 
 
 def evaluate_financial_scenarios(
@@ -32,6 +38,7 @@ def evaluate_financial_scenarios(
     Generate complete 3-tier financial scenarios and a 3-year cash flow model for a parcel.
     """
     baseline_result = evaluate_feasibility(parcel, req)
+    financial_prov = get_financial_model_provenance()
 
     # ── 1. Conservative Scenario (-10% sales price, +10% construction cost) ─
     cons_req = FeasibilityScenarioRequest(
@@ -42,7 +49,7 @@ def evaluate_financial_scenarios(
     )
     cons_result = evaluate_feasibility(parcel, cons_req)
     cons_margin_pct = round(
-        (cons_result.estimated_margin_crore / max(cons_result.projected_gdv_crore, 1.0)) * 100.0, 1
+        (cons_result.estimated_margin_crore / max(cons_result.projected_gdv_crore, 0.01)) * 100.0, 1
     )
 
     conservative_item = FinancialScenarioItem(
@@ -53,11 +60,12 @@ def evaluate_financial_scenarios(
         margin_pct=cons_margin_pct,
         roi_pct=cons_result.roi_pct,
         assumptions_summary="-10% Selling Realization, +10% Construction Cost Escalation",
+        provenance=financial_prov,
     )
 
     # ── 2. Baseline Scenario ─────────────────────────────────────────────
     base_margin_pct = round(
-        (baseline_result.estimated_margin_crore / max(baseline_result.projected_gdv_crore, 1.0)) * 100.0, 1
+        (baseline_result.estimated_margin_crore / max(baseline_result.projected_gdv_crore, 0.01)) * 100.0, 1
     )
     baseline_item = FinancialScenarioItem(
         scenario_name="Baseline",
@@ -67,6 +75,7 @@ def evaluate_financial_scenarios(
         margin_pct=base_margin_pct,
         roi_pct=baseline_result.roi_pct,
         assumptions_summary="Standard PMRDA Micro-Market Engineering & Price Baseline",
+        provenance=financial_prov,
     )
 
     # ── 3. Optimistic Scenario (+15% sales price, -5% construction cost) ──
@@ -78,7 +87,7 @@ def evaluate_financial_scenarios(
     )
     opt_result = evaluate_feasibility(parcel, opt_req)
     opt_margin_pct = round(
-        (opt_result.estimated_margin_crore / max(opt_result.projected_gdv_crore, 1.0)) * 100.0, 1
+        (opt_result.estimated_margin_crore / max(opt_result.projected_gdv_crore, 0.01)) * 100.0, 1
     )
 
     optimistic_item = FinancialScenarioItem(
@@ -89,6 +98,7 @@ def evaluate_financial_scenarios(
         margin_pct=opt_margin_pct,
         roi_pct=opt_result.roi_pct,
         assumptions_summary="+15% Premium Realization, -5% EPC Value Engineering",
+        provenance=financial_prov,
     )
 
     scenarios = {
@@ -139,7 +149,7 @@ def evaluate_financial_scenarios(
     ]
 
     break_even_pct = round(
-        (baseline_result.total_project_cost_crore / max(baseline_result.projected_gdv_crore, 1.0)) * 100.0,
+        (baseline_result.total_project_cost_crore / max(baseline_result.projected_gdv_crore, 0.01)) * 100.0,
         1,
     )
 
@@ -161,4 +171,5 @@ def evaluate_financial_scenarios(
         cashflow_timeline=cashflow_timeline,
         break_even_sales_pct=break_even_pct,
         assumptions=assumptions,
+        provenance=financial_prov,
     )

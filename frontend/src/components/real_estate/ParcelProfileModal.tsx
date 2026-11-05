@@ -637,7 +637,7 @@ export default function ParcelProfileModal({
                     <h3 className="font-display text-sm font-bold text-slate-900 mb-3 flex items-center justify-between">
                       <span className="flex items-center gap-2">
                         <Route className="h-4 w-4 text-emerald-600" />
-                        Exact Haversine Proximity to Regional Infrastructure
+                        Straight-Line Distance Estimate (Haversine WGS-84)
                       </span>
                       <span className="text-xs font-normal text-slate-500">
                         Accessibility Score: <b className="text-emerald-600 font-bold">{profile.infrastructure_analysis.accessibility_score}/100</b>

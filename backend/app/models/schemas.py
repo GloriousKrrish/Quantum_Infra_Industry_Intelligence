@@ -4,12 +4,77 @@ Pydantic v2 data models for Quantum Estate X.
 All domain objects — land parcels, infrastructure reports, QUBO problems,
 QAOA/classical results, benchmarks, and the full workflow response — are
 defined here as strict, validated schemas.
+
+Phase 1.7 Data Trust Framework:
+Enforces rigorous data provenance tracking, verification tiers, coordinate
+validation, and explicit methodological labeling across all geospatial and
+financial entities.
 """
 
 from __future__ import annotations
 
-from typing import Dict, List, Optional
-from pydantic import BaseModel, ConfigDict, Field
+from enum import Enum
+from typing import Any, Dict, List, Optional, Union
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# 0. DATA TRUST & PROVENANCE FRAMEWORK (PHASE 1.7)
+# ═══════════════════════════════════════════════════════════════════════
+
+class VerificationStatus(str, Enum):
+    """Formal verification tiers for all platform data points."""
+
+    VERIFIED_OFFICIAL = "VERIFIED_OFFICIAL"          # Authoritative government or cadastral survey record
+    VERIFIED_OPEN_DATA = "VERIFIED_OPEN_DATA"        # Externally verified open geodata (e.g. OpenStreetMap geodetic nodes)
+    USER_PROVIDED = "USER_PROVIDED"                  # Supplied directly by client or developer input
+    ESTIMATED = "ESTIMATED"                          # Derived mathematically or via standard engineering models
+    SYNTHETIC = "SYNTHETIC"                          # Calibrated demonstration data for algorithmic simulation
+    UNVERIFIED = "UNVERIFIED"                        # Field data pending ground-truthing
+    UNAVAILABLE = "UNAVAILABLE"                      # Data field unavailable or sensor offline
+
+
+class ParcelGeometryType(str, Enum):
+    """Classification of parcel boundary spatial representation."""
+
+    POINT_CENTROID = "POINT_CENTROID"                         # WGS-84 coordinate centroid only
+    APPROXIMATE_BOUND = "APPROXIMATE_BOUND"                   # Indicative bounding perimeter
+    VERIFIED_CADASTRAL_POLYGON = "VERIFIED_CADASTRAL_POLYGON" # Surveyor-certified cadastral polygon
+    ILLUSTRATIVE_3D_MASSING = "ILLUSTRATIVE_3D_MASSING"       # Volumetric spatial visualization envelope
+
+
+class DistanceMethodology(str, Enum):
+    """Methodology used for geographic proximity calculation."""
+
+    HAVERSINE_STRAIGHT_LINE = "HAVERSINE_STRAIGHT_LINE" # Great-circle spherical distance
+    ROAD_NETWORK_ROUTING = "ROAD_NETWORK_ROUTING"       # Actual turn-by-turn road network routing
+    ESTIMATED_PROXIMITY = "ESTIMATED_PROXIMITY"         # Regional zone proximity heuristic
+
+
+class ProvenanceRecord(BaseModel):
+    """Immutable provenance tracking record documenting the origin and trust level of data."""
+
+    model_config = ConfigDict(from_attributes=True)
+
+    source_name: str = Field(..., description="Organization, portal, or standard providing the data")
+    source_url: Optional[str] = Field(default=None, description="Direct URL, API endpoint, or publication link")
+    source_type: str = Field(
+        default="Open Data",
+        description="Type: Government Cadastre, OpenStreetMap Geodata, Engineering Code, Empirical Benchmark, User Input",
+    )
+    verification_status: VerificationStatus = Field(
+        default=VerificationStatus.ESTIMATED,
+        description="Formal validation tier",
+    )
+    last_verified: Optional[str] = Field(
+        default="2026-11-05", description="ISO-8601 date of verification or data capture"
+    )
+    confidence_level: Optional[float] = Field(
+        default=None, ge=0.0, le=1.0, description="Methodologically supported confidence index (0.0 to 1.0)"
+    )
+    methodology_notes: Optional[str] = Field(
+        default=None, description="Documentation of estimation, calculation, or survey rules"
+    )
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -17,14 +82,14 @@ from pydantic import BaseModel, ConfigDict, Field
 # ═══════════════════════════════════════════════════════════════════════
 
 class LandParcel(BaseModel):
-    """A single land parcel with infrastructure scores and financials."""
+    """A single land parcel with infrastructure scores, financials, and provenance."""
 
     model_config = ConfigDict(from_attributes=True)
 
     id: str = Field(..., description="Unique parcel identifier, e.g. 'PUNE-001'")
     name: str = Field(..., description="Human-readable location name")
-    location_lat: float = Field(..., description="Latitude (WGS-84)")
-    location_lng: float = Field(..., description="Longitude (WGS-84)")
+    location_lat: float = Field(..., ge=-90.0, le=90.0, description="Latitude (WGS-84)")
+    location_lng: float = Field(..., ge=-180.0, le=180.0, description="Longitude (WGS-84)")
     area_acres: float = Field(..., gt=0, description="Total area in acres")
     price_crore: float = Field(..., gt=0, description="Market price in ₹ Crore")
 
@@ -55,6 +120,34 @@ class LandParcel(BaseModel):
         default=None, description="Brief contextual summary of immediate surroundings"
     )
 
+    # Phase 1.7 Data Trust Framework Extensions
+    geometry_type: ParcelGeometryType = Field(
+        default=ParcelGeometryType.POINT_CENTROID,
+        description="Spatial boundary classification (Point, Bound, Verified Polygon, Illustrative Massing)",
+    )
+    geojson_geometry: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="RFC 7946 GeoJSON Geometry object representing parcel coordinates or approximate polygon",
+    )
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Complete data lineage and verification audit record",
+    )
+
+    @field_validator("location_lat")
+    @classmethod
+    def validate_latitude(cls, v: float) -> float:
+        if not (-90.0 <= v <= 90.0):
+            raise ValueError(f"Latitude must be in [-90.0, 90.0], got {v}")
+        return round(v, 6)
+
+    @field_validator("location_lng")
+    @classmethod
+    def validate_longitude(cls, v: float) -> float:
+        if not (-180.0 <= v <= 180.0):
+            raise ValueError(f"Longitude must be in [-180.0, 180.0], got {v}")
+        return round(v, 6)
+
 
 class InfrastructureProximityPoint(BaseModel):
     """Proximity measurement to a specific real-world infrastructure anchor."""
@@ -66,12 +159,30 @@ class InfrastructureProximityPoint(BaseModel):
         ...,
         description="Type: Highway, Hospital, Education, Railway, Airport, Commercial Hub",
     )
-    distance_km: float = Field(..., ge=0, description="Haversine distance in kilometres")
+    distance_km: float = Field(..., ge=0, description="Calculated distance in kilometres")
     drive_time_min: int = Field(..., ge=0, description="Estimated drive time in minutes")
     coordinates: List[float] = Field(..., description="[Latitude, Longitude]")
     data_source: str = Field(
         default="OpenStreetMap GIS & PMRDA Regional Master Plan",
         description="Geographic verification source",
+    )
+
+    # Phase 1.7 Data Trust Framework Extensions
+    distance_methodology: DistanceMethodology = Field(
+        default=DistanceMethodology.HAVERSINE_STRAIGHT_LINE,
+        description="Calculation methodology: Straight-line Haversine or Road Network Routing",
+    )
+    distance_label: str = Field(
+        default="Straight-line distance estimate (Haversine)",
+        description="Human-readable methodology disclaimer",
+    )
+    drive_time_label: str = Field(
+        default="Estimated transit time at benchmark road speed (IRC SP-73 / IRC-106)",
+        description="Methodological basis for transit time",
+    )
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Audit record documenting geospatial node origin",
     )
 
 
@@ -98,6 +209,20 @@ class ParcelInfrastructureAnalysis(BaseModel):
     data_source: str = Field(
         default="OpenStreetMap GIS & IS 1172/CPHEEO Engineering Standards",
         description="Attribution for infrastructure data",
+    )
+
+    # Phase 1.7 Methodology Disclosures
+    accessibility_score_methodology: str = Field(
+        default="Weighted proximity decay formula (Highway 25%, Hospital 20%, Commercial 20%, Rail 15%, Edu 10%, Air 10%)",
+        description="Documented mathematical formulation for the accessibility index",
+    )
+    is_official_rating: bool = Field(
+        default=False,
+        description="Explicit disclaimer: estimated heuristic index, not an official municipal or statutory rating",
+    )
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Audit record documenting infrastructure dataset lineage",
     )
 
 
@@ -147,6 +272,14 @@ class FeasibilityScenarioResult(BaseModel):
         default="Preliminary feasibility estimate based on typical PMRDA benchmarks. Does not constitute statutory FSI approval or sanctioned development permit.",
         description="Legal and regulatory disclaimer",
     )
+    regulatory_applicability_note: str = Field(
+        default="FSI and permissible built-up allowances depend on road width, plot frontage, and TDR eligibility under Maharashtra Unified DCPR 2020. Parameters are configurable estimates.",
+        description="Statutory context for building potential",
+    )
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Audit record documenting feasibility benchmark lineage",
+    )
 
 
 class FinancialScenarioItem(BaseModel):
@@ -161,6 +294,10 @@ class FinancialScenarioItem(BaseModel):
     margin_pct: float
     roi_pct: float
     assumptions_summary: str
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Lineage of scenario escalation assumptions",
+    )
 
 
 class CashFlowYear(BaseModel):
@@ -188,6 +325,10 @@ class FinancialAnalysisResponse(BaseModel):
     cashflow_timeline: List[CashFlowYear]
     break_even_sales_pct: float
     assumptions: Dict[str, object]
+    provenance: Optional[ProvenanceRecord] = Field(
+        default=None,
+        description="Audit record documenting financial model assumptions",
+    )
 
 
 class QuantumParticipationInfo(BaseModel):
@@ -223,6 +364,14 @@ class ParcelDetailedProfile(BaseModel):
     feasibility: FeasibilityScenarioResult
     financials: FinancialAnalysisResponse
     quantum_participation: QuantumParticipationInfo
+    provenance_audit: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Detailed audit summary of verified, estimated, and synthetic data fields",
+    )
+    data_trust_tier: VerificationStatus = Field(
+        default=VerificationStatus.ESTIMATED,
+        description="Overall trust tier of the composite dossier",
+    )
 
 
 class InfrastructureReport(BaseModel):

@@ -7,15 +7,14 @@ Computes preliminary development scenarios for:
 - Industrial & Logistics Development
 - Mixed-Use Integrated Development
 
-Calculations:
-- Built-Up Area (BUA) via land area conversion (1 acre = 43,560 sq.ft) and FSI
-- Construction Hard Cost, Infrastructure & Approvals, Contingency, and Land Cost
-- Projected Gross Development Value (GDV)
-- Developer Gross Margin & Preliminary Return on Investment (ROI %)
+Phase 1.7 Validation & Safeguards:
+- Strict mathematical boundary guards (non-positive area, negative costs, division-by-zero protection)
+- Transparent distinction between statutory FSI approvals and preliminary model estimates
+- Direct lineage tracking via ProvenanceRecord
 
 Assumptions & Standards:
 - National Building Code (NBC 2016)
-- Unified Development Control and Promotion Regulations (UDCPR Maharashtra)
+- Unified Development Control and Promotion Regulations (UDCPR 2020 Maharashtra)
 - Typical PMRDA Micro-Market Benchmarks
 """
 
@@ -28,6 +27,7 @@ from backend.app.models.schemas import (
     FeasibilityScenarioResult,
     LandParcel,
 )
+from backend.app.data.provenance.data_registry import get_feasibility_model_provenance
 
 SQFT_PER_ACRE: float = 43560.0
 
@@ -132,25 +132,38 @@ def evaluate_feasibility(
 ) -> FeasibilityScenarioResult:
     """
     Calculate development feasibility for a parcel under specified or default typology assumptions.
+
+    Includes mathematical boundary validations and explicit regulatory labeling.
     """
+    if parcel.area_acres <= 0:
+        raise ValueError(f"Parcel area must be positive, got {parcel.area_acres} acres.")
+
+    if parcel.price_crore < 0:
+        raise ValueError(f"Parcel price cannot be negative, got {parcel.price_crore} crore.")
+
     typology = (req.development_type if req and req.development_type else parcel.zone_type).lower()
     if typology not in TYPOLOGY_BENCHMARKS:
         typology = "mixed"
 
     bench = TYPOLOGY_BENCHMARKS[typology]
 
-    # Resolve configurable parameters
-    fsi = float(req.custom_target_fsi if req and req.custom_target_fsi else bench["fsi"])
-    cost_per_sqft = float(
+    # Resolve configurable parameters with boundary guards
+    raw_fsi = req.custom_target_fsi if req and req.custom_target_fsi else bench["fsi"]
+    fsi = max(float(raw_fsi), 0.1)
+
+    raw_cost = (
         req.custom_construction_cost_sqft
         if req and req.custom_construction_cost_sqft
         else bench["construction_cost_sqft"]
     )
-    sell_price_sqft = float(
+    cost_per_sqft = max(float(raw_cost), 100.0)
+
+    raw_sell = (
         req.projected_selling_price_sqft
         if req and req.projected_selling_price_sqft
         else bench["selling_price_sqft"]
     )
+    sell_price_sqft = max(float(raw_sell), 100.0)
 
     # 1. Area conversions
     land_area_sqft = round(parcel.area_acres * SQFT_PER_ACRE, 2)
@@ -185,13 +198,15 @@ def evaluate_feasibility(
     # 5. Projected Gross Development Value (GDV)
     projected_gdv_crore = round((bua_sqft * sell_price_sqft) / 10000000.0, 2)
 
-    # 6. Returns & margins
+    # 6. Returns & margins (with non-zero denominator guard)
     margin_crore = round(projected_gdv_crore - total_cost_crore, 2)
-    roi_pct = round((margin_crore / max(total_cost_crore, 1.0)) * 100.0, 2)
+    roi_pct = round((margin_crore / max(total_cost_crore, 0.01)) * 100.0, 2)
 
     duration = int(bench["duration_months"])
     infra_reqs = list(bench["infra_requirements"])
     constraints = list(bench["constraints"])
+
+    provenance = get_feasibility_model_provenance(typology)
 
     return FeasibilityScenarioResult(
         development_type=typology,
@@ -215,4 +230,9 @@ def evaluate_feasibility(
             "Preliminary engineering & financial feasibility model. Does not constitute formal "
             "architectural sanction, sanctioned FSI certificate, or statutory clearance under Maharashtra UDCPR."
         ),
+        regulatory_applicability_note=(
+            "Permissible FSI and built-up allowances depend on road width, plot depth, and TDR eligibility "
+            "under Maharashtra Unified DCPR 2020. Parameters are configurable estimates, not statutory sanctions."
+        ),
+        provenance=provenance,
     )

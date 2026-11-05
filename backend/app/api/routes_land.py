@@ -1,11 +1,12 @@
 """
 API routes for real estate land parcel intelligence, geospatial infrastructure
-proximity analysis, development feasibility, and financial scenario modeling.
+proximity analysis, development feasibility, financial scenario modeling, and
+Phase 1.7 Data Trust Framework provenance audits.
 """
 
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from fastapi import APIRouter, HTTPException, Path, Query
 
@@ -29,6 +30,8 @@ from backend.app.models.schemas import (
     ParcelDetailedProfile,
     ParcelInfrastructureAnalysis,
 )
+from backend.app.data.provenance.data_registry import get_provenance_audit_summary
+from backend.app.data.sources.osm_source import query_overpass_amenities
 
 router = APIRouter(prefix="/api/parcels", tags=["Land Parcels & Real Estate Intelligence"])
 
@@ -63,6 +66,16 @@ async def list_parcels(
             sort_by=sort_by,
         )
     return get_all_parcels()
+
+
+@router.get(
+    "/provenance/audit",
+    summary="Get platform-wide data provenance and verification audit",
+    description="Returns formal data verification tiers, lineage sources, and methodological audit summary.",
+)
+async def get_provenance_audit() -> dict:
+    """Return platform-wide data provenance and validation audit."""
+    return get_provenance_audit_summary()
 
 
 @router.get(
@@ -113,16 +126,72 @@ async def get_parcel_profile(
     "/{parcel_id}/infrastructure",
     response_model=ParcelInfrastructureAnalysis,
     summary="Get multi-sector infrastructure proximity analysis",
-    description="Calculates exact Haversine distances to highways, hospitals, universities, railway stations, airports, and commercial centers.",
+    description="Calculates exact Haversine distances to highways, hospitals, universities, railway stations, airports, and commercial centers with configurable weights.",
 )
 async def get_parcel_infrastructure(
     parcel_id: str = Path(..., description="Unique parcel identifier (e.g. 'PUNE-001')"),
+    weight_highway: Optional[float] = Query(default=None, ge=0),
+    weight_hospital: Optional[float] = Query(default=None, ge=0),
+    weight_commercial: Optional[float] = Query(default=None, ge=0),
+    weight_railway: Optional[float] = Query(default=None, ge=0),
+    weight_education: Optional[float] = Query(default=None, ge=0),
+    weight_airport: Optional[float] = Query(default=None, ge=0),
 ) -> ParcelInfrastructureAnalysis:
     """Return infrastructure proximity and accessibility analysis."""
     parcel = get_parcel_by_id(parcel_id)
     if not parcel:
         raise HTTPException(status_code=404, detail=f"Parcel with ID '{parcel_id}' not found.")
-    return analyze_parcel_infrastructure(parcel)
+
+    custom_weights = None
+    if any(
+        w is not None
+        for w in [
+            weight_highway,
+            weight_hospital,
+            weight_commercial,
+            weight_railway,
+            weight_education,
+            weight_airport,
+        ]
+    ):
+        custom_weights = {
+            "highway": weight_highway if weight_highway is not None else 0.0,
+            "hospital": weight_hospital if weight_hospital is not None else 0.0,
+            "commercial": weight_commercial if weight_commercial is not None else 0.0,
+            "railway": weight_railway if weight_railway is not None else 0.0,
+            "education": weight_education if weight_education is not None else 0.0,
+            "airport": weight_airport if weight_airport is not None else 0.0,
+        }
+
+    return analyze_parcel_infrastructure(parcel, custom_weights)
+
+
+@router.get(
+    "/{parcel_id}/overpass",
+    summary="Query real-time OpenStreetMap amenities via Overpass API",
+    description="Queries live OpenStreetMap POIs within a specified radius around the parcel centroid, with verified offline fallback.",
+)
+async def get_parcel_overpass_amenities(
+    parcel_id: str = Path(..., description="Unique parcel identifier (e.g. 'PUNE-001')"),
+    radius_meters: int = Query(default=5000, ge=500, le=25000, description="Search radius in meters"),
+) -> dict:
+    """Query live nearby infrastructure amenities from OpenStreetMap."""
+    parcel = get_parcel_by_id(parcel_id)
+    if not parcel:
+        raise HTTPException(status_code=404, detail=f"Parcel with ID '{parcel_id}' not found.")
+
+    elements, status_msg = query_overpass_amenities(
+        parcel.location_lat, parcel.location_lng, radius_meters
+    )
+    return {
+        "parcel_id": parcel.id,
+        "parcel_name": parcel.name,
+        "radius_meters": radius_meters,
+        "query_status": status_msg,
+        "elements_count": len(elements),
+        "elements": elements,
+        "attribution": "© OpenStreetMap contributors (ODbL 1.0 License)",
+    }
 
 
 @router.post(

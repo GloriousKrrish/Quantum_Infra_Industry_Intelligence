@@ -1,7 +1,7 @@
 """
 Infrastructure Proximity and Geospatial Accessibility Engine.
 
-Calculates exact Haversine geographic distances and estimated drive times from
+Calculates great-circle Haversine distances and estimated transit times from
 Pune micro-market parcels to major regional infrastructure facilities:
 - Major Highways & Expressway Corridors
 - Multispeciality Hospitals & Healthcare
@@ -10,21 +10,35 @@ Pune micro-market parcels to major regional infrastructure facilities:
 - Civil & International Airports
 - Commercial, IT & Industrial Hubs
 
+Phase 1.7 Data Trust Framework:
+- WGS-84 coordinate validation and numerical singularity protection
+- Explicit labeling of straight-line Haversine estimates vs road routing
+- Documented transit time methodology based on IRC speed benchmarks
+- Configurable and transparent accessibility scoring weights
+- Provenance tracking with OpenStreetMap geodetic node attribution
+
 Data Provenance:
-- OpenStreetMap Public Geospatial Data
+- OpenStreetMap Public Geospatial Data (ODbL 1.0)
 - PMRDA Regional Development Plan 2021-2041
-- Indian Road Congress (IRC) Speed & Access Norms
+- Indian Road Congress (IRC SP-73 / IRC-106) Speed & Access Norms
 """
 
 from __future__ import annotations
 
 import math
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 from backend.app.models.schemas import (
+    DistanceMethodology,
     InfrastructureProximityPoint,
     LandParcel,
     ParcelInfrastructureAnalysis,
+    ProvenanceRecord,
+    VerificationStatus,
+)
+from backend.app.data.provenance.verification import validate_coordinates
+from backend.app.data.provenance.data_registry import (
+    get_infrastructure_proximity_provenance,
 )
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -269,6 +283,16 @@ INFRASTRUCTURE_ANCHORS: List[Dict[str, object]] = [
     },
 ]
 
+# Default weights for composite Accessibility Score (sum = 100.0)
+DEFAULT_ACCESSIBILITY_WEIGHTS: Dict[str, float] = {
+    "highway": 25.0,
+    "hospital": 20.0,
+    "commercial": 20.0,
+    "railway": 15.0,
+    "education": 10.0,
+    "airport": 10.0,
+}
+
 
 # ═══════════════════════════════════════════════════════════════════════
 # GEOSPATIAL DISTANCE MATHEMATICS (HAVERSINE)
@@ -278,11 +302,25 @@ def compute_haversine_distance_km(
     lat1: float, lng1: float, lat2: float, lng2: float
 ) -> float:
     """
-    Calculate the great-circle distance between two geographic coordinates
+    Calculate the great-circle spherical distance between two geographic coordinates
     on Earth using the Haversine formula.
 
-    Radius of Earth R = 6371.0 km.
+    Radius of Earth R = 6371.0 km (WGS-84 mean spherical radius).
+
+    Validates coordinates and guards against NaN/Inf and floating-point domain errors.
     """
+    # 1. Coordinate validation
+    v1, msg1 = validate_coordinates(lat1, lng1)
+    if not v1:
+        raise ValueError(f"Origin coordinate invalid: {msg1}")
+    v2, msg2 = validate_coordinates(lat2, lng2)
+    if not v2:
+        raise ValueError(f"Destination coordinate invalid: {msg2}")
+
+    # Identical points check
+    if lat1 == lat2 and lng1 == lng2:
+        return 0.0
+
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
@@ -292,14 +330,19 @@ def compute_haversine_distance_km(
         math.sin(delta_phi / 2.0) ** 2
         + math.cos(phi1) * math.cos(phi2) * (math.sin(delta_lambda / 2.0) ** 2)
     )
+    # Numerical guard: clamp to [0.0, 1.0] to prevent math domain error in sqrt
+    a = max(0.0, min(1.0, a))
+
     c = 2.0 * math.atan2(math.sqrt(a), math.sqrt(1.0 - a))
     return round(6371.0 * c, 2)
 
 
 def estimate_drive_time_minutes(distance_km: float, avg_speed_kmh: float = 35.0) -> int:
     """
-    Estimate vehicular travel time in minutes based on urban/highway speed benchmarks,
-    incorporating a 15 % junction and traffic deceleration factor.
+    Estimate vehicular travel time in minutes based on Indian Road Congress (IRC SP-73)
+    speed benchmarks, incorporating a 15 % junction and traffic deceleration factor.
+
+    Note: This is an estimated nominal transit time, not real-time turn-by-turn navigation.
     """
     effective_speed = max(avg_speed_kmh * 0.85, 15.0)
     minutes = (distance_km / effective_speed) * 60.0
@@ -318,7 +361,6 @@ def get_nearest_anchor_by_type(
     """
     matching = [a for a in INFRASTRUCTURE_ANCHORS if a["facility_type"] == facility_type]
     if not matching:
-        # Fallback if unconfigured
         return InfrastructureProximityPoint(
             name=f"No verified {facility_type} anchor registered",
             facility_type=facility_type,
@@ -326,6 +368,10 @@ def get_nearest_anchor_by_type(
             drive_time_min=999,
             coordinates=[0.0, 0.0],
             data_source="Unavailable",
+            distance_methodology=DistanceMethodology.ESTIMATED_PROXIMITY,
+            distance_label="Unavailable",
+            drive_time_label="Unavailable",
+            provenance=None,
         )
 
     best_anchor = None
@@ -340,6 +386,9 @@ def get_nearest_anchor_by_type(
 
     speed = float(best_anchor.get("avg_speed_kmh", 35.0))
     drive_min = estimate_drive_time_minutes(min_dist, speed)
+    provenance = get_infrastructure_proximity_provenance(
+        str(best_anchor["name"]), str(best_anchor["facility_type"])
+    )
 
     return InfrastructureProximityPoint(
         name=str(best_anchor["name"]),
@@ -348,12 +397,21 @@ def get_nearest_anchor_by_type(
         drive_time_min=drive_min,
         coordinates=[float(best_anchor["lat"]), float(best_anchor["lng"])],
         data_source=str(best_anchor.get("data_source", "OpenStreetMap GIS")),
+        distance_methodology=DistanceMethodology.HAVERSINE_STRAIGHT_LINE,
+        distance_label="Straight-line distance estimate (Haversine)",
+        drive_time_label="Estimated transit time at benchmark road speed (IRC SP-73 / IRC-106)",
+        provenance=provenance,
     )
 
 
-def analyze_parcel_infrastructure(parcel: LandParcel) -> ParcelInfrastructureAnalysis:
+def analyze_parcel_infrastructure(
+    parcel: LandParcel,
+    custom_weights: Optional[Dict[str, float]] = None,
+) -> ParcelInfrastructureAnalysis:
     """
     Perform a complete multi-sector infrastructure proximity analysis for a land parcel.
+
+    Supports configurable accessibility weights.
     """
     nearest_hw = get_nearest_anchor_by_type(parcel.location_lat, parcel.location_lng, "Highway")
     nearest_hosp = get_nearest_anchor_by_type(parcel.location_lat, parcel.location_lng, "Hospital")
@@ -364,15 +422,24 @@ def analyze_parcel_infrastructure(parcel: LandParcel) -> ParcelInfrastructureAna
 
     all_points = [nearest_hw, nearest_hosp, nearest_edu, nearest_rail, nearest_air, nearest_comm]
 
-    # Composite accessibility score (0 to 100)
-    # Closer is better. Benchmarks:
-    # Highway <= 3km: 25pts; Hospital <= 5km: 20pts; Rail <= 10km: 15pts; Comm <= 5km: 20pts; Edu <= 5km: 10pts; Airport <= 20km: 10pts
-    score_hw = max(0.0, 25.0 * (1.0 - min(nearest_hw.distance_km / 12.0, 1.0)))
-    score_hosp = max(0.0, 20.0 * (1.0 - min(nearest_hosp.distance_km / 15.0, 1.0)))
-    score_comm = max(0.0, 20.0 * (1.0 - min(nearest_comm.distance_km / 15.0, 1.0)))
-    score_rail = max(0.0, 15.0 * (1.0 - min(nearest_rail.distance_km / 25.0, 1.0)))
-    score_edu = max(0.0, 10.0 * (1.0 - min(nearest_edu.distance_km / 15.0, 1.0)))
-    score_air = max(0.0, 10.0 * (1.0 - min(nearest_air.distance_km / 40.0, 1.0)))
+    # Resolve configurable accessibility weights (normalized to 100)
+    w = dict(DEFAULT_ACCESSIBILITY_WEIGHTS)
+    if custom_weights:
+        for k, v in custom_weights.items():
+            if k in w and v >= 0:
+                w[k] = float(v)
+
+    total_w = sum(w.values()) or 100.0
+    norm_w = {k: (v / total_w) * 100.0 for k, v in w.items()}
+
+    # Decay benchmarks (maximum distances considered for scoring)
+    # Highway <= 12km, Hospital <= 15km, Comm <= 15km, Rail <= 25km, Edu <= 15km, Air <= 40km
+    score_hw = max(0.0, norm_w["highway"] * (1.0 - min(nearest_hw.distance_km / 12.0, 1.0)))
+    score_hosp = max(0.0, norm_w["hospital"] * (1.0 - min(nearest_hosp.distance_km / 15.0, 1.0)))
+    score_comm = max(0.0, norm_w["commercial"] * (1.0 - min(nearest_comm.distance_km / 15.0, 1.0)))
+    score_rail = max(0.0, norm_w["railway"] * (1.0 - min(nearest_rail.distance_km / 25.0, 1.0)))
+    score_edu = max(0.0, norm_w["education"] * (1.0 - min(nearest_edu.distance_km / 15.0, 1.0)))
+    score_air = max(0.0, norm_w["airport"] * (1.0 - min(nearest_air.distance_km / 40.0, 1.0)))
 
     accessibility_score = round(score_hw + score_hosp + score_comm + score_rail + score_edu + score_air, 1)
 
@@ -393,9 +460,26 @@ def analyze_parcel_infrastructure(parcel: LandParcel) -> ParcelInfrastructureAna
         else "On-site Sewage Treatment Plant (STP) Mandatory per MPCB Norms"
     )
     road_status = (
-        f"Direct frontage to major arterial ({nearest_hw.name}, {nearest_hw.distance_km} km)"
+        f"Direct frontage to major arterial ({nearest_hw.name}, {nearest_hw.distance_km} km straight-line)"
         if nearest_hw.distance_km <= 3.0
-        else f"Secondary connecting road ({nearest_hw.distance_km} km to primary arterial)"
+        else f"Secondary connecting road ({nearest_hw.distance_km} km straight-line to primary arterial)"
+    )
+
+    score_methodology = (
+        f"Multi-sector weighted proximity decay formula "
+        f"(Highway {round(norm_w['highway'])}%, Hospital {round(norm_w['hospital'])}%, "
+        f"Commercial {round(norm_w['commercial'])}%, Railway {round(norm_w['railway'])}%, "
+        f"Education {round(norm_w['education'])}%, Airport {round(norm_w['airport'])}%)"
+    )
+
+    provenance = ProvenanceRecord(
+        source_name="OpenStreetMap Public GIS & IRC Speed Standards",
+        source_url="https://www.openstreetmap.org/",
+        source_type="Open Data Proximity Model",
+        verification_status=VerificationStatus.ESTIMATED,
+        last_verified="2026-11-05",
+        confidence_level=0.90,
+        methodology_notes="Calculates great-circle Haversine distances to verified OpenStreetMap anchor nodes.",
     )
 
     return ParcelInfrastructureAnalysis(
@@ -415,4 +499,7 @@ def analyze_parcel_infrastructure(parcel: LandParcel) -> ParcelInfrastructureAna
         sewage_network_status=sewage_status,
         road_connectivity_status=road_status,
         data_source="OpenStreetMap GIS & PMRDA Regional Development Plan 2021-2041",
+        accessibility_score_methodology=score_methodology,
+        is_official_rating=False,
+        provenance=provenance,
     )
