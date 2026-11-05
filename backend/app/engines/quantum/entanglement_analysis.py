@@ -223,12 +223,22 @@ def analyze_entanglement_state(
             "purity_subsystem_B": round(compute_purity(rho_b), 4),
             "entropy_subsystem_A": round(compute_von_neumann_entropy(rho_a), 4),
             "entropy_subsystem_B": round(compute_von_neumann_entropy(rho_b), 4),
+            "interpretation_note": (
+                "Subsystem mixedness Tr(ρ_A²) < 1 witnesses quantum entanglement IF AND ONLY IF "
+                "the global bipartite state is pure (Tr(ρ_AB²) = 1.0). For mixed global states, "
+                "subsystem mixedness can arise purely from classical statistical ignorance."
+            ),
         }
 
     # Classification logic
-    if concurrence is not None and concurrence > 0.01:
+    is_npt = bool(ppt_analysis and ppt_analysis.get("is_entangled_npt", False))
+    has_concurrence = bool(concurrence is not None and concurrence > 1e-5)
+
+    if has_concurrence or is_npt:
         ent_classification = "ENTANGLED"
-        ent_desc = f"Quantum entangled state (Concurrence C = {concurrence:.3f}, Negativity N = {ppt_analysis['negativity']:.3f})."
+        neg_val = ppt_analysis["negativity"] if ppt_analysis else 0.0
+        c_val = concurrence if concurrence is not None else 0.0
+        ent_desc = f"Quantum entangled state (Concurrence C = {c_val:.4f}, Negativity N = {neg_val:.4f})."
     elif p_name == "classical_correlated_separable":
         ent_classification = "SEPARABLE_CLASSICAL_CORRELATION"
         ent_desc = "Classically correlated but unentangled mixture (C = 0.000, PPT-separable, local hidden variables suffice)."
@@ -247,7 +257,11 @@ def analyze_entanglement_state(
         "entanglement_classification": ent_classification,
         "description": ent_desc,
         "concurrence": concurrence,
+        "negativity": ppt_analysis["negativity"] if ppt_analysis else 0.0,
+        "logarithmic_negativity": ppt_analysis["logarithmic_negativity"] if ppt_analysis else 0.0,
         "ppt_negativity": ppt_analysis,
         "schmidt_decomposition": schmidt,
         "subsystem_metrics": subsystem_metrics,
+        "werner_critical_threshold": 0.333333 if p_name == "werner_state" else None,
+        "explanation": ent_desc,
     }

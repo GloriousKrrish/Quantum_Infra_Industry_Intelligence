@@ -2,10 +2,11 @@
 Quantum Decoherence & Open Systems Engine for Quantum Estate X.
 
 Simulates environmental interaction, T1 relaxation, and T2 dephasing:
-- Physical relaxation bound: T2 <= 2 * T1
+- Physical relaxation bound: T2 <= 2 * T1 (under standard Markovian weak-coupling assumptions)
+- Pure dephasing relationship: 1/T2 = 1/(2*T1) + 1/T_phi
 - Analytic Kraus trajectory for amplitude + phase damping
 - Lindblad master equation:
-    dρ/dt = -i/ℏ [H, ρ] + Σ_k (L_k ρ L_k† - 1/2 {L_k† L_k, ρ})
+    dρ/dt = -i/ℏ [H, ρ] + (1/T₁) (σ₋ ρ σ₊ - 1/2 {σ₊ σ₋, ρ}) + (1/2T_φ) (σ_z ρ σ_z - ρ)
 - Time-series tracking of Bloch vector shrinkage, purity loss, and von Neumann entropy
 """
 
@@ -27,11 +28,15 @@ def simulate_decoherence_trajectory(
 ) -> Dict[str, Any]:
     """
     Simulate continuous decoherence trajectory over time t in [0, total_time_us].
+    Validates physical relaxation bounds and returns comprehensive population, coherence, and Bloch data.
     """
+    if t1_us <= 0.0 or t2_us <= 0.0 or total_time_us <= 0.0:
+        raise ValueError("Decoherence parameters t1_us, t2_us, and total_time_us must be strictly positive.")
+
     # Physical consistency check: T2 <= 2 * T1
-    t1 = max(1.0, float(t1_us))
+    t1 = float(t1_us)
     t2_max = 2.0 * t1
-    t2 = min(t2_max, max(0.5, float(t2_us)))
+    t2 = min(t2_max, float(t2_us))
 
     # Pure dephasing time T_phi: 1/T2 = 1/(2*T1) + 1/T_phi
     inv_t_phi = (1.0 / t2) - (1.0 / (2.0 * t1))
@@ -81,25 +86,42 @@ def simulate_decoherence_trajectory(
 
         trajectory.append({
             "time_us": round(float(t), 2),
+            "rho_00": round(float(rho_00_t), 4),
+            "rho_11": round(float(rho_11_t), 4),
+            "abs_rho_01": round(float(abs(rho_01_t)), 4),
+            "purity": round(purity, 4),
+            "entropy": round(entropy, 4),
+            "von_neumann_entropy": round(entropy, 4),
+            "excited_state_population": round(rho_11_t, 4),
+            "bloch_vector": {
+                "x": round(rx, 4),
+                "y": round(ry, 4),
+                "z": round(rz, 4),
+                "length": round(r_len, 4),
+            },
             "bloch_x": round(rx, 4),
             "bloch_y": round(ry, 4),
             "bloch_z": round(rz, 4),
             "bloch_length": round(r_len, 4),
-            "purity": round(purity, 4),
-            "entropy": round(entropy, 4),
-            "excited_state_population": round(rho_11_t, 4),
         })
 
     return {
         "initial_state": init_name,
+        "t1_us": t1,
+        "t2_us": t2,
         "t1_relaxation_us": t1,
         "t2_dephasing_us": t2,
         "t_phi_pure_dephasing_us": round(t_phi, 2) if not math.isinf(t_phi) else "Infinity",
         "physical_constraint_satisfied": bool(t2 <= 2.0 * t1 + 1e-6),
+        "input_was_clamped": bool(t2_us > 2.0 * t1_us),
         "total_time_us": total_time_us,
         "trajectory": trajectory,
         "lindblad_formulation": (
             "dρ/dt = -i/ℏ [H, ρ] + (1/T₁) (σ₋ ρ σ₊ - 1/2 {σ₊ σ₋, ρ}) + "
             "(1/2T_φ) (σ_z ρ σ_z - ρ)"
+        ),
+        "disclaimer": (
+            "Mathematical Markovian weak-coupling master equation model. "
+            "Assumes zero-temperature thermal bath (asymptotic ground state |0⟩) and frequency-independent decay rates."
         ),
     }

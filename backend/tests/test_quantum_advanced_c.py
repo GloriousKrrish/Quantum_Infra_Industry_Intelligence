@@ -1,8 +1,8 @@
 """
 Verification Suite for Phase 03 Group C:
 - Quantum Noise Models (Depolarizing, Amplitude Damping, Thermal Relaxation)
-- Decoherence & Open Quantum Systems (T1, T2, Bloch Trajectory)
-- Quantum Channels (Kraus representations, CPTP verification, purity degradation)
+- Decoherence & Open Quantum Systems (T1, T2, Bloch Trajectory, Parameter Safeguards)
+- Quantum Channels (Kraus representations, CPTP completeness, Affine Bloch Shrinkage)
 """
 
 import math
@@ -19,6 +19,7 @@ from backend.app.engines.quantum.decoherence import (
 from backend.app.engines.quantum.quantum_channels import (
     get_channel_kraus_operators,
     apply_quantum_channel,
+    compute_bloch_affine_map,
 )
 
 
@@ -32,6 +33,7 @@ def test_noise_model_depolarizing_tvd():
     res = simulate_noisy_circuit(circuit_ops=ops, num_qubits=2, noise_type="depolarizing", error_prob=0.15, shots=2000)
     assert res["total_variation_distance"] > 0.05
     assert len(res["distribution_comparison"]) == 4
+    assert "delta" in res["distribution_comparison"][0]
 
 
 def test_noise_model_amplitude_damping_bias():
@@ -58,14 +60,23 @@ def test_decoherence_purity_decay_to_ground_state():
     """State |+> dephases: purity initially drops from 1.0, then relaxes to ground state |0> (purity -> 1.0)."""
     res = simulate_decoherence_trajectory(initial_state_name="plus", t1_us=20.0, t2_us=10.0, total_time_us=80.0, num_steps=20)
     traj = res["trajectory"]
-    # Initial state |+> at t=0 has purity 1.0, bloch_x = 1.0
+    # Initial state |+> at t=0 has purity 1.0, bloch_x = 1.0, rho_00 = 0.5
     assert math.isclose(traj[0]["purity"], 1.0, abs_tol=1e-3)
     assert math.isclose(traj[0]["bloch_x"], 1.0, abs_tol=1e-3)
+    assert math.isclose(traj[0]["rho_00"], 0.5, abs_tol=1e-3)
+    assert "bloch_vector" in traj[0]
 
     # Late time t >> T1, T2: state relaxes to north pole |0> (bloch_z -> 1.0, bloch_x -> 0)
     final_pt = traj[-1]
     assert math.isclose(final_pt["bloch_x"], 0.0, abs_tol=1e-2)
     assert final_pt["bloch_z"] > 0.95
+    assert final_pt["rho_00"] > 0.95
+
+
+def test_decoherence_invalid_parameters_rejected():
+    """Non-positive relaxation times raise ValueError."""
+    with pytest.raises(ValueError, match="strictly positive"):
+        simulate_decoherence_trajectory(t1_us=-10.0)
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -88,3 +99,16 @@ def test_depolarizing_channel_bloch_shrinkage():
     # Depolarizing shrinks radius to (1 - p) = 0.6
     assert math.isclose(res["bloch_out"]["length"], 0.60, abs_tol=1e-2)
     assert res["fidelity_retained"] < 1.0
+    assert "bloch_shrinkage" in res
+    assert math.isclose(res["bloch_shrinkage"]["x_scale"], 0.60, abs_tol=1e-2)
+
+
+def test_amplitude_damping_affine_transformation():
+    """Amplitude damping channel produces non-unital shift (z_shift = gamma)."""
+    gamma = 0.25
+    res = apply_quantum_channel(channel_type="amplitude_damping", input_state_preset="pure_plus", gamma=gamma)
+    shrink = res["bloch_shrinkage"]
+    assert math.isclose(shrink["z_shift"], gamma, abs_tol=1e-4)
+    assert math.isclose(shrink["z_scale"], 1.0 - gamma, abs_tol=1e-4)
+    assert math.isclose(shrink["x_scale"], math.sqrt(1.0 - gamma), abs_tol=1e-4)
+    assert len(res["kraus_operators"]) == 2

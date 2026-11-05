@@ -92,6 +92,35 @@ def get_channel_kraus_operators(
         return [MATRIX_I], "Identity channel."
 
 
+def compute_bloch_affine_map(kraus_ops: List[np.ndarray]) -> Dict[str, float]:
+    """
+    Compute affine transformation of the Bloch vector under channel E:
+        r' = M r + c
+    Where:
+        c_i = 1/2 Tr(E(I) σ_i)
+        M_{ij} = 1/2 Tr(E(σ_j) σ_i)
+    """
+    paulis = [MATRIX_X, MATRIX_Y, MATRIX_Z]
+
+    # Shift vector c = 1/2 Tr(E(I) sigma)
+    e_i = sum(k @ MATRIX_I @ k.conj().T for k in kraus_ops)
+    c_vec = [float(0.5 * np.trace(e_i @ s).real) for s in paulis]
+
+    # Diagonal scale factors M_xx, M_yy, M_zz
+    scales = []
+    for s in paulis:
+        e_s = sum(k @ s @ k.conj().T for k in kraus_ops)
+        m_ii = float(0.5 * np.trace(e_s @ s).real)
+        scales.append(m_ii)
+
+    return {
+        "x_scale": round(scales[0], 4),
+        "y_scale": round(scales[1], 4),
+        "z_scale": round(scales[2], 4),
+        "z_shift": round(c_vec[2], 4),
+    }
+
+
 def apply_quantum_channel(
     channel_type: str = "depolarizing",
     input_state_preset: str = "pure_plus",
@@ -132,7 +161,7 @@ def apply_quantum_channel(
     purity_out = compute_purity(rho_out)
     fid = compute_quantum_fidelity(rho_in, rho_out)
 
-    # Output Bloch vector
+    # 5. Output Bloch vector
     rx_out = float(2.0 * rho_out[0, 1].real)
     ry_out = float(-2.0 * rho_out[0, 1].imag)
     rz_out = float(rho_out[0, 0].real - rho_out[1, 1].real)
@@ -143,11 +172,22 @@ def apply_quantum_channel(
         "length": round(math.sqrt(rx_out ** 2 + ry_out ** 2 + rz_out ** 2), 4),
     }
 
-    # Serialized matrix output
+    # 6. Affine Bloch shrinkage matrix
+    bloch_shrinkage = compute_bloch_affine_map(kraus_ops)
+
+    # 7. Serialized matrix output
     matrix_cells = [
         [{"real": round(float(rho_out[r, c].real), 4), "imag": round(float(rho_out[r, c].imag), 4)} for c in range(2)]
         for r in range(2)
     ]
+
+    # Serialized Kraus operator matrices
+    serialized_kraus = []
+    for k_mat in kraus_ops:
+        serialized_kraus.append([
+            [{"real": round(float(k_mat[r, c].real), 4), "imag": round(float(k_mat[r, c].imag), 4)} for c in range(2)]
+            for r in range(2)
+        ])
 
     return {
         "channel_type": channel_type,
@@ -157,9 +197,13 @@ def apply_quantum_channel(
         "completeness_error": round(completeness_err, 8),
         "input_purity": purity_in,
         "output_purity": round(purity_out, 4),
+        "state_fidelity": fid["squared_fidelity"],
         "fidelity_retained": fid["squared_fidelity"],
         "bloch_in": bloch_in,
         "bloch_out": bloch_out,
         "output_density_matrix": matrix_cells,
+        "num_kraus_operators": len(kraus_ops),
         "kraus_operator_count": len(kraus_ops),
+        "kraus_operators": serialized_kraus,
+        "bloch_shrinkage": bloch_shrinkage,
     }

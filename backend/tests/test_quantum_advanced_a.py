@@ -186,3 +186,4 @@ def test_interference_fringe_sweep():
         th = pt["phase_rad"]
         expected_p0 = math.cos(th / 2.0) ** 2
         assert math.isclose(pt["theory_p0"], expected_p0, abs_tol=1e-4)
+

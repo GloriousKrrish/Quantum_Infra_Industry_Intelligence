@@ -148,6 +148,11 @@ export default function TomographyLab() {
                   <span className="font-bold text-blue-900">⟨σ_x⟩ (Hadamard Basis):</span>
                   <span className="font-mono font-bold text-blue-700">
                     {result.pauli_measurements.x.expected_val.toFixed(4)}
+                    {result.pauli_measurements.x.std_err !== undefined && (
+                      <span className="text-[10px] text-slate-500 font-normal ml-1">
+                        ±{result.pauli_measurements.x.std_err.toFixed(3)}
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between text-[10px] text-blue-800 font-mono">
@@ -162,6 +167,11 @@ export default function TomographyLab() {
                   <span className="font-bold text-emerald-900">⟨σ_y⟩ (Phase Basis S†H):</span>
                   <span className="font-mono font-bold text-emerald-700">
                     {result.pauli_measurements.y.expected_val.toFixed(4)}
+                    {result.pauli_measurements.y.std_err !== undefined && (
+                      <span className="text-[10px] text-slate-500 font-normal ml-1">
+                        ±{result.pauli_measurements.y.std_err.toFixed(3)}
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between text-[10px] text-emerald-800 font-mono">
@@ -176,6 +186,11 @@ export default function TomographyLab() {
                   <span className="font-bold text-purple-900">⟨σ_z⟩ (Computational Basis):</span>
                   <span className="font-mono font-bold text-purple-700">
                     {result.pauli_measurements.z.expected_val.toFixed(4)}
+                    {result.pauli_measurements.z.std_err !== undefined && (
+                      <span className="text-[10px] text-slate-500 font-normal ml-1">
+                        ±{result.pauli_measurements.z.std_err.toFixed(3)}
+                      </span>
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between text-[10px] text-purple-800 font-mono">
@@ -266,10 +281,32 @@ export default function TomographyLab() {
                 <span className="text-slate-500">Reconstruction Fidelity:</span>
                 <span className="font-bold text-emerald-700">{(result.fidelity_reconstructed * 100).toFixed(2)}%</span>
               </div>
+              {result.fidelity_raw !== undefined && result.is_raw_psd === false && (
+                <div className="flex justify-between p-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-[11px]">
+                  <span>Raw (Pre-Projection) Fidelity:</span>
+                  <span className="font-bold">{(result.fidelity_raw * 100).toFixed(2)}%</span>
+                </div>
+              )}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Statistical Notice Banner */}
+      {result?.statistical_notice && (
+        <div className="rounded-2xl border border-blue-200 bg-blue-50/70 p-4 text-xs text-blue-900 flex items-start gap-3">
+          <Info className="h-5 w-5 text-blue-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="font-bold uppercase tracking-wider text-[11px] text-blue-800">
+              Statistical Sampling Notice
+            </span>
+            <p className="leading-relaxed text-[11px]">
+              {result.statistical_notice}
+            </p>
           </div>
         </div>
       )}
     </div>
   );
 }
+

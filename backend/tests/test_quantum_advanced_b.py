@@ -117,12 +117,25 @@ def test_classical_correlated_state_has_zero_concurrence():
 
 def test_werner_state_entanglement_transition():
     """Werner state is entangled if and only if p > 1/3 ~ 0.333."""
-    # At p = 0.8: entangled
+    # At p = 0.8: strongly entangled
     res_ent = analyze_entanglement_state(preset="werner_state", werner_parameter_p=0.8)
     assert res_ent["concurrence"] > 0.0
     assert res_ent["ppt_negativity"]["is_entangled_npt"] is True
+    assert res_ent["entanglement_classification"] == "ENTANGLED"
+
+    # Near boundary: at p = 0.34 (p > 1/3 ~ 0.3333), state is weakly entangled
+    res_boundary_ent = analyze_entanglement_state(preset="werner_state", werner_parameter_p=0.34)
+    assert res_boundary_ent["concurrence"] > 0.0
+    assert res_boundary_ent["entanglement_classification"] == "ENTANGLED"
+
+    # Near boundary: at p = 0.33 (p <= 1/3), state is strictly separable
+    res_boundary_sep = analyze_entanglement_state(preset="werner_state", werner_parameter_p=0.33)
+    assert math.isclose(res_boundary_sep["concurrence"], 0.0, abs_tol=1e-5)
+    assert res_boundary_sep["entanglement_classification"] == "SEPARABLE"
 
     # At p = 0.2: separable
     res_sep = analyze_entanglement_state(preset="werner_state", werner_parameter_p=0.2)
     assert math.isclose(res_sep["concurrence"], 0.0, abs_tol=1e-5)
     assert res_sep["ppt_negativity"]["is_ppt_separable"] is True
+    assert res_sep["entanglement_classification"] == "SEPARABLE"
+

@@ -155,13 +155,15 @@ def simulate_noisy_circuit(
 
         total_variation_dist += 0.5 * abs(f_id - f_no)
 
+        delta = round(f_no - f_id, 4)
         distribution_comparison.append({
             "bitstring": bitstr,
             "ideal_count": c_id,
             "ideal_frequency": round(f_id, 4),
             "noisy_count": c_no,
             "noisy_frequency": round(f_no, 4),
-            "frequency_shift": round(f_no - f_id, 4),
+            "frequency_shift": delta,
+            "delta": delta,
         })
 
     # Estimate noisy density matrix from reconstructed probabilities or channel
@@ -175,6 +177,7 @@ def simulate_noisy_circuit(
         "shots": shots,
         "total_variation_distance": round(total_variation_dist, 4),
         "ideal_purity": 1.0,
+        "noisy_purity_estimate": round(purity_proxy, 4),
         "estimated_noisy_purity": round(purity_proxy, 4),
         "distribution_comparison": distribution_comparison,
         "disclaimer": (
@@ -182,3 +185,4 @@ def simulate_noisy_circuit(
             "Simplified Markovian error model for research exploration; does not claim hardware fidelity."
         ),
     }
+

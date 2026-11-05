@@ -115,3 +115,4 @@ def simulate_mach_zehnder(
         },
         "sweep_curve": sweep_curve,
     }
+

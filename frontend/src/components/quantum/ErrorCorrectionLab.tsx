@@ -268,9 +268,32 @@ export default function ErrorCorrectionLab() {
                 </div>
               ))}
             </div>
+
+            {result.coherent_recovery_method && (
+              <div className="p-2.5 rounded-lg bg-slate-100/70 border border-slate-200 font-mono text-[10px] text-slate-600">
+                <span className="font-bold block text-slate-700 mb-0.5">Recovery Architecture:</span>
+                {result.coherent_recovery_method}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Code Limitations & Scientific Transparency Callout */}
+      {result?.code_limitations && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
+          <Info className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <span className="font-bold uppercase tracking-wider text-[11px] text-amber-800">
+              Scientific Scope & Code Limitations
+            </span>
+            <p className="leading-relaxed text-[11px]">
+              {result.code_limitations}
+            </p>
           </div>
         </div>
       )}
     </div>
   );
 }
+

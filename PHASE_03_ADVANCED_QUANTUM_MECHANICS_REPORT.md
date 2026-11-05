@@ -193,3 +193,4 @@ dist/assets/index-BLT7s7rt.js   1,777.77 kB
 With Phase 03 complete, the master roadmap advances to:
 - **Phase 1.8 — Real Geographic Intelligence**: Integrating real PMRDA Pune GIS shapefiles, cadastral boundary vectors, and infrastructure network layers.
 - **Phase 04 — Advanced Quantum Optimization**: Higher-depth QAOA ($p \ge 3$), multi-angle QAOA, XY mixer Hamiltonians for hard budget constraints, and comparative penalty tuning.
+

@@ -593,6 +593,10 @@ export interface ErrorCorrectionResponse {
   is_corrected: boolean;
   logical_fidelity: number;
   circuit_steps: string[];
+  code_limitations?: string;
+  coherent_recovery_method?: string;
+  recovered_logical_probabilities?: Record<string, number>;
+  theoretical_input_probabilities?: Record<string, number>;
 }
 
 export interface QuantumChannelRequest {
@@ -627,16 +631,22 @@ export interface TomographyRequest {
 export interface TomographyResponse {
   shots_per_basis: number;
   pauli_measurements: {
-    x: { expected_val: number; prob_plus: number; prob_minus: number };
-    y: { expected_val: number; prob_plus_i: number; prob_minus_i: number };
-    z: { expected_val: number; prob_0: number; prob_1: number };
+    x: { expected_val: number; prob_plus: number; prob_minus: number; std_err?: number };
+    y: { expected_val: number; prob_plus_i: number; prob_minus_i: number; std_err?: number };
+    z: { expected_val: number; prob_0: number; prob_1: number; std_err?: number };
   };
   reconstructed_bloch_vector: BlochVectorData;
+  raw_bloch_vector?: BlochVectorData;
   true_bloch_vector: BlochVectorData;
   reconstructed_density_matrix: ComplexNumber[][];
   fidelity_reconstructed: number;
+  fidelity_raw?: number;
+  fidelity_projected?: number;
+  is_raw_psd?: boolean;
+  is_psd_projected?: boolean;
   purity_reconstructed: number;
   trace_distance: number;
+  statistical_notice?: string;
 }
 
 export interface WorkflowResponse {
