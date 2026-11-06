@@ -17,6 +17,7 @@ from backend.app.api.routes_workflow import router as workflow_router
 from backend.app.api.routes_geospatial import router as geospatial_router
 from backend.app.api.routes_map import router as map_router
 from backend.app.api.routes_optimization import router as optimization_router
+from backend.app.api.routes_vqc import router as vqc_router
 
 # ═══════════════════════════════════════════════════════════════════════
 # APPLICATION FACTORY
@@ -46,6 +47,7 @@ app.include_router(workflow_router)
 app.include_router(geospatial_router)
 app.include_router(map_router)
 app.include_router(optimization_router)
+app.include_router(vqc_router)
 
 
 # ═══════════════════════════════════════════════════════════════════════

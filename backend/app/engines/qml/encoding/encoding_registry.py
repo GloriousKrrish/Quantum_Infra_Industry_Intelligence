@@ -127,3 +127,4 @@ class EncodingRegistry:
                 })
 
         return results
+

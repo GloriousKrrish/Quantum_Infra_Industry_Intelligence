@@ -140,3 +140,4 @@ class BaseQuantumEncoder(ABC):
         cleaned_data = self.validate_input(data)
         circuit = self.build_circuit(cleaned_data)
         return calculate_circuit_metrics(circuit, transpile_to_basis=True)
+

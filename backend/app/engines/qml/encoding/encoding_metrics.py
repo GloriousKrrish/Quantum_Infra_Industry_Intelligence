@@ -109,3 +109,4 @@ def calculate_circuit_metrics(
         transpiled_gate_count=transpiled_gates,
         transpiled_cx_count=transpiled_cx,
     )
+

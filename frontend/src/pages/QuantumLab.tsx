@@ -22,6 +22,7 @@ import {
   ShieldCheck,
   Scan,
   Zap,
+  BrainCircuit,
 } from "lucide-react";
 import {
   BarChart,
@@ -51,6 +52,7 @@ import NoiseDecoherenceLab from "../components/quantum/NoiseDecoherenceLab";
 import ErrorCorrectionLab from "../components/quantum/ErrorCorrectionLab";
 import TomographyLab from "../components/quantum/TomographyLab";
 import QuantumOptimizationLab from "../components/quantum/QuantumOptimizationLab";
+import VQCLab from "../components/quantum/VQCLab";
 import {
   MOCK_QUANTUM_RESULT,
   MOCK_BENCHMARK,
@@ -77,6 +79,7 @@ type QuantumTab =
   | "tomography"
   | "math_explorer"
   | "optimization_research"
+  | "vqc_lab"
   | "qaoa_optimizer"
   | "benchmarks";
 
@@ -355,6 +358,18 @@ export default function QuantumLab() {
             Phase 04 Optimization Lab
           </button>
           <button
+            onClick={() => setActiveTab("vqc_lab")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "vqc_lab"
+                ? "border-purple-600 text-purple-700 bg-purple-50/60 rounded-t-lg font-semibold"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <BrainCircuit className="h-3.5 w-3.5 text-purple-600" />
+            Phase 05.2 VQC Lab
+          </button>
+          <button
             onClick={() => setActiveTab("qaoa_optimizer")}
             className={cn(
               "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
@@ -511,6 +526,9 @@ export default function QuantumLab() {
 
       {/* ── TAB: PHASE 04 ADVANCED QUANTUM-CLASSICAL OPTIMIZATION LAB ── */}
       {activeTab === "optimization_research" && <QuantumOptimizationLab />}
+
+      {/* ── TAB: PHASE 05.2 VARIATIONAL QUANTUM CLASSIFIER (VQC) LAB ──── */}
+      {activeTab === "vqc_lab" && <VQCLab />}
 
       {/* ── TAB 4: QAOA LAND OPTIMIZER (PRESERVED) ────────────────────── */}
       {activeTab === "qaoa_optimizer" && (

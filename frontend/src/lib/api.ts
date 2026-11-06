@@ -1761,4 +1761,224 @@ export async function runOptimizationBenchmark(
   return data;
 }
 
+// ==========================================
+// Phase 05.2 - Variational Quantum Classifier (VQC)
+// ==========================================
+
+export interface VQCHealthResponse {
+  status: string;
+  qiskit_version: string;
+  qiskit_aer_version: string;
+  scipy_version: string;
+  sklearn_version: string;
+  supported_ansatzes: string[];
+  supported_optimizers: string[];
+  supported_encoders: string[];
+  supported_datasets: string[];
+  simulation_backend: string;
+  hardware_disclaimer: string;
+}
+
+export interface AnsatzItemSchema {
+  identifier: string;
+  name: string;
+  description: string;
+  parameter_scaling: string;
+  entanglement_options: string[];
+}
+
+export interface AnsatzListResponse {
+  ansatzes: AnsatzItemSchema[];
+}
+
+export interface CircuitBuildRequest {
+  num_qubits?: number;
+  ansatz_type?: string;
+  num_layers?: number;
+  rotation_gates?: string[];
+  entanglement?: string;
+  sample_features?: number[];
+  encoder_name?: string;
+}
+
+export interface CircuitBuildResponse {
+  num_qubits: number;
+  num_parameters: number;
+  circuit_depth: number;
+  total_gates: number;
+  single_qubit_gates: number;
+  two_qubit_gates: number;
+  gate_breakdown: Record<string, number>;
+  ansatz_type: string;
+  encoder_name: string;
+}
+
+export interface ConfusionMatrixData {
+  tn: number;
+  fp: number;
+  fn: number;
+  tp: number;
+}
+
+export interface ClassificationMetricsData {
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  roc_auc: number;
+  confusion_matrix: ConfusionMatrixData;
+}
+
+export interface TrainingIterationRecord {
+  iteration: number;
+  train_loss: number;
+  val_loss?: number | null;
+  train_accuracy: number;
+  val_accuracy?: number | null;
+  gradient_norm?: number | null;
+  step_time_ms?: number | null;
+}
+
+export interface VQCTrainRequest {
+  dataset_name: string;
+  n_samples?: number;
+  encoder_name?: string;
+  ansatz_type?: string;
+  num_layers?: number;
+  optimizer?: string;
+  max_iter?: number;
+  learning_rate?: number;
+  loss_function?: string;
+  seed?: number;
+}
+
+export interface VQCTrainResponse {
+  success: boolean;
+  status: string;
+  experiment_id: string;
+  dataset_name: string;
+  provenance_tier: string;
+  num_qubits: number;
+  num_parameters: number;
+  iterations: number;
+  final_train_loss: number;
+  final_val_loss?: number | null;
+  test_metrics: ClassificationMetricsData;
+  weights: number[];
+  training_time_ms: float_number;
+  quantum_circuit_evaluations: number;
+  history: TrainingIterationRecord[];
+  hardware_disclaimer: string;
+}
+
+type float_number = number;
+
+export interface VQCPredictRequest {
+  features: number[][];
+  weights: number[];
+  encoder_name?: string;
+  ansatz_type?: string;
+  num_layers?: number;
+  threshold?: number;
+}
+
+export interface VQCPredictResponse {
+  predictions: number[];
+  probabilities: number[][];
+  num_samples: number;
+  inference_time_ms: number;
+}
+
+export interface BenchmarkModelEntry {
+  model_name: string;
+  is_quantum: boolean;
+  accuracy: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  roc_auc: number;
+  confusion_matrix: ConfusionMatrixData;
+  training_time_ms: number;
+  inference_latency_ms: number;
+  num_parameters: number;
+  circuit_depth?: number | null;
+  hardware_note: string;
+}
+
+export interface VQCBenchmarkRequest {
+  dataset_name: string;
+  n_samples?: number;
+  encoder_name?: string;
+  ansatz_type?: string;
+  num_layers?: number;
+  max_iter?: number;
+  seed?: number;
+}
+
+export interface VQCBenchmarkResponse {
+  dataset_name: string;
+  provenance_tier: string;
+  num_features: number;
+  train_samples: number;
+  test_samples: number;
+  models: BenchmarkModelEntry[];
+  vqc_training_history: Array<Record<string, unknown>>;
+  summary_findings: string[];
+  scientific_disclaimer: string;
+}
+
+export interface VQCExperimentRecord {
+  experiment_id: string;
+  created_at: string;
+  dataset_name: string;
+  ansatz_type: string;
+  optimizer: string;
+  test_accuracy: number;
+  training_time_ms: number;
+  status: string;
+}
+
+export async function getVQCHealth(): Promise<VQCHealthResponse> {
+  const { data } = await api.get<VQCHealthResponse>("/qml/vqc/health");
+  return data;
+}
+
+export async function getVQCAnsatzList(): Promise<AnsatzListResponse> {
+  const { data } = await api.get<AnsatzListResponse>("/qml/vqc/ansatz/list");
+  return data;
+}
+
+export async function buildVQCCircuit(
+  req: CircuitBuildRequest
+): Promise<CircuitBuildResponse> {
+  const { data } = await api.post<CircuitBuildResponse>("/qml/vqc/circuit/build", req);
+  return data;
+}
+
+export async function trainVQCModel(
+  req: VQCTrainRequest
+): Promise<VQCTrainResponse> {
+  const { data } = await api.post<VQCTrainResponse>("/qml/vqc/model/train", req);
+  return data;
+}
+
+export async function predictVQCModel(
+  req: VQCPredictRequest
+): Promise<VQCPredictResponse> {
+  const { data } = await api.post<VQCPredictResponse>("/qml/vqc/model/predict", req);
+  return data;
+}
+
+export async function runVQCBenchmark(
+  req: VQCBenchmarkRequest
+): Promise<VQCBenchmarkResponse> {
+  const { data } = await api.post<VQCBenchmarkResponse>("/qml/vqc/benchmark/run", req);
+  return data;
+}
+
+export async function getVQCExperiments(): Promise<{ total_experiments: number; experiments: VQCExperimentRecord[] }> {
+  const { data } = await api.get<{ total_experiments: number; experiments: VQCExperimentRecord[] }>("/qml/vqc/experiments");
+  return data;
+}
+
 export default api;

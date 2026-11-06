@@ -173,3 +173,4 @@ class AmplitudeEncoder(BaseQuantumEncoder):
                 "computational advantage without efficient state preparation routines."
             ),
         }
+

@@ -4,6 +4,44 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 05.2: Variational Quantum Classifier (VQC)] — 2026-11-06
+### Added: Trainable Hybrid Quantum-Classical Classifier & Scientific Benchmark Suite
+- **Parameterized Quantum Ansatzes (`ParameterizedAnsatz`)**:
+  - Hardware-Efficient Ansatz (HEA): Interleaved $R_Y(\theta)$ rotation layers and CNOT entangling gates with linear, circular, and full topologies.
+  - Strongly Entangling Ansatz (SEA - Schuld et al.): Euler rotations ($R_Z \cdot R_Y \cdot R_Z$) per qubit per layer with range-shifting periodic entanglement.
+  - TwoLocal Architecture: Configurable single-qubit rotations with parameterized depth and entangling blocks.
+  - Dynamic parameter binding using Qiskit `ParameterVector`.
+- **Observable Measurement & Born Rule Calibration (`VQCMeasurementEngine`)**:
+  - Hermetian observable measurement $\langle Z_0 \rangle \in [-1, +1]$ on qubit 0.
+  - Exact Born rule probability calibration: $P(q_0 = 0) = \frac{1 + \langle Z_0 \rangle}{2}$, $P(q_0 = 1) = \frac{1 - \langle Z_0 \rangle}{2}$.
+  - Support for Statevector analytical expectations and `AerSimulator` finite-shot sampling.
+- **Analytical Parameter-Shift Rule Gradients (`VQCGradientEngine`)**:
+  - Analytical parameter shift rule: $\frac{\partial \langle Z_0 \rangle}{\partial \theta_k} = \frac{f(\theta_k + \pi/2) - f(\theta_k - \pi/2)}{2}$.
+  - Cross-validated against symmetric finite-difference quotients with empirical error $< 10^{-10} \ll 10^{-4}$.
+- **Loss Functions & Chain-Rule Backpropagation (`BinaryCrossEntropyLoss`, `MeanSquaredErrorLoss`)**:
+  - Stable Log Loss / BCE and MSE with analytical loss gradients $\frac{\partial \mathcal{L}}{\partial \theta}$.
+- **Hybrid Training Loop (`VQCTrainer`)**:
+  - Classical optimizers: COBYLA (simplex), L-BFGS-B (quasi-Newton + Parameter-Shift), and Adam (adaptive gradient).
+  - Iteration loss telemetry, early stopping, and step timing.
+- **Data Preprocessing & Benchmark Datasets (`DatasetPreprocessor`, `VQCDatasetLibrary`)**:
+  - Data leakage prevention: Scalers and PCA fitted strictly on training splits.
+  - Synthetic datasets: Interleaving Moons, Concentric Circles, Linearly Separable, and Iris Binary.
+  - Domain datasets: Pune Land Suitability (4D) and Infrastructure Flood & Seismic Risk (4D).
+- **Comparative Benchmark Suite (`ClassicalBaselineRunner`, `VQCBenchmarkSuite`)**:
+  - Rigorous head-to-head comparison evaluating VQC alongside 6 classical Scikit-Learn models (Logistic Regression, Linear SVM, RBF SVM, Decision Tree, Random Forest, Multi-Layer Perceptron).
+  - Full metrics: Accuracy, Precision, Recall, F1, ROC-AUC, training time, latency, and parameter count.
+- **FastAPI Endpoints (`routes_vqc.py`)**:
+  - 8 production endpoints mounted at `/api/qml/vqc/*` (`/health`, `/ansatz/list`, `/circuit/build`, `/model/train`, `/model/predict`, `/benchmark/run`, `/experiments`).
+- **Interactive React 19 Frontend Laboratory (`VQCLab.tsx`)**:
+  - Integrated in `QuantumLab.tsx` with porcelain white styling.
+  - Interactive dataset selector, live circuit architecture inspector, training convergence line charts, $2 \times 2$ confusion matrix, 7-model comparative benchmark table, live single-sample inference sandbox, and telemetry registry.
+- **Verification & Testing (`test_qml_vqc.py`)**:
+  - 17 dedicated VQC unit tests passing.
+  - Full backend test suite passing (237 / 237 tests).
+  - Frontend production build passing with 0 errors.
+
+---
+
 ## [Phase 05.1: Quantum Data Encoding Engine] — 2026-11-06
 ### Added: Quantum Machine Learning Data Encoders & Circuit Analyzers
 - **Basis Encoding (`BasisEncoder`)**:
