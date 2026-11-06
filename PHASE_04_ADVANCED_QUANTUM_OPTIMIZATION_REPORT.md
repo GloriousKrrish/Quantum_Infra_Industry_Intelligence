@@ -129,3 +129,4 @@ A dedicated **Phase 04 Optimization Lab** component (`QuantumOptimizationLab.tsx
 - **Runtime Services:**
   - FastAPI backend operational on port 8000 (`http://localhost:8000/api/optimization/health`).
   - Vite dev server operational on port 8080 (`http://localhost:8080/`).
+

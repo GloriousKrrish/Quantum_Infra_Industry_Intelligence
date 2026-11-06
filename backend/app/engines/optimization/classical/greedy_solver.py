@@ -145,3 +145,4 @@ class GreedySolver:
                 "capacity": capacity
             }
         )
+

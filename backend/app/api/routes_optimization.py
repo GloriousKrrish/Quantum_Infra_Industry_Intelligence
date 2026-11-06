@@ -82,14 +82,17 @@ router = APIRouter(prefix="/api/optimization", tags=["Quantum-Classical Optimiza
 
 def _get_preset_portfolio_pune() -> QUBOModel:
     assets = [
-        RealEstateAsset("hinj_1", "Hinjewadi Tech Parcel", 18.5, 4.2, 0.35, "Hinjewadi"),
-        RealEstateAsset("wakad_1", "Wakad Commercial Hub", 16.0, 3.8, 0.25, "Wakad"),
-        RealEstateAsset("baner_1", "Baner High Street", 14.5, 5.0, 0.20, "Baner"),
-        RealEstateAsset("pcmc_1", "PCMC Industrial Park", 21.0, 6.5, 0.45, "PCMC"),
-        RealEstateAsset("kharadi_1", "Kharadi Cyber Gateway", 17.0, 4.5, 0.30, "Kharadi"),
+        RealEstateAsset("hinj_1", "Hinjewadi Tech Parcel", 18.5, 4.2, 0.35, "Hinjewadi", provenance_tier="SYNTHETIC_BENCHMARK"),
+        RealEstateAsset("wakad_1", "Wakad Commercial Hub", 16.0, 3.8, 0.25, "Wakad", provenance_tier="SYNTHETIC_BENCHMARK"),
+        RealEstateAsset("baner_1", "Baner High Street", 14.5, 5.0, 0.20, "Baner", provenance_tier="SYNTHETIC_BENCHMARK"),
+        RealEstateAsset("pcmc_1", "PCMC Industrial Park", 21.0, 6.5, 0.45, "PCMC", provenance_tier="SYNTHETIC_BENCHMARK"),
+        RealEstateAsset("kharadi_1", "Kharadi Cyber Gateway", 17.0, 4.5, 0.30, "Kharadi", provenance_tier="SYNTHETIC_BENCHMARK"),
     ]
     builder = RealEstatePortfolioBuilder(assets=assets, total_budget_cr=10.0, risk_aversion=0.4)
-    return builder.to_qubo()
+    qubo = builder.to_qubo()
+    qubo.metadata["provenance_tier"] = "SYNTHETIC_BENCHMARK"
+    qubo.metadata["data_provenance"] = "SYNTHETIC_BENCHMARK (Simulated indicative values for algorithmic research and benchmarking; not actual transactional registry data)"
+    return qubo
 
 
 def _get_preset_knapsack() -> QUBOModel:
@@ -101,7 +104,10 @@ def _get_preset_knapsack() -> QUBOModel:
         KnapsackItem("k5", "Stormwater Pump Unit", 15.0, 5.0),
     ]
     builder = KnapsackProblemBuilder(items=items, capacity=15.0)
-    return builder.to_qubo()
+    qubo = builder.to_qubo()
+    qubo.metadata["provenance_tier"] = "SYNTHETIC_BENCHMARK"
+    qubo.metadata["data_provenance"] = "SYNTHETIC_BENCHMARK (Simulated indicative parameters for algorithmic benchmarking)"
+    return qubo
 
 
 def _get_preset_facility_pune() -> QUBOModel:
@@ -118,7 +124,10 @@ def _get_preset_facility_pune() -> QUBOModel:
         DemandPoint("d4", "Tathawade Demand", 18.6186, 73.7538, 1.2),
     ]
     builder = FacilityLocationBuilder(sites, demands, num_facilities_to_open=2)
-    return builder.to_qubo()
+    qubo = builder.to_qubo()
+    qubo.metadata["provenance_tier"] = "SYNTHETIC_BENCHMARK"
+    qubo.metadata["data_provenance"] = "SYNTHETIC_BENCHMARK (Simulated indicative parameters for algorithmic benchmarking)"
+    return qubo
 
 
 # =========================================================================
@@ -472,9 +481,13 @@ async def solve_qaoa(request: SolveQAOARequest):
         optimal_betas=sol.optimal_betas,
         optimal_bitstring=sol.optimal_bitstring,
         optimal_vector=sol.optimal_vector,
+        best_sampled_bitstring=sol.best_sampled_bitstring,
+        most_frequent_bitstring=sol.most_frequent_bitstring,
         best_sampled_energy=sol.best_sampled_energy,
+        most_frequent_energy=sol.most_frequent_energy,
         expected_energy=sol.expected_energy,
         ground_state_probability=sol.ground_state_probability,
+        is_verified_ground_state=sol.is_verified_ground_state,
         approximation_ratio=sol.approximation_ratio,
         solve_time_ms=sol.solve_time_ms,
         circuit_metadata=sol.circuit_metadata,
@@ -577,7 +590,10 @@ async def run_benchmark(request: BenchmarkRequest):
                 is_quantum=s.is_quantum,
                 status=s.status,
                 optimal_bitstring=s.optimal_bitstring,
+                best_bitstring=s.best_bitstring,
                 energy=s.energy,
+                bitstring_evaluated_energy=s.bitstring_evaluated_energy,
+                absolute_optimality_gap=s.absolute_optimality_gap,
                 optimality_gap_pct=s.optimality_gap_pct,
                 approximation_ratio=s.approximation_ratio,
                 solve_time_ms=s.solve_time_ms,
@@ -592,3 +608,4 @@ async def run_benchmark(request: BenchmarkRequest):
         total_benchmark_time_ms=report.total_benchmark_time_ms,
         scientific_disclaimer=report.scientific_disclaimer,
     )
+

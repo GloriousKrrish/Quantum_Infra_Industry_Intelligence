@@ -109,3 +109,4 @@ class HybridOptimizer:
             approximation_ratio=approx_ratio,
             total_execution_time_ms=round(elapsed_ms, 2),
         )
+

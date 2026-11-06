@@ -22,6 +22,7 @@ class RealEstateAsset:
     micro_market: str  # e.g., "Hinjewadi", "Wakad", "Baner", "Chakan", "Kharadi"
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+    provenance_tier: str = "SYNTHETIC_BENCHMARK"
 
 
 class RealEstatePortfolioBuilder:
@@ -151,5 +152,8 @@ class RealEstatePortfolioBuilder:
                 "budget_cr": B,
                 "risk_aversion": self.risk_aversion,
                 "diversification_penalty": self.diversification_penalty,
+                "provenance_tier": "SYNTHETIC_BENCHMARK",
+                "data_provenance": "SYNTHETIC_BENCHMARK (Simulated indicative values for algorithmic research and benchmarking; not actual transactional registry data)",
             }
         )
+

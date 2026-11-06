@@ -44,11 +44,15 @@ class QAOASolution:
     iterations: int
     optimal_gammas: List[float]
     optimal_betas: List[float]
-    optimal_bitstring: str
+    optimal_bitstring: str  # Kept for backward compatibility (best sampled bitstring)
+    best_sampled_bitstring: str
+    most_frequent_bitstring: str
     optimal_vector: List[int]
     best_sampled_energy: float
+    most_frequent_energy: float
     expected_energy: float
     ground_state_probability: float
+    is_verified_ground_state: bool
     approximation_ratio: Optional[float]
     solve_time_ms: float
     circuit_metadata: Dict[str, Any]
@@ -127,8 +131,8 @@ class QAOAEngine:
 
             bound_qc = qc_param.assign_parameters(param_dict)
             sv = Statevector.from_instruction(bound_qc)
-            # Expectation value: <psi | H_Ising | psi> + offset
-            energy = float(sv.expectation_value(ising_hamiltonian).real + c0)
+            # Expectation value: <psi | H_Ising | psi> (offset is already incorporated in SparsePauliOp identity term)
+            energy = float(sv.expectation_value(ising_hamiltonian).real)
 
             iteration_counter[0] += 1
             if iteration_counter[0] <= 50 or iteration_counter[0] % 5 == 0:
@@ -192,6 +196,12 @@ class QAOAEngine:
         elapsed_ms = (time.perf_counter() - start_time) * 1000.0
         circuit_meta = circuit_builder.get_circuit_metadata()
 
+        most_freq_energy = qubo.evaluate_energy(decoded.most_probable_bitstring)
+        is_ground = (
+            known_ground_energy is not None
+            and abs(decoded.best_energy - known_ground_energy) < 1e-4
+        )
+
         return QAOASolution(
             status="OPTIMIZED" if res.success else "ITERATION_LIMIT_REACHED",
             success=bool(res.success),
@@ -202,10 +212,14 @@ class QAOAEngine:
             optimal_gammas=[round(float(g), 6) for g in opt_gammas],
             optimal_betas=[round(float(b), 6) for b in opt_betas],
             optimal_bitstring=decoded.best_energy_bitstring,
+            best_sampled_bitstring=decoded.best_energy_bitstring,
+            most_frequent_bitstring=decoded.most_probable_bitstring,
             optimal_vector=[int(b) for b in decoded.best_energy_bitstring],
             best_sampled_energy=decoded.best_energy,
+            most_frequent_energy=round(most_freq_energy, 6),
             expected_energy=round(expected_energy, 6),
             ground_state_probability=decoded.ground_state_probability,
+            is_verified_ground_state=is_ground,
             approximation_ratio=approx_ratio,
             solve_time_ms=round(elapsed_ms, 2),
             circuit_metadata={
@@ -229,3 +243,4 @@ class QAOAEngine:
             ],
             all_counts=raw_counts,
         )
+

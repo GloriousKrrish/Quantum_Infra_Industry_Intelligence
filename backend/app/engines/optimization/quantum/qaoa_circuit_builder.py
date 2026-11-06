@@ -135,3 +135,4 @@ class QAOACircuitBuilder:
             rz_count=counts.get("rz", 0),
             rx_count=counts.get("rx", 0),
         )
+

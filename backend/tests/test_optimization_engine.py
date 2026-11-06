@@ -356,3 +356,135 @@ def test_api_solve_qaoa(client, sample_qubo_2var):
     assert data["optimal_bitstring"] == "01"
     assert np.isclose(data["best_sampled_energy"], 1.0)
     assert len(data["top_measurements"]) > 0
+
+
+# =========================================================================
+# Phase 4.9 Forensic Scientific Audit & Regression Verification Tests
+# =========================================================================
+
+def test_benchmark_bitstring_energy_consistency():
+    """
+    Forensic test for Objective 1:
+    Verifies that for every solver in the benchmark, the reported energy EXACTLY matches
+    the direct algebraic evaluation x^T Q x + c0. The identical bitstring must NEVER evaluate
+    to differing energies.
+    """
+    from backend.app.engines.optimization.hybrid.benchmark_runner import BenchmarkRunner
+    from backend.app.api.routes_optimization import _get_preset_portfolio_pune
+
+    qubo = _get_preset_portfolio_pune()
+    runner = BenchmarkRunner(seed=42)
+    report = runner.run_benchmark(qubo, run_qaoa_p2=True, qaoa_shots=2048, qaoa_maxiter=25)
+
+    bitstring_to_energy = {}
+    for solver in report.solvers:
+        # 1. Direct re-evaluation
+        re_evaluated = qubo.evaluate_energy(solver.optimal_bitstring)
+        assert np.isclose(solver.energy, re_evaluated, atol=1e-5), (
+            f"Energy mismatch for solver {solver.solver_name}: "
+            f"reported={solver.energy}, re_evaluated={re_evaluated}"
+        )
+        assert np.isclose(solver.bitstring_evaluated_energy, re_evaluated, atol=1e-5)
+
+        # 2. Invariance check: same bitstring must have identical energy across all solvers
+        if solver.optimal_bitstring in bitstring_to_energy:
+            prev_energy, prev_solver = bitstring_to_energy[solver.optimal_bitstring]
+            assert np.isclose(solver.energy, prev_energy, atol=1e-5), (
+                f"Benchmark inconsistency detected! Bitstring {solver.optimal_bitstring} "
+                f"evaluated to {prev_energy} in {prev_solver} but {solver.energy} in {solver.solver_name}"
+            )
+        else:
+            bitstring_to_energy[solver.optimal_bitstring] = (solver.energy, solver.solver_name)
+
+
+def test_qaoa_disambiguated_fields(sample_qubo_2var):
+    """
+    Forensic test verifying that best_sampled_bitstring, most_frequent_bitstring,
+    best_sampled_energy, and expected_energy are distinct and mathematically consistent.
+    """
+    engine = QAOAEngine(depth_p=1, shots=1024, optimizer_name="COBYLA", maxiter=20, seed=42)
+    sol = engine.solve(sample_qubo_2var)
+
+    assert sol.best_sampled_bitstring is not None
+    assert sol.most_frequent_bitstring is not None
+    assert len(sol.best_sampled_bitstring) == sample_qubo_2var.num_variables
+    assert len(sol.most_frequent_bitstring) == sample_qubo_2var.num_variables
+
+    # Verify evaluated energies match exactly
+    best_eval = sample_qubo_2var.evaluate_energy(sol.best_sampled_bitstring)
+    most_freq_eval = sample_qubo_2var.evaluate_energy(sol.most_frequent_bitstring)
+
+    assert np.isclose(sol.best_sampled_energy, best_eval, atol=1e-5)
+    assert np.isclose(sol.most_frequent_energy, most_freq_eval, atol=1e-5)
+
+    # By definition, the best sampled energy must be <= most frequent sampled energy
+    assert sol.best_sampled_energy <= sol.most_frequent_energy + 1e-5
+
+    # Expected energy must be within [E_min, E_max]
+    all_energies = [
+        sample_qubo_2var.evaluate_energy(format(i, f"0{sample_qubo_2var.num_variables}b"))
+        for i in range(2 ** sample_qubo_2var.num_variables)
+    ]
+    e_min, e_max = min(all_energies), max(all_energies)
+    assert e_min - 1e-5 <= sol.expected_energy <= e_max + 1e-5
+
+
+def test_provenance_tier_labeling():
+    """
+    Forensic test verifying that synthetic benchmark presets are explicitly
+    tagged with provenance_tier == 'SYNTHETIC_BENCHMARK'.
+    """
+    from backend.app.api.routes_optimization import _get_preset_portfolio_pune, _get_preset_knapsack, _get_preset_facility_pune
+
+    p1 = _get_preset_portfolio_pune()
+    assert p1.metadata.get("provenance_tier") == "SYNTHETIC_BENCHMARK"
+    assert "not actual transactional" in p1.metadata.get("data_provenance", "").lower()
+
+    p2 = _get_preset_knapsack()
+    assert p2.metadata.get("provenance_tier") == "SYNTHETIC_BENCHMARK"
+
+    p3 = _get_preset_facility_pune()
+    assert p3.metadata.get("provenance_tier") == "SYNTHETIC_BENCHMARK"
+
+
+def test_shift_invariant_approximation_ratio():
+    """
+    Forensic test verifying that adding an arbitrary offset C to a QUBO does NOT alter
+    the normalized approximation ratio alpha = (E_worst - E) / (E_worst - E_min).
+    """
+    from backend.app.engines.optimization.hybrid.performance_metrics import BenchmarkMetricsCalculator
+
+    e_min = -33.76
+    e_worst = 250.0
+    sol_energy = -32.16
+
+    alpha_base = BenchmarkMetricsCalculator.calculate_approx_ratio(sol_energy, e_min, e_worst)
+
+    # Add constant shift C = 1000.0 to all energies
+    shift = 1000.0
+    alpha_shifted = BenchmarkMetricsCalculator.calculate_approx_ratio(sol_energy + shift, e_min + shift, e_worst + shift)
+
+    assert np.isclose(alpha_base, alpha_shifted, atol=1e-6), (
+        f"Approximation ratio is sensitive to constant offset: base={alpha_base}, shifted={alpha_shifted}"
+    )
+
+
+def test_milp_mccormick_exhaustive_comparison():
+    """
+    Forensic test verifying that SciPy HiGHS MILP via McCormick envelopes matches
+    exact brute-force combinatorial search on random QUBO instances.
+    """
+    np.random.seed(999)
+    for n in [3, 4, 5]:
+        Q = np.random.uniform(-5, 5, size=(n, n))
+        Q = (Q + Q.T) / 2.0
+        qubo = QUBOModel(matrix=Q, offset=5.0)
+
+        bf_sol = BruteForceSolver().solve(qubo)
+        milp_sol = HiGHSMILPSolver().solve_qubo(qubo)
+
+        assert np.isclose(bf_sol.minimum_energy, milp_sol.objective_value, atol=1e-5), (
+            f"MILP and Brute-Force disagree on n={n}: BF={bf_sol.minimum_energy}, MILP={milp_sol.objective_value}"
+        )
+
+

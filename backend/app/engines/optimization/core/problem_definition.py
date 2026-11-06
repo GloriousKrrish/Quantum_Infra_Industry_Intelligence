@@ -57,3 +57,4 @@ class OptimizationProblem:
             "parameters": self.parameters,
             "metadata": self.metadata,
         }
+

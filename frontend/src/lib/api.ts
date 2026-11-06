@@ -1608,9 +1608,13 @@ export interface QAOASolutionResponse {
   optimal_betas: number[];
   optimal_bitstring: string;
   optimal_vector: number[];
+  best_sampled_bitstring?: string;
+  most_frequent_bitstring?: string;
   best_sampled_energy: number;
+  most_frequent_energy?: number;
   expected_energy: number;
   ground_state_probability: number;
+  is_verified_ground_state?: boolean;
   approximation_ratio?: number;
   solve_time_ms: number;
   circuit_metadata: Record<string, any>;
@@ -1671,7 +1675,10 @@ export interface BenchmarkSolverEntry {
   is_quantum: boolean;
   status: string;
   optimal_bitstring: string;
+  best_bitstring?: string;
   energy: number;
+  bitstring_evaluated_energy?: number;
+  absolute_optimality_gap?: number;
   optimality_gap_pct: number;
   approximation_ratio: number;
   solve_time_ms: number;

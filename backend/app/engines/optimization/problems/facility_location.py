@@ -152,3 +152,4 @@ class FacilityLocationBuilder:
                 "cardinality_penalty": P,
             }
         )
+

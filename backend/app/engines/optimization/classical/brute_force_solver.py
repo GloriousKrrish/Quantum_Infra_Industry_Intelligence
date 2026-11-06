@@ -97,3 +97,4 @@ class BruteForceSolver:
             solve_time_ms=elapsed_ms,
             energy_percentiles=percentiles
         )
+

@@ -279,3 +279,4 @@ class HiGHSMILPSolver:
                 solve_time_ms=elapsed_ms,
                 extra_metadata={"exception": str(e)}
             )
+

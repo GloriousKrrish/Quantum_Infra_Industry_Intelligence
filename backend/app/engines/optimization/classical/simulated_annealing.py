@@ -148,3 +148,4 @@ class SimulatedAnnealingSolver:
                 "seed": self.seed,
             }
         )
+

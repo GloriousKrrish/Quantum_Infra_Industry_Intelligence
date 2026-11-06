@@ -118,3 +118,4 @@ class ResourceAllocationBuilder:
                 "penalty": P,
             }
         )
+

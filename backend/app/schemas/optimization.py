@@ -114,9 +114,13 @@ class QAOASolutionResponse(BaseModel):
     optimal_betas: List[float]
     optimal_bitstring: str
     optimal_vector: List[int]
+    best_sampled_bitstring: Optional[str] = None
+    most_frequent_bitstring: Optional[str] = None
     best_sampled_energy: float
+    most_frequent_energy: Optional[float] = None
     expected_energy: float
     ground_state_probability: float
+    is_verified_ground_state: Optional[bool] = False
     approximation_ratio: Optional[float] = None
     solve_time_ms: float
     circuit_metadata: Dict[str, Any]
@@ -162,7 +166,10 @@ class BenchmarkSolverEntrySchema(BaseModel):
     is_quantum: bool
     status: str
     optimal_bitstring: str
+    best_bitstring: Optional[str] = None
     energy: float
+    bitstring_evaluated_energy: Optional[float] = None
+    absolute_optimality_gap: Optional[float] = None
     optimality_gap_pct: float
     approximation_ratio: float
     solve_time_ms: float
@@ -193,3 +200,4 @@ class OptimizationHealthResponse(BaseModel):
     supported_problem_types: List[str]
     simulation_backend: str
     hardware_disclaimer: str
+

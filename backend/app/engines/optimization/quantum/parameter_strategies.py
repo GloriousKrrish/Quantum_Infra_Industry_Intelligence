@@ -75,3 +75,4 @@ class QAOAParameterInitializer:
 
         # Default fallback
         return [0.2] * depth_p, [0.2] * depth_p
+

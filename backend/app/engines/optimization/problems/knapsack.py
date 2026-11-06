@@ -139,3 +139,4 @@ class KnapsackProblemBuilder:
                 "slack_coefficients": slack_coeffs,
             }
         )
+

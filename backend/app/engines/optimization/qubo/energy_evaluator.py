@@ -66,3 +66,4 @@ def get_ground_state_exact(qubo: QUBOModel) -> Tuple[str, float]:
             best_bs = bs
 
     return best_bs, round(best_energy, 6)
+
