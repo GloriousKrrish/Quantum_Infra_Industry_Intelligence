@@ -10,7 +10,7 @@ import {
   Play,
   RotateCcw,
   Sliders,
-  Scale,
+  Scale, 
   Binary,
   ShieldCheck,
   TrendingDown,
@@ -209,27 +209,27 @@ export default function QuantumOptimizationLab() {
   return (
     <div className="space-y-6">
       {/* ── TOP BANNER: SCIENTIFIC DISCLOSURE & ENGINE HEALTH ─────────── */}
-      <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-r from-blue-50/80 via-slate-50 to-indigo-50/60 p-5 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-start gap-3">
-            <div className="rounded-xl bg-blue-600 p-2.5 text-white shadow-sm mt-0.5">
-              <Atom className="h-5 w-5 animate-spin-slow" />
+      <div className={cn('rounded-2xl', 'border', 'border-blue-200/80', 'bg-gradient-to-r', 'from-blue-50/80', 'via-slate-50', 'to-indigo-50/60', 'p-5', 'shadow-xs')}>
+        <div className={cn('flex', 'flex-col', 'md:flex-row', 'md:items-center', 'justify-between', 'gap-4')}>
+          <div className={cn('flex', 'items-start', 'gap-3')}>
+            <div className={cn('rounded-xl', 'bg-blue-600', 'p-2.5', 'text-white', 'shadow-sm', 'mt-0.5')}>
+              <Atom className={cn('h-5', 'w-5', 'animate-spin-slow')} />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="font-display text-base font-bold text-slate-900">
+              <div className={cn('flex', 'items-center', 'gap-2')}>
+                <h2 className={cn('font-display', 'text-base', 'font-bold', 'text-slate-900')}>
                   Quantum-Classical Optimization Research Engine
                 </h2>
-                <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700">
+                <span className={cn('rounded-full', 'bg-blue-100', 'px-2', 'py-0.5', 'text-[10px]', 'font-semibold', 'text-blue-700')}>
                   Phase 04 Verified
                 </span>
               </div>
-              <p className="mt-1 text-xs text-slate-600 max-w-2xl leading-relaxed">
+              <p className={cn('mt-1', 'text-xs', 'text-slate-600', 'max-w-2xl', 'leading-relaxed')}>
                 Mathematical QUBO formulation, bidirectional Ising mapping, exact SciPy HiGHS MILP,
                 and parameterized QAOA quantum approximate optimization on classical CPU simulator.
               </p>
-              <div className="mt-2 flex items-center gap-1.5 text-[11px] font-medium text-amber-700 bg-amber-50/80 border border-amber-200/60 rounded-md px-2.5 py-1 w-fit">
-                <Info className="h-3.5 w-3.5 shrink-0 text-amber-600" />
+              <div className={cn('mt-2', 'flex', 'items-center', 'gap-1.5', 'text-[11px]', 'font-medium', 'text-amber-700', 'bg-amber-50/80', 'border', 'border-amber-200/60', 'rounded-md', 'px-2.5', 'py-1', 'w-fit')}>
+                <Info className={cn('h-3.5', 'w-3.5', 'shrink-0', 'text-amber-600')} />
                 <span>
                   Scientific Disclosure: Executed via local CPU classical simulation with Qiskit Aer 0.18.2. No physical quantum device accessed.
                 </span>
@@ -239,18 +239,18 @@ export default function QuantumOptimizationLab() {
 
           {/* Software environment versions badge */}
           {health && (
-            <div className="flex flex-col sm:flex-row md:flex-col gap-1.5 shrink-0 text-[11px] font-mono bg-white/80 border border-slate-200/80 rounded-xl p-3 shadow-2xs">
-              <div className="flex items-center justify-between gap-4">
+            <div className={cn('flex', 'flex-col', 'sm:flex-row', 'md:flex-col', 'gap-1.5', 'shrink-0', 'text-[11px]', 'font-mono', 'bg-white/80', 'border', 'border-slate-200/80', 'rounded-xl', 'p-3', 'shadow-2xs')}>
+              <div className={cn('flex', 'items-center', 'justify-between', 'gap-4')}>
                 <span className="text-slate-500">Qiskit:</span>
-                <span className="font-semibold text-slate-800">v{health.qiskit_version}</span>
+                <span className={cn('font-semibold', 'text-slate-800')}>v{health.qiskit_version}</span>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className={cn('flex', 'items-center', 'justify-between', 'gap-4')}>
                 <span className="text-slate-500">Qiskit Aer:</span>
-                <span className="font-semibold text-slate-800">v{health.qiskit_aer_version}</span>
+                <span className={cn('font-semibold', 'text-slate-800')}>v{health.qiskit_aer_version}</span>
               </div>
-              <div className="flex items-center justify-between gap-4">
+              <div className={cn('flex', 'items-center', 'justify-between', 'gap-4')}>
                 <span className="text-slate-500">SciPy HiGHS:</span>
-                <span className="font-semibold text-slate-800">v{health.scipy_version}</span>
+                <span className={cn('font-semibold', 'text-slate-800')}>v{health.scipy_version}</span>
               </div>
             </div>
           )}
@@ -258,27 +258,27 @@ export default function QuantumOptimizationLab() {
       </div>
 
       {errorMsg && (
-        <div className="flex items-center gap-2 rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700">
-          <AlertTriangle className="h-4 w-4 shrink-0" />
+        <div className={cn('flex', 'items-center', 'gap-2', 'rounded-xl', 'border', 'border-red-200', 'bg-red-50', 'p-4', 'text-xs', 'text-red-700')}>
+          <AlertTriangle className={cn('h-4', 'w-4', 'shrink-0')} />
           <span>{errorMsg}</span>
         </div>
       )}
 
       {/* ── 1. DOMAIN PROBLEM FORMULATION ─────────────────────────────── */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5 pb-4 border-b border-slate-100">
+      <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-6', 'shadow-xs')}>
+        <div className={cn('flex', 'flex-col', 'md:flex-row', 'md:items-center', 'justify-between', 'gap-4', 'mb-5', 'pb-4', 'border-b', 'border-slate-100')}>
           <div>
-            <h3 className="font-display text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Sliders className="h-4 w-4 text-blue-600" />
+            <h3 className={cn('font-display', 'text-sm', 'font-bold', 'text-slate-900', 'flex', 'items-center', 'gap-2')}>
+              <Sliders className={cn('h-4', 'w-4', 'text-blue-600')} />
               Domain Problem Selection & Mathematical Modeling
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className={cn('text-xs', 'text-slate-500', 'mt-0.5')}>
               Select a practical real estate or spatial infrastructure optimization scenario
             </p>
           </div>
 
           {/* Preset Buttons */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-slate-100/80 p-1 rounded-xl">
+          <div className={cn('flex', 'flex-wrap', 'items-center', 'gap-1.5', 'bg-slate-100/80', 'p-1', 'rounded-xl')}>
             {(
               [
                 ["portfolio", "Real Estate Portfolio"],
@@ -304,12 +304,12 @@ export default function QuantumOptimizationLab() {
         </div>
 
         {/* Dynamic Controls based on Problem Preset */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className={cn('grid', 'grid-cols-1', 'md:grid-cols-3', 'gap-4')}>
           {selectedProblem === "portfolio" && (
             <>
-              <div className="md:col-span-3 mb-1">
-                <div className="flex items-center gap-2 rounded-lg bg-amber-50/90 border border-amber-200/80 px-3 py-1.5 text-[11px] text-amber-800 font-medium">
-                  <span className="rounded bg-amber-200/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-amber-900 shrink-0">
+              <div className={cn('md:col-span-3', 'mb-1')}>
+                <div className={cn('flex', 'items-center', 'gap-2', 'rounded-lg', 'bg-amber-50/90', 'border', 'border-amber-200/80', 'px-3', 'py-1.5', 'text-[11px]', 'text-amber-800', 'font-medium')}>
+                  <span className={cn('rounded', 'bg-amber-200/70', 'px-1.5', 'py-0.5', 'text-[9px]', 'font-bold', 'uppercase', 'tracking-wider', 'text-amber-900', 'shrink-0')}>
                     Provenance: SYNTHETIC_BENCHMARK
                   </span>
                   <span>
@@ -319,9 +319,9 @@ export default function QuantumOptimizationLab() {
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-medium text-slate-700">Total Investment Budget:</span>
-                  <span className="font-mono font-bold text-blue-600">₹{portfolioBudget.toFixed(1)} Cr</span>
+                <div className={cn('flex', 'justify-between', 'text-xs')}>
+                  <span className={cn('font-medium', 'text-slate-700')}>Total Investment Budget:</span>
+                  <span className={cn('font-mono', 'font-bold', 'text-blue-600')}>₹{portfolioBudget.toFixed(1)} Cr</span>
                 </div>
                 <input
                   type="range"
@@ -330,17 +330,17 @@ export default function QuantumOptimizationLab() {
                   step={0.5}
                   value={portfolioBudget}
                   onChange={(e) => setPortfolioBudget(parseFloat(e.target.value))}
-                  className="w-full accent-blue-600"
+                  className={cn('w-full', 'accent-blue-600')}
                 />
-                <p className="text-[10px] text-slate-500">
+                <p className={cn('text-[10px]', 'text-slate-500')}>
                   Allocates across Hinjewadi, Wakad, Baner, PCMC, and Kharadi parcels.
                 </p>
               </div>
 
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-medium text-slate-700">Risk Aversion Factor (λ):</span>
-                  <span className="font-mono font-bold text-blue-600">{portfolioRiskAversion.toFixed(2)}</span>
+                <div className={cn('flex', 'justify-between', 'text-xs')}>
+                  <span className={cn('font-medium', 'text-slate-700')}>Risk Aversion Factor (λ):</span>
+                  <span className={cn('font-mono', 'font-bold', 'text-blue-600')}>{portfolioRiskAversion.toFixed(2)}</span>
                 </div>
                 <input
                   type="range"
@@ -349,15 +349,15 @@ export default function QuantumOptimizationLab() {
                   step={0.05}
                   value={portfolioRiskAversion}
                   onChange={(e) => setPortfolioRiskAversion(parseFloat(e.target.value))}
-                  className="w-full accent-blue-600"
+                  className={cn('w-full', 'accent-blue-600')}
                 />
-                <p className="text-[10px] text-slate-500">
+                <p className={cn('text-[10px]', 'text-slate-500')}>
                   Higher values penalize volatile parcel micro-markets.
                 </p>
               </div>
 
-              <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-3 text-[11px] text-slate-600 space-y-1">
-                <div className="font-semibold text-slate-800">Micro-Market Diversification:</div>
+              <div className={cn('rounded-xl', 'bg-slate-50', 'border', 'border-slate-200/60', 'p-3', 'text-[11px]', 'text-slate-600', 'space-y-1')}>
+                <div className={cn('font-semibold', 'text-slate-800')}>Micro-Market Diversification:</div>
                 <div>Enforces spatial anti-clustering penalty to avoid single-zone concentration.</div>
               </div>
             </>
@@ -366,9 +366,9 @@ export default function QuantumOptimizationLab() {
           {selectedProblem === "knapsack" && (
             <>
               <div className="space-y-1.5">
-                <div className="flex justify-between text-xs">
-                  <span className="font-medium text-slate-700">Substation / Hub Capacity:</span>
-                  <span className="font-mono font-bold text-blue-600">{knapsackCapacity.toFixed(0)} Units</span>
+                <div className={cn('flex', 'justify-between', 'text-xs')}>
+                  <span className={cn('font-medium', 'text-slate-700')}>Substation / Hub Capacity:</span>
+                  <span className={cn('font-mono', 'font-bold', 'text-blue-600')}>{knapsackCapacity.toFixed(0)} Units</span>
                 </div>
                 <input
                   type="range"
@@ -377,22 +377,22 @@ export default function QuantumOptimizationLab() {
                   step={1}
                   value={knapsackCapacity}
                   onChange={(e) => setKnapsackCapacity(parseFloat(e.target.value))}
-                  className="w-full accent-blue-600"
+                  className={cn('w-full', 'accent-blue-600')}
                 />
-                <p className="text-[10px] text-slate-500">
+                <p className={cn('text-[10px]', 'text-slate-500')}>
                   Selects optimal combination of power transformers, EV clusters, and storage.
                 </p>
               </div>
-              <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-3 text-[11px] text-slate-600 space-y-1 md:col-span-2">
-                <div className="font-semibold text-slate-800">Binary Slack Expansion:</div>
+              <div className={cn('rounded-xl', 'bg-slate-50', 'border', 'border-slate-200/60', 'p-3', 'text-[11px]', 'text-slate-600', 'space-y-1', 'md:col-span-2')}>
+                <div className={cn('font-semibold', 'text-slate-800')}>Binary Slack Expansion:</div>
                 <div>Capacity constraint is converted into exact QUBO via powers-of-two slack bits.</div>
               </div>
             </>
           )}
 
           {selectedProblem === "facility_location" && (
-            <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-3 text-[11px] text-slate-600 space-y-1 md:col-span-3">
-              <div className="font-semibold text-slate-800">P-Median Spatial Location:</div>
+            <div className={cn('rounded-xl', 'bg-slate-50', 'border', 'border-slate-200/60', 'p-3', 'text-[11px]', 'text-slate-600', 'space-y-1', 'md:col-span-3')}>
+              <div className={cn('font-semibold', 'text-slate-800')}>P-Median Spatial Location:</div>
               <div>
                 Selects 2 optimal regional logistics/medical hubs among Baner, Wakad, Hinjewadi, and PCMC
                 to minimize aggregate travel distance to demand centers.
@@ -401,8 +401,8 @@ export default function QuantumOptimizationLab() {
           )}
 
           {selectedProblem === "resource_allocation" && (
-            <div className="rounded-xl bg-slate-50 border border-slate-200/60 p-3 text-[11px] text-slate-600 space-y-1 md:col-span-3">
-              <div className="font-semibold text-slate-800">Bipartite Heavy Machinery Scheduling:</div>
+            <div className={cn('rounded-xl', 'bg-slate-50', 'border', 'border-slate-200/60', 'p-3', 'text-[11px]', 'text-slate-600', 'space-y-1', 'md:col-span-3')}>
+              <div className={cn('font-semibold', 'text-slate-800')}>Bipartite Heavy Machinery Scheduling:</div>
               <div>
                 Matches cranes, piling rigs, and excavators to foundation and core wall tasks across active sites.
               </div>
@@ -413,38 +413,38 @@ export default function QuantumOptimizationLab() {
 
       {/* ── 2. MATHEMATICAL QUBO & ISING MATRIX VISUALIZATION ─────────── */}
       {problemData && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className={cn('grid', 'grid-cols-1', 'lg:grid-cols-3', 'gap-6')}>
           {/* QUBO Matrix Heatmap Card */}
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs lg:col-span-2">
-            <div className="flex items-center justify-between mb-4">
+          <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-6', 'shadow-xs', 'lg:col-span-2')}>
+            <div className={cn('flex', 'items-center', 'justify-between', 'mb-4')}>
               <div>
-                <h3 className="font-display text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <Binary className="h-4 w-4 text-indigo-600" />
+                <h3 className={cn('font-display', 'text-sm', 'font-bold', 'text-slate-900', 'flex', 'items-center', 'gap-2')}>
+                  <Binary className={cn('h-4', 'w-4', 'text-indigo-600')} />
                   QUBO Matrix Q ({problemData.num_variables} × {problemData.num_variables})
                 </h3>
-                <p className="text-[11px] text-slate-500">
+                <p className={cn('text-[11px]', 'text-slate-500')}>
                   Energy = x^T Q x + {problemData.qubo.offset.toFixed(2)} (Diagonal: Linear weights, Off-diagonal: Couplings)
                 </p>
               </div>
 
               {quboValidation && (
-                <div className="flex items-center gap-1.5 text-[11px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md font-medium">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                <div className={cn('flex', 'items-center', 'gap-1.5', 'text-[11px]', 'text-emerald-700', 'bg-emerald-50', 'border', 'border-emerald-200', 'px-2.5', 'py-1', 'rounded-md', 'font-medium')}>
+                  <CheckCircle2 className={cn('h-3.5', 'w-3.5', 'text-emerald-600')} />
                   <span>Algebraically Validated</span>
                 </div>
               )}
             </div>
 
             {/* Matrix Heatmap Table */}
-            <div className="overflow-x-auto border border-slate-100 rounded-xl p-2 bg-slate-50/50 max-h-72 overflow-y-auto font-mono text-[11px]">
-              <table className="w-full border-collapse text-center">
+            <div className={cn('overflow-x-auto', 'border', 'border-slate-100', 'rounded-xl', 'p-2', 'bg-slate-50/50', 'max-h-72', 'overflow-y-auto', 'font-mono', 'text-[11px]')}>
+              <table className={cn('w-full', 'border-collapse', 'text-center')}>
                 <thead>
                   <tr>
-                    <th className="p-1 text-slate-400 font-normal text-[10px]"></th>
+                    <th className={cn('p-1', 'text-slate-400', 'font-normal', 'text-[10px]')}></th>
                     {problemData.variable_names.map((name, idx) => (
                       <th
                         key={idx}
-                        className="p-1 font-medium text-slate-600 max-w-[60px] truncate"
+                        className={cn('p-1', 'font-medium', 'text-slate-600', 'max-w-[60px]', 'truncate')}
                         title={name}
                       >
                         v{idx}
@@ -455,7 +455,7 @@ export default function QuantumOptimizationLab() {
                 <tbody>
                   {problemData.qubo.matrix.map((row, rIdx) => (
                     <tr key={rIdx}>
-                      <td className="p-1 font-medium text-slate-600 text-left text-[10px] max-w-[70px] truncate" title={problemData.variable_names[rIdx]}>
+                      <td className={cn('p-1', 'font-medium', 'text-slate-600', 'text-left', 'text-[10px]', 'max-w-[70px]', 'truncate')} title={problemData.variable_names[rIdx]}>
                         v{rIdx}
                       </td>
                       {row.map((val, cIdx) => {
@@ -487,9 +487,9 @@ export default function QuantumOptimizationLab() {
             </div>
 
             {/* Variable Legend */}
-            <div className="mt-3 flex flex-wrap gap-2 text-[10px] text-slate-600 font-mono">
+            <div className={cn('mt-3', 'flex', 'flex-wrap', 'gap-2', 'text-[10px]', 'text-slate-600', 'font-mono')}>
               {problemData.variable_names.map((v, i) => (
-                <span key={i} className="bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                <span key={i} className={cn('bg-slate-100', 'px-2', 'py-0.5', 'rounded', 'border', 'border-slate-200')}>
                   v{i}: {v}
                 </span>
               ))}
@@ -498,35 +498,35 @@ export default function QuantumOptimizationLab() {
 
           {/* Spectral Diagnostics & Ising Hamiltonian */}
           <div className="space-y-4">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-              <h4 className="font-display text-xs font-bold text-slate-900 mb-3 flex items-center gap-1.5">
-                <Scale className="h-3.5 w-3.5 text-blue-600" />
+            <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-5', 'shadow-xs')}>
+              <h4 className={cn('font-display', 'text-xs', 'font-bold', 'text-slate-900', 'mb-3', 'flex', 'items-center', 'gap-1.5')}>
+                <Scale className={cn('h-3.5', 'w-3.5', 'text-blue-600')} />
                 Spectral & Algebraic Diagnostics
               </h4>
 
               {quboValidation && (
-                <div className="space-y-2 text-xs font-mono">
-                  <div className="flex justify-between py-1 border-b border-slate-100">
+                <div className={cn('space-y-2', 'text-xs', 'font-mono')}>
+                  <div className={cn('flex', 'justify-between', 'py-1', 'border-b', 'border-slate-100')}>
                     <span className="text-slate-500">Variables (n):</span>
-                    <span className="font-bold text-slate-800">{quboValidation.num_variables}</span>
+                    <span className={cn('font-bold', 'text-slate-800')}>{quboValidation.num_variables}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
+                  <div className={cn('flex', 'justify-between', 'py-1', 'border-b', 'border-slate-100')}>
                     <span className="text-slate-500">Condition Number κ:</span>
-                    <span className="font-bold text-slate-800">
+                    <span className={cn('font-bold', 'text-slate-800')}>
                       {quboValidation.condition_number ? quboValidation.condition_number.toFixed(2) : "N/A"}
                     </span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
+                  <div className={cn('flex', 'justify-between', 'py-1', 'border-b', 'border-slate-100')}>
                     <span className="text-slate-500">Min Eigenvalue λ_min:</span>
-                    <span className="font-bold text-slate-800">{quboValidation.min_eigenvalue}</span>
+                    <span className={cn('font-bold', 'text-slate-800')}>{quboValidation.min_eigenvalue}</span>
                   </div>
-                  <div className="flex justify-between py-1 border-b border-slate-100">
+                  <div className={cn('flex', 'justify-between', 'py-1', 'border-b', 'border-slate-100')}>
                     <span className="text-slate-500">Max Eigenvalue λ_max:</span>
-                    <span className="font-bold text-slate-800">{quboValidation.max_eigenvalue}</span>
+                    <span className={cn('font-bold', 'text-slate-800')}>{quboValidation.max_eigenvalue}</span>
                   </div>
-                  <div className="flex justify-between py-1">
+                  <div className={cn('flex', 'justify-between', 'py-1')}>
                     <span className="text-slate-500">Dynamic Range:</span>
-                    <span className="font-bold text-slate-800">{quboValidation.dynamic_range_db} dB</span>
+                    <span className={cn('font-bold', 'text-slate-800')}>{quboValidation.dynamic_range_db} dB</span>
                   </div>
                 </div>
               )}
@@ -534,23 +534,23 @@ export default function QuantumOptimizationLab() {
 
             {/* Ising Model Mapping */}
             {isingData && (
-              <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs">
-                <h4 className="font-display text-xs font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                  <Zap className="h-3.5 w-3.5 text-indigo-600" />
+              <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-5', 'shadow-xs')}>
+                <h4 className={cn('font-display', 'text-xs', 'font-bold', 'text-slate-900', 'mb-2', 'flex', 'items-center', 'gap-1.5')}>
+                  <Zap className={cn('h-3.5', 'w-3.5', 'text-indigo-600')} />
                   Ising Mapping H(z)
                 </h4>
-                <p className="text-[10px] text-slate-500 mb-2">
+                <p className={cn('text-[10px]', 'text-slate-500', 'mb-2')}>
                   Mapped via z_i = 1 - 2 x_i. Total Pauli terms: {isingData.pauli_terms.length}
                 </p>
-                <div className="space-y-1 font-mono text-[10px] max-h-32 overflow-y-auto bg-slate-50 p-2 rounded-lg border border-slate-100">
+                <div className={cn('space-y-1', 'font-mono', 'text-[10px]', 'max-h-32', 'overflow-y-auto', 'bg-slate-50', 'p-2', 'rounded-lg', 'border', 'border-slate-100')}>
                   {isingData.pauli_terms.slice(0, 8).map((term, tIdx) => (
-                    <div key={tIdx} className="flex justify-between text-slate-700">
-                      <span className="text-indigo-600 font-semibold">{term.pauli}</span>
+                    <div key={tIdx} className={cn('flex', 'justify-between', 'text-slate-700')}>
+                      <span className={cn('text-indigo-600', 'font-semibold')}>{term.pauli}</span>
                       <span>{term.coefficient.toFixed(3)}</span>
                     </div>
                   ))}
                   {isingData.pauli_terms.length > 8 && (
-                    <div className="text-slate-400 text-center pt-1 italic">
+                    <div className={cn('text-slate-400', 'text-center', 'pt-1', 'italic')}>
                       + {isingData.pauli_terms.length - 8} additional Pauli terms
                     </div>
                   )}
@@ -562,47 +562,47 @@ export default function QuantumOptimizationLab() {
       )}
 
       {/* ── 3. PARAMETERIZED QAOA SIMULATION CONTROLS & HISTOGRAM ─────── */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-6', 'shadow-xs', 'space-y-6')}>
+        <div className={cn('flex', 'flex-col', 'md:flex-row', 'md:items-center', 'justify-between', 'gap-4', 'pb-4', 'border-b', 'border-slate-100')}>
           <div>
-            <h3 className="font-display text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Atom className="h-4 w-4 text-blue-600" />
+            <h3 className={cn('font-display', 'text-sm', 'font-bold', 'text-slate-900', 'flex', 'items-center', 'gap-2')}>
+              <Atom className={cn('h-4', 'w-4', 'text-blue-600')} />
               Configurable QAOA Quantum Simulation Engine
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className={cn('text-xs', 'text-slate-500')}>
               Parametric variational quantum circuit U(C, γ) U(B, β) optimized via classical feedback loop
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className={cn('flex', 'items-center', 'gap-2')}>
             <button
               onClick={handleRunMILP}
               disabled={isRunningClassical || !problemData}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 disabled:opacity-50"
+              className={cn('flex', 'items-center', 'gap-1.5', 'rounded-xl', 'border', 'border-slate-300', 'bg-white', 'px-3', 'py-2', 'text-xs', 'font-semibold', 'text-slate-700', 'shadow-2xs', 'hover:bg-slate-50', 'disabled:opacity-50')}
             >
-              <Cpu className="h-3.5 w-3.5 text-slate-600" />
+              <Cpu className={cn('h-3.5', 'w-3.5', 'text-slate-600')} />
               {isRunningClassical ? "Solving MILP..." : "Run HiGHS MILP"}
             </button>
 
             <button
               onClick={handleRunQAOA}
               disabled={isRunningQAOA || !problemData}
-              className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700 disabled:opacity-50"
+              className={cn('flex', 'items-center', 'gap-1.5', 'rounded-xl', 'bg-blue-600', 'px-4', 'py-2', 'text-xs', 'font-semibold', 'text-white', 'shadow-sm', 'hover:bg-blue-700', 'disabled:opacity-50')}
             >
-              <Play className="h-3.5 w-3.5" />
+              <Play className={cn('h-3.5', 'w-3.5')} />
               {isRunningQAOA ? "Simulating QAOA..." : "Execute QAOA"}
             </button>
           </div>
         </div>
 
         {/* Hyperparameter Controls */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4">
+        <div className={cn('grid', 'grid-cols-2', 'sm:grid-cols-5', 'gap-4')}>
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-600">Circuit Depth (p):</label>
+            <label className={cn('text-[11px]', 'font-medium', 'text-slate-600')}>Circuit Depth (p):</label>
             <select
               value={depthP}
               onChange={(e) => setDepthP(parseInt(e.target.value))}
-              className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-semibold"
+              className={cn('w-full', 'rounded-lg', 'border', 'border-slate-200', 'bg-white', 'p-1.5', 'text-xs', 'font-semibold')}
             >
               <option value={1}>p = 1 (Fast)</option>
               <option value={2}>p = 2 (Higher Fidelity)</option>
@@ -611,11 +611,11 @@ export default function QuantumOptimizationLab() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-600">Optimizer:</label>
+            <label className={cn('text-[11px]', 'font-medium', 'text-slate-600')}>Optimizer:</label>
             <select
               value={optimizerName}
               onChange={(e) => setOptimizerName(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-semibold"
+              className={cn('w-full', 'rounded-lg', 'border', 'border-slate-200', 'bg-white', 'p-1.5', 'text-xs', 'font-semibold')}
             >
               <option value="COBYLA">COBYLA (Simplex)</option>
               <option value="NELDER-MEAD">Nelder-Mead</option>
@@ -624,11 +624,11 @@ export default function QuantumOptimizationLab() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-600">Parameter Strategy:</label>
+            <label className={cn('text-[11px]', 'font-medium', 'text-slate-600')}>Parameter Strategy:</label>
             <select
               value={strategy}
               onChange={(e) => setStrategy(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-semibold"
+              className={cn('w-full', 'rounded-lg', 'border', 'border-slate-200', 'bg-white', 'p-1.5', 'text-xs', 'font-semibold')}
             >
               <option value="linear_ramp">Linear Ramp (Adiabatic)</option>
               <option value="random">Random Initialization</option>
@@ -637,11 +637,11 @@ export default function QuantumOptimizationLab() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-600">Measurement Shots:</label>
+            <label className={cn('text-[11px]', 'font-medium', 'text-slate-600')}>Measurement Shots:</label>
             <select
               value={shots}
               onChange={(e) => setShots(parseInt(e.target.value))}
-              className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-semibold"
+              className={cn('w-full', 'rounded-lg', 'border', 'border-slate-200', 'bg-white', 'p-1.5', 'text-xs', 'font-semibold')}
             >
               <option value={1024}>1,024 shots</option>
               <option value={2048}>2,048 shots</option>
@@ -650,81 +650,81 @@ export default function QuantumOptimizationLab() {
           </div>
 
           <div className="space-y-1">
-            <label className="text-[11px] font-medium text-slate-600">Max Iterations:</label>
+            <label className={cn('text-[11px]', 'font-medium', 'text-slate-600')}>Max Iterations:</label>
             <input
               type="number"
               min={10}
               max={80}
               value={maxiter}
               onChange={(e) => setMaxiter(parseInt(e.target.value) || 30)}
-              className="w-full rounded-lg border border-slate-200 bg-white p-1.5 text-xs font-mono font-semibold"
+              className={cn('w-full', 'rounded-lg', 'border', 'border-slate-200', 'bg-white', 'p-1.5', 'text-xs', 'font-mono', 'font-semibold')}
             />
           </div>
         </div>
 
         {/* Results Presentation (QAOA + MILP Comparison) */}
         {qaoaResult && (
-          <div className="space-y-6 pt-2">
+          <div className={cn('space-y-6', 'pt-2')}>
             {/* KPI Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-1">
-                <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+            <div className={cn('grid', 'grid-cols-2', 'md:grid-cols-4', 'gap-4')}>
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'bg-slate-50/60', 'p-3.5', 'space-y-1')}>
+                <div className={cn('text-[10px]', 'font-medium', 'text-slate-500', 'uppercase', 'tracking-wider')}>
                   Best Sampled Bitstring
                 </div>
-                <div className="font-mono text-base font-bold text-blue-600">
+                <div className={cn('font-mono', 'text-base', 'font-bold', 'text-blue-600')}>
                   |{qaoaResult.best_sampled_bitstring || qaoaResult.optimal_bitstring}⟩
                 </div>
-                <div className="text-[10px] text-slate-500">
+                <div className={cn('text-[10px]', 'text-slate-500')}>
                   Most frequent: |{qaoaResult.most_frequent_bitstring || qaoaResult.optimal_bitstring}⟩
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-1">
-                <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'bg-slate-50/60', 'p-3.5', 'space-y-1')}>
+                <div className={cn('text-[10px]', 'font-medium', 'text-slate-500', 'uppercase', 'tracking-wider')}>
                   Best Sampled Energy
                 </div>
-                <div className="font-mono text-base font-bold text-slate-900">
+                <div className={cn('font-mono', 'text-base', 'font-bold', 'text-slate-900')}>
                   {qaoaResult.best_sampled_energy.toFixed(4)}
                 </div>
-                <div className="text-[10px] text-slate-500">
+                <div className={cn('text-[10px]', 'text-slate-500')}>
                   Expected ⟨H⟩: {qaoaResult.expected_energy.toFixed(4)}
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-1">
-                <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'bg-slate-50/60', 'p-3.5', 'space-y-1')}>
+                <div className={cn('text-[10px]', 'font-medium', 'text-slate-500', 'uppercase', 'tracking-wider')}>
                   Ground State Prob P(GS)
                 </div>
-                <div className="font-mono text-base font-bold text-emerald-600">
+                <div className={cn('font-mono', 'text-base', 'font-bold', 'text-emerald-600')}>
                   {(qaoaResult.ground_state_probability * 100).toFixed(2)}%
                 </div>
-                <div className="text-[10px] text-slate-500">
+                <div className={cn('text-[10px]', 'text-slate-500')}>
                   Over {qaoaResult.shots.toLocaleString()} measurement shots
                 </div>
               </div>
 
-              <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-1">
-                <div className="text-[10px] font-medium text-slate-500 uppercase tracking-wider">
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'bg-slate-50/60', 'p-3.5', 'space-y-1')}>
+                <div className={cn('text-[10px]', 'font-medium', 'text-slate-500', 'uppercase', 'tracking-wider')}>
                   Shift-Invariant Approx Ratio
                 </div>
-                <div className="font-mono text-base font-bold text-indigo-600">
+                <div className={cn('font-mono', 'text-base', 'font-bold', 'text-indigo-600')}>
                   α = {qaoaResult.approximation_ratio ? qaoaResult.approximation_ratio.toFixed(4) : "1.0000"}
                 </div>
-                <div className="text-[10px] text-slate-500">
+                <div className={cn('text-[10px]', 'text-slate-500')}>
                   Time: {qaoaResult.solve_time_ms.toFixed(0)} ms ({qaoaResult.iterations} steps)
                 </div>
               </div>
             </div>
 
             {/* Convergence Trajectory Chart & Measurement Distribution */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className={cn('grid', 'grid-cols-1', 'lg:grid-cols-2', 'gap-6')}>
               {/* Convergence Line Chart */}
-              <div className="rounded-xl border border-slate-200 p-4 bg-white">
-                <h4 className="font-display text-xs font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                  <TrendingDown className="h-3.5 w-3.5 text-blue-600" />
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'p-4', 'bg-white')}>
+                <h4 className={cn('font-display', 'text-xs', 'font-bold', 'text-slate-900', 'mb-2', 'flex', 'items-center', 'gap-1.5')}>
+                  <TrendingDown className={cn('h-3.5', 'w-3.5', 'text-blue-600')} />
                   QAOA Classical Optimization Convergence
                 </h4>
-                <div className="h-56 w-full">
+                <div className={cn('h-56', 'w-full')}>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={qaoaResult.trajectory}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -740,12 +740,12 @@ export default function QuantumOptimizationLab() {
               </div>
 
               {/* Measurement Distribution Bar Chart */}
-              <div className="rounded-xl border border-slate-200 p-4 bg-white">
-                <h4 className="font-display text-xs font-bold text-slate-900 mb-2 flex items-center gap-1.5">
-                  <BarChart3 className="h-3.5 w-3.5 text-indigo-600" />
+              <div className={cn('rounded-xl', 'border', 'border-slate-200', 'p-4', 'bg-white')}>
+                <h4 className={cn('font-display', 'text-xs', 'font-bold', 'text-slate-900', 'mb-2', 'flex', 'items-center', 'gap-1.5')}>
+                  <BarChart3 className={cn('h-3.5', 'w-3.5', 'text-indigo-600')} />
                   Top Measurement Bitstrings (Qiskit Aer)
                 </h4>
-                <div className="h-56 w-full">
+                <div className={cn('h-56', 'w-full')}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={qaoaResult.top_measurements.slice(0, 8)}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
@@ -773,21 +773,21 @@ export default function QuantumOptimizationLab() {
 
         {/* MILP Result Callout if run standalone */}
         {classicalResult && (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-emerald-600 p-2 text-white">
-                <ShieldCheck className="h-4 w-4" />
+          <div className={cn('rounded-xl', 'border', 'border-emerald-200', 'bg-emerald-50/50', 'p-4', 'flex', 'items-center', 'justify-between')}>
+            <div className={cn('flex', 'items-center', 'gap-3')}>
+              <div className={cn('rounded-lg', 'bg-emerald-600', 'p-2', 'text-white')}>
+                <ShieldCheck className={cn('h-4', 'w-4')} />
               </div>
               <div>
-                <div className="text-xs font-bold text-emerald-950">
+                <div className={cn('text-xs', 'font-bold', 'text-emerald-950')}>
                   Exact Classical Baseline: SciPy HiGHS MILP
                 </div>
-                <div className="text-[11px] text-emerald-800 font-mono">
+                <div className={cn('text-[11px]', 'text-emerald-800', 'font-mono')}>
                   Optimal bitstring: |{classicalResult.optimal_bitstring}⟩ — Provable Global Minimum: {classicalResult.objective_value.toFixed(4)}
                 </div>
               </div>
             </div>
-            <div className="text-right text-xs font-mono text-emerald-900">
+            <div className={cn('text-right', 'text-xs', 'font-mono', 'text-emerald-900')}>
               Time: {classicalResult.solve_time_ms.toFixed(1)} ms
             </div>
           </div>
@@ -795,14 +795,14 @@ export default function QuantumOptimizationLab() {
       </div>
 
       {/* ── 4. HEAD-TO-HEAD 5-WAY COMPARATIVE BENCHMARK ───────────────── */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-6 shadow-xs space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
+      <div className={cn('rounded-2xl', 'border', 'border-slate-200/80', 'bg-white', 'p-6', 'shadow-xs', 'space-y-5')}>
+        <div className={cn('flex', 'flex-col', 'sm:flex-row', 'sm:items-center', 'justify-between', 'gap-4', 'pb-4', 'border-b', 'border-slate-100')}>
           <div>
-            <h3 className="font-display text-sm font-bold text-slate-900 flex items-center gap-2">
-              <Scale className="h-4 w-4 text-purple-600" />
+            <h3 className={cn('font-display', 'text-sm', 'font-bold', 'text-slate-900', 'flex', 'items-center', 'gap-2')}>
+              <Scale className={cn('h-4', 'w-4', 'text-purple-600')} />
               Rigorous 5-Way Quantum vs Classical Benchmark Matrix
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className={cn('text-xs', 'text-slate-500')}>
               Evaluates SciPy HiGHS MILP, Brute-Force (2^n), Greedy, Simulated Annealing, and QAOA on identical formulation
             </p>
           </div>
@@ -810,19 +810,19 @@ export default function QuantumOptimizationLab() {
           <button
             onClick={handleRunBenchmark}
             disabled={isRunningBenchmark || !problemData}
-            className="flex items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-purple-700 disabled:opacity-50"
+            className={cn('flex', 'items-center', 'gap-1.5', 'rounded-xl', 'bg-purple-600', 'px-4', 'py-2', 'text-xs', 'font-semibold', 'text-white', 'shadow-sm', 'hover:bg-purple-700', 'disabled:opacity-50')}
           >
-            <BarChart3 className="h-3.5 w-3.5" />
+            <BarChart3 className={cn('h-3.5', 'w-3.5')} />
             {isRunningBenchmark ? "Benchmarking Solvers..." : "Run Head-to-Head Benchmark"}
           </button>
         </div>
 
         {benchmarkResult && (
           <div className="space-y-4">
-            <div className="overflow-x-auto border border-slate-200 rounded-xl">
-              <table className="w-full text-left text-xs border-collapse">
+            <div className={cn('overflow-x-auto', 'border', 'border-slate-200', 'rounded-xl')}>
+              <table className={cn('w-full', 'text-left', 'text-xs', 'border-collapse')}>
                 <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200 text-slate-600 font-medium">
+                  <tr className={cn('bg-slate-50', 'border-b', 'border-slate-200', 'text-slate-600', 'font-medium')}>
                     <th className="p-3">Solver</th>
                     <th className="p-3">Type</th>
                     <th className="p-3">Best Bitstring |x⟩</th>
@@ -834,7 +834,7 @@ export default function QuantumOptimizationLab() {
                     <th className="p-3">Iterations</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 font-mono text-[11px]">
+                <tbody className={cn('divide-y', 'divide-slate-100', 'font-mono', 'text-[11px]')}>
                   {benchmarkResult.solvers.map((s, idx) => {
                     const isOptimal = Math.abs(s.energy - benchmarkResult.exact_ground_energy) < 1e-4;
                     const displayedBitstring = s.best_bitstring || s.optimal_bitstring;
@@ -848,20 +848,20 @@ export default function QuantumOptimizationLab() {
                           isOptimal ? "bg-emerald-50/30" : "hover:bg-slate-50/50"
                         )}
                       >
-                        <td className="p-3 font-bold text-slate-900 font-sans flex items-center gap-1.5">
+                        <td className={cn('p-3', 'font-bold', 'text-slate-900', 'font-sans', 'flex', 'items-center', 'gap-1.5')}>
                           {s.is_quantum ? (
-                            <Atom className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                            <Atom className={cn('h-3.5', 'w-3.5', 'text-blue-600', 'shrink-0')} />
                           ) : (
-                            <Cpu className="h-3.5 w-3.5 text-slate-600 shrink-0" />
+                            <Cpu className={cn('h-3.5', 'w-3.5', 'text-slate-600', 'shrink-0')} />
                           )}
                           <span>{s.solver_name}</span>
                         </td>
-                        <td className="p-3 font-sans text-slate-600">
+                        <td className={cn('p-3', 'font-sans', 'text-slate-600')}>
                           {s.is_quantum ? "Quantum Sim" : "Classical"}
                         </td>
-                        <td className="p-3 font-bold text-blue-700">|{displayedBitstring}⟩</td>
-                        <td className="p-3 font-bold text-slate-900">{evalEnergy.toFixed(4)}</td>
-                        <td className="p-3 text-slate-700">+{absGap.toFixed(4)}</td>
+                        <td className={cn('p-3', 'font-bold', 'text-blue-700')}>|{displayedBitstring}⟩</td>
+                        <td className={cn('p-3', 'font-bold', 'text-slate-900')}>{evalEnergy.toFixed(4)}</td>
+                        <td className={cn('p-3', 'text-slate-700')}>+{absGap.toFixed(4)}</td>
                         <td className="p-3">
                           <span
                             className={cn(
@@ -876,11 +876,11 @@ export default function QuantumOptimizationLab() {
                             {s.optimality_gap_pct.toFixed(2)}%
                           </span>
                         </td>
-                        <td className="p-3 font-semibold text-slate-700">
+                        <td className={cn('p-3', 'font-semibold', 'text-slate-700')}>
                           {s.approximation_ratio.toFixed(4)}
                         </td>
-                        <td className="p-3 text-slate-600">{s.solve_time_ms.toFixed(1)} ms</td>
-                        <td className="p-3 text-slate-500">{s.iterations}</td>
+                        <td className={cn('p-3', 'text-slate-600')}>{s.solve_time_ms.toFixed(1)} ms</td>
+                        <td className={cn('p-3', 'text-slate-500')}>{s.iterations}</td>
                       </tr>
                     );
                   })}
@@ -888,20 +888,20 @@ export default function QuantumOptimizationLab() {
               </table>
             </div>
 
-            <div className="flex items-center gap-2 text-[11px] text-slate-500 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200/60">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+            <div className={cn('flex', 'items-center', 'gap-2', 'text-[11px]', 'text-slate-500', 'bg-slate-50', 'px-3', 'py-1.5', 'rounded-lg', 'border', 'border-slate-200/60')}>
+              <ShieldCheck className={cn('h-3.5', 'w-3.5', 'text-emerald-600', 'shrink-0')} />
               <span>
                 Mathematical Verification: Every displayed bitstring has been independently re-evaluated via direct matrix multiplication E(x) = x^T Q x + c₀.
               </span>
             </div>
 
             {/* Scientific Summary Findings */}
-            <div className="rounded-xl bg-slate-50 p-4 border border-slate-200/60 space-y-1.5 text-xs">
-              <div className="font-bold text-slate-800 flex items-center gap-1.5">
-                <Info className="h-3.5 w-3.5 text-blue-600" />
+            <div className={cn('rounded-xl', 'bg-slate-50', 'p-4', 'border', 'border-slate-200/60', 'space-y-1.5', 'text-xs')}>
+              <div className={cn('font-bold', 'text-slate-800', 'flex', 'items-center', 'gap-1.5')}>
+                <Info className={cn('h-3.5', 'w-3.5', 'text-blue-600')} />
                 Benchmark Findings & Scientific Consensus:
               </div>
-              <ul className="list-disc list-inside space-y-1 text-slate-600 text-[11px]">
+              <ul className={cn('list-disc', 'list-inside', 'space-y-1', 'text-slate-600', 'text-[11px]')}>
                 {benchmarkResult.summary_findings.map((f, i) => (
                   <li key={i}>{f}</li>
                 ))}

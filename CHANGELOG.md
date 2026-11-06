@@ -4,6 +4,40 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 05.1: Quantum Data Encoding Engine] — 2026-11-06
+### Added: Quantum Machine Learning Data Encoders & Circuit Analyzers
+- **Basis Encoding (`BasisEncoder`)**:
+  - Encodes discrete binary vectors $x \in \{0, 1\}^n$ into computational basis states $|x\rangle$ using single-qubit Pauli-$X$ gates.
+  - Strict input validation rejecting non-binary values, negatives, and floats.
+  - Full support for little-endian ($2^i$) and big-endian ($2^{n-1-i}$) qubit ordering.
+  - Deterministic shot measurement verification method on `AerSimulator`.
+- **Amplitude Encoding (`AmplitudeEncoder`)**:
+  - Encodes continuous feature vectors $x \in \mathbb{R}^d$ into quantum state amplitudes on $n = \lceil \log_2 d \rceil$ qubits.
+  - Robust zero-vector rejection ($\|x\|_2 < 10^{-12}$) and automatic $L_2$ Euclidean normalization.
+  - Zero-padding for non-power-of-two dimensions with exact state preparation via `qiskit.circuit.initialize`.
+  - State preparation verification proving statevector overlap fidelity $F \ge 0.9999$.
+  - Explicit documentation of $\mathcal{O}(2^n) = \mathcal{O}(d)$ gate complexity without quantum RAM.
+- **Angle & Rotation Encoding (`AngleEncoder`)**:
+  - Implemented single-qubit Pauli rotation encodings ($R_X, R_Y, R_Z$) and combined Euler rotations.
+  - Configurable feature-to-qubit mappings: one-to-one, dense (3:1 Euler compression), and cyclic.
+  - Analytical statevector verification comparing circuits against pure mathematical Kronecker tensor products ($F = 1.000000$, error $< 10^{-6}$).
+- **IQP Feature Maps (`IQPFeatureMap`)**:
+  - Non-linear Instantaneous Quantum Polynomial feature map with Hadamard superposition layers, single-qubit $R_Z$ rotations, and two-qubit CNOT-entangled $R_{ZZ}$ phase interactions ($2(\pi - x_i)(\pi - x_j)$).
+  - Configurable entanglement topologies: linear, circular, and full all-to-all across configurable repetitions $R \ge 1$.
+- **Circuit Resource Metrics (`EncodingResourceMetrics`, `calculate_circuit_metrics`)**:
+  - Direct inspection of actual Qiskit `circuit.data` instruction objects (no hardcoded estimates).
+  - Reports qubit count, circuit depth, total gates, 1-qubit vs 2-qubit gates, parameter count, and statevector dimension.
+- **Encoding Registry & Comparator (`EncodingRegistry`)**:
+  - Centralized factory and catalog for all 8 encoder variants.
+  - Empirical head-to-head comparison method benchmarking resource utilization across identical data vectors.
+- **Verification & Testing**:
+  - Authored 18 dedicated tests in `backend/tests/test_qml_encoding.py`.
+  - Full backend test suite passing: **220 passed, 0 failed** across all 15 test suites.
+  - Frontend production build passing: `tsc -b && vite build` built in 8.12s with 0 errors.
+  - Published comprehensive milestone report `PHASE_05_1_QUANTUM_DATA_ENCODING_REPORT.md`.
+
+---
+
 ## [Phase 4.9: Advanced Quantum Optimization Scientific Audit] — 2026-11-06
 ### Forensic Mathematical, Algorithmic & Computational Audit
 - **Forensic Benchmark Inconsistency Resolution**:
