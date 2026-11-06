@@ -29,8 +29,8 @@
 | **02** | **Quantum Computing Foundation** | Qiskit Aer C++ engine, 1-8 qubit playground, 14-gate unitary library, Bloch sphere 3D with pure/mixed states, Bell & GHZ entanglement lab, 10 reproducible experiments | **COMPLETED** |
 | **03** | **Quantum Mechanics Research Lab** | Multi-qubit density operators, continuous Hamiltonian state evolution $U(t)$, wave interference, Schmidt decomposition, concurrence, PPT negativity, Werner transitions, Qiskit Aer noise models, $T_1/T_2$ decoherence, 3-qubit QEC, and quantum state tomography | **COMPLETED** |
 | **1.8** | **Real Geographic Intelligence** | Real Pune GIS, WGS-84/UTM 43N dual projections, NetworkX topological road routing with IRC speeds, RFC 7946 GeoJSON, KDTree spatial index, MCDA suitability scoring | **COMPLETED** |
-| **04** | **Advanced Quantum Optimization** | Multi-layer QAOA ($p \ge 3$), XY mixer Hamiltonians, higher-order QUBOs, penalty tuning | **NEXT FOCUS** |
-| **05** | **Quantum Machine Learning** | QNN, QSVM, quantum kernel estimation, land valuation classification | **PLANNED** |
+| **04** | **Advanced Quantum Optimization** | Multi-layer QAOA ($p \le 5$), exact SciPy HiGHS MILP, algebraic QUBO ⇄ Ising proof ($|E_Q - E_I| = 0$), Knapsack/Portfolio/Facility/Resource formulations, 5-way benchmark suite, React 19 Quantum Optimization Lab | **COMPLETED** |
+| **05** | **Quantum Machine Learning** | QNN, QSVM, quantum kernel estimation, land valuation classification | **NEXT FOCUS** |
 | **06** | **Infrastructure Intelligence** | Road networks, IS 1172 water, CPHEEO sewage, 220kV power grid, infrastructure gap index | **PLANNED** |
 | **07** | **Development & Engineering Intelligence**| Construction scheduling, UDCPR 2020 FSI optimization, structural cost modeling | **PLANNED** |
 | **08** | **Financial Intelligence** | Capital stack structures, debt-equity sizing, IRR, NPV, multi-year waterfalls | **PLANNED** |

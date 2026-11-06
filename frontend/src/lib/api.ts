@@ -1499,4 +1499,259 @@ export async function executeMapOptimization(
   return data;
 }
 
+// ═══════════════════════════════════════════════════════════════════════
+// PHASE 04 — QUANTUM-CLASSICAL OPTIMIZATION ENGINE APIS
+// ═══════════════════════════════════════════════════════════════════════
+
+export interface QUBOPayload {
+  matrix: number[][];
+  offset: number;
+  variable_names: string[];
+  problem_name: string;
+  metadata?: Record<string, any>;
+}
+
+export interface ProblemBuildRequest {
+  problem_type: "knapsack" | "portfolio" | "facility_location" | "resource_allocation" | string;
+  parameters?: Record<string, any>;
+}
+
+export interface ProblemBuildResponse {
+  problem_type: string;
+  qubo: QUBOPayload;
+  num_variables: number;
+  variable_names: string[];
+  linear_coefficients: Record<string, number>;
+  quadratic_interactions: Array<{
+    var1: string;
+    var2: string;
+    index1: number;
+    index2: number;
+    coupling: number;
+  }>;
+  milp_summary?: Record<string, any>;
+}
+
+export interface QUBOValidateResponse {
+  is_valid: boolean;
+  num_variables: number;
+  is_symmetric: boolean;
+  is_finite: boolean;
+  condition_number?: number;
+  min_eigenvalue?: number;
+  max_eigenvalue?: number;
+  dynamic_range_db?: number;
+  warnings: string[];
+}
+
+export interface IsingConvertResponse {
+  num_spins: number;
+  h_linear: number[];
+  J_quadratic: number[][];
+  offset: number;
+  variable_names: string[];
+  pauli_terms: Array<{ pauli: string; coefficient: number }>;
+  verified_equivalent: boolean;
+}
+
+export interface SolveClassicalRequest {
+  qubo: QUBOPayload;
+  solver: "milp" | "brute_force" | "greedy" | "simulated_annealing";
+  seed?: number;
+}
+
+export interface ClassicalSolutionResponse {
+  solver_name: string;
+  status: string;
+  optimal_bitstring: string;
+  optimal_vector: number[];
+  objective_value: number;
+  solve_time_ms: number;
+  iterations: number;
+  optimality_gap?: number;
+  extra_metadata?: Record<string, any>;
+}
+
+export interface SolveQAOARequest {
+  qubo: QUBOPayload;
+  depth_p: number;
+  shots: number;
+  optimizer_name: string;
+  strategy: string;
+  maxiter: number;
+  seed?: number;
+}
+
+export interface QAOAIterationPoint {
+  iteration: number;
+  energy: number;
+  gammas: number[];
+  betas: number[];
+}
+
+export interface MeasurementItem {
+  bitstring: string;
+  counts: number;
+  probability: number;
+  energy: number;
+  is_ground_state: boolean;
+}
+
+export interface QAOASolutionResponse {
+  status: string;
+  success: boolean;
+  depth_p: number;
+  shots: number;
+  optimizer_name: string;
+  iterations: number;
+  optimal_gammas: number[];
+  optimal_betas: number[];
+  optimal_bitstring: string;
+  optimal_vector: number[];
+  best_sampled_energy: number;
+  expected_energy: number;
+  ground_state_probability: number;
+  approximation_ratio?: number;
+  solve_time_ms: number;
+  circuit_metadata: Record<string, any>;
+  trajectory: QAOAIterationPoint[];
+  top_measurements: MeasurementItem[];
+  hardware_disclaimer: string;
+}
+
+export interface SolveHybridRequest {
+  qubo: QUBOPayload;
+  depth_p: number;
+  shots: number;
+  seed?: number;
+}
+
+export interface HybridOptimizationResponse {
+  problem_name: string;
+  num_variables: number;
+  variable_names: string[];
+  classical_solution: {
+    solver: string;
+    bitstring: string;
+    vector: number[];
+    objective_value: number;
+    solve_time_ms: number;
+    status: string;
+  };
+  quantum_solution: {
+    solver: string;
+    bitstring: string;
+    vector: number[];
+    best_sampled_energy: number;
+    expected_energy: number;
+    ground_state_probability: number;
+    solve_time_ms: number;
+    circuit_metadata: Record<string, any>;
+    trajectory: QAOAIterationPoint[];
+    top_measurements: MeasurementItem[];
+  };
+  consensus_reached: boolean;
+  optimality_gap_pct: number;
+  approximation_ratio: number;
+  total_execution_time_ms: number;
+  hardware_disclaimer: string;
+}
+
+export interface BenchmarkRequest {
+  qubo?: QUBOPayload;
+  problem_preset?: "portfolio_pune" | "knapsack_infra" | "facility_pune";
+  run_qaoa_p2?: boolean;
+  shots?: number;
+  maxiter?: number;
+  seed?: number;
+}
+
+export interface BenchmarkSolverEntry {
+  solver_name: string;
+  is_quantum: boolean;
+  status: string;
+  optimal_bitstring: string;
+  energy: number;
+  optimality_gap_pct: number;
+  approximation_ratio: number;
+  solve_time_ms: number;
+  iterations: number;
+  feasibility_status: string;
+  hardware_note: string;
+  metadata?: Record<string, any>;
+}
+
+export interface BenchmarkResponse {
+  problem_name: string;
+  num_variables: number;
+  exact_ground_energy: number;
+  exact_ground_bitstring: string;
+  solvers: BenchmarkSolverEntry[];
+  summary_findings: string[];
+  total_benchmark_time_ms: number;
+  scientific_disclaimer: string;
+}
+
+export interface OptimizationHealthResponse {
+  status: string;
+  qiskit_version: string;
+  qiskit_aer_version: string;
+  scipy_version: string;
+  numpy_version: string;
+  supported_solvers: string[];
+  supported_problem_types: string[];
+  simulation_backend: string;
+  hardware_disclaimer: string;
+}
+
+export async function getOptimizationHealth(): Promise<OptimizationHealthResponse> {
+  const { data } = await api.get<OptimizationHealthResponse>("/optimization/health");
+  return data;
+}
+
+export async function buildOptimizationProblem(
+  params: ProblemBuildRequest
+): Promise<ProblemBuildResponse> {
+  const { data } = await api.post<ProblemBuildResponse>("/optimization/problems/build", params);
+  return data;
+}
+
+export async function validateQUBO(qubo: QUBOPayload): Promise<QUBOValidateResponse> {
+  const { data } = await api.post<QUBOValidateResponse>("/optimization/qubo/validate", qubo);
+  return data;
+}
+
+export async function convertQUBOToIsing(qubo: QUBOPayload): Promise<IsingConvertResponse> {
+  const { data } = await api.post<IsingConvertResponse>("/optimization/qubo/convert", qubo);
+  return data;
+}
+
+export async function solveClassicalOptimization(
+  req: SolveClassicalRequest
+): Promise<ClassicalSolutionResponse> {
+  const { data } = await api.post<ClassicalSolutionResponse>("/optimization/solve/classical", req);
+  return data;
+}
+
+export async function solveQAOAOptimization(
+  req: SolveQAOARequest
+): Promise<QAOASolutionResponse> {
+  const { data } = await api.post<QAOASolutionResponse>("/optimization/solve/qaoa", req);
+  return data;
+}
+
+export async function solveHybridOptimization(
+  req: SolveHybridRequest
+): Promise<HybridOptimizationResponse> {
+  const { data } = await api.post<HybridOptimizationResponse>("/optimization/solve/hybrid", req);
+  return data;
+}
+
+export async function runOptimizationBenchmark(
+  req: BenchmarkRequest
+): Promise<BenchmarkResponse> {
+  const { data } = await api.post<BenchmarkResponse>("/optimization/benchmark", req);
+  return data;
+}
+
 export default api;

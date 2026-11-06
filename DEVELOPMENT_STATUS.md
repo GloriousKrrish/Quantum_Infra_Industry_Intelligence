@@ -47,6 +47,12 @@
 | **OpenStreetMap Engine** | Overpass API POIs | **HEALTHY** | Port 8000 (`/api/parcels/{id}/overpass`) | 1-hr TTL cache, 3.5s timeout & offline fallback |
 | **Feasibility Engine** | Development Feasibility | **HEALTHY** | Port 8000 (`/api/parcels/{id}/feasibility`) | Modular typology, UDCPR 2020 notes & safeguards |
 | **Financial Engine** | Scenario Modeling | **HEALTHY** | Port 8000 (`/api/parcels/{id}/financial`) | 3-tier sensitivity, 3-year cash flow & safeguards |
+| **Optimization Engine (Phase 04)** | Modular QUBO & Ising Engine | **HEALTHY** | Port 8000 (`/api/optimization/health`) | Bidirectional Ising proof ($|E_Q - E_I| = 0$), matrix condition $\kappa$ |
+| **Problem Library (Phase 04)** | Domain Formulation Suite | **HEALTHY** | Port 8000 (`/api/optimization/problems/build`) | Knapsack, Portfolio, Facility Location, Resource Allocation |
+| **Exact HiGHS MILP (Phase 04)** | SciPy HiGHS Branch-and-Cut | **HEALTHY** | Port 8000 (`/api/optimization/solve/classical`) | Exact linear & linearized McCormick QUBO solving |
+| **QAOA Simulation (Phase 04)** | Configurable Depth $p \in \{1..5\}$ | **HEALTHY** | Port 8000 (`/api/optimization/solve/qaoa`) | Qiskit Aer CPU simulation, convergence trajectory, shot decoding |
+| **5-Way Benchmark (Phase 04)** | Head-to-Head Comparative Matrix | **HEALTHY** | Port 8000 (`/api/optimization/benchmark`) | MILP, Brute-Force, Greedy, SA, QAOA with gap & approx ratio |
+| **Optimization Lab UI (Phase 04)** | React 19 Interactive Lab | **HEALTHY** | Port 8080 (`/quantum`) | Matrix heatmap, convergence curves, measurement distribution |
 | **Frontend UI (MapLibre)** | MapLibre GL JS + React 19 | **HEALTHY** | Port 8080 (`/`) | Production build: 0 errors |
 
 ---

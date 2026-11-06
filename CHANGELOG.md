@@ -4,6 +4,43 @@ All notable changes to the Quantum Estate X platform are documented in this file
 
 ---
 
+## [Phase 04: Advanced Quantum Optimization & Quantum-Classical Hybrid Computing] — 2026-11-06
+### Added: Quantum-Classical Optimization Research Engine
+- **Mathematical QUBO & Ising Engine (`backend/app/engines/optimization/qubo/`)**:
+  - `QUBOModel` dataclass with upper-triangular and symmetric canonicalization.
+  - Closed-form, machine-precision bidirectional QUBO ⇄ Ising converter ($|E_{\text{QUBO}} - E_{\text{Ising}}| = 0.0$).
+  - Big-endian Qiskit `SparsePauliOp` mapping adhering to Pauli string endianness conventions.
+  - Matrix condition number $\kappa$, min/max eigenvalues, and dynamic range diagnostics in `qubo_validator.py`.
+- **Classical Optimization Solvers Suite (`backend/app/engines/optimization/classical/`)**:
+  - SciPy HiGHS MILP solver (`scipy.optimize.milp`) for exact global minimum determination via McCormick linearized QUBOs.
+  - Brute-Force solver evaluating all $2^n$ combinations for $n \le 20$.
+  - Greedy coordinate-descent 1-bit flip solver with multi-start restarts.
+  - Simulated Annealing solver implementing Metropolis-Hastings with temperature trajectory logging.
+- **Advanced Parameterized QAOA Engine (`backend/app/engines/optimization/quantum/`)**:
+  - Parameterized quantum circuits supporting depth $p \in \{1, 2, 3, 4, 5\}$ using Qiskit primitives.
+  - Multiple initialization schedules: Linear Ramp (adiabatic heuristic), Random uniform, and Fourier heuristics.
+  - Hybrid optimization loop: exact statevector expectation evaluation with classical optimizers (COBYLA, Nelder-Mead, SLSQP) followed by shot-based sampling with AerSimulator (1,024 to 4,096 shots).
+  - Little-endian measurement decoder extracting top bitstrings, expected energy $\langle H \rangle$, and ground-state probability $P_{\text{opt}}$.
+- **Domain Problem Library (`backend/app/engines/optimization/problems/`)**:
+  - `knapsack.py`: 0/1 knapsack with power-of-two binary slack variables.
+  - `portfolio.py`: Pune real estate parcel portfolio selection with ROI, risk variance, budget constraint, and micro-market diversification.
+  - `facility_location.py`: P-Median spatial facility location with demand-weighted distances and proximity redundancy penalties.
+  - `resource_allocation.py`: Bipartite heavy machinery and construction site scheduling.
+- **Benchmarking Suite & Orchestrator (`backend/app/engines/optimization/hybrid/`)**:
+  - Head-to-head 5-way benchmark runner evaluating MILP, Brute-Force, Greedy, SA, and QAOA ($p=1, 2$).
+  - Automatic calculation of optimality gap % and approximation ratio $\alpha$.
+- **FastAPI Endpoints (`/api/optimization/*`)**:
+  - Mounted 8 dedicated endpoints for health, problem building, QUBO validation, Ising conversion, classical solve, QAOA solve, hybrid solve, and automated benchmarking.
+- **Frontend Research Laboratory (`QuantumOptimizationLab.tsx`)**:
+  - React 19 interactive laboratory mounted in `QuantumLab.tsx`.
+  - QUBO interactive matrix heatmap, spectral diagnostics card, convergence curves, measurement distribution bar chart, and comparative solver matrix table.
+- **Verification & Testing**:
+  - Authored 21 dedicated tests in `backend/tests/test_optimization_engine.py`.
+  - Full pytest test suite passing: **197 passed, 0 failed**.
+  - Frontend production build passing: `tsc -b && vite build` built in 26.3s with zero errors.
+
+---
+
 ## [Master Transformation: Real-World Geospatial Digital Twin] — 2026-11-05
 ### Added: Authentic 2D/3D MapLibre GIS Platform
 - **MapLibre GL JS Integration (`RealWorldMapLibre.tsx`)**:

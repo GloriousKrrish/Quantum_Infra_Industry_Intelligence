@@ -21,6 +21,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Scan,
+  Zap,
 } from "lucide-react";
 import {
   BarChart,
@@ -49,6 +50,7 @@ import AdvancedEntanglementLab from "../components/quantum/AdvancedEntanglementL
 import NoiseDecoherenceLab from "../components/quantum/NoiseDecoherenceLab";
 import ErrorCorrectionLab from "../components/quantum/ErrorCorrectionLab";
 import TomographyLab from "../components/quantum/TomographyLab";
+import QuantumOptimizationLab from "../components/quantum/QuantumOptimizationLab";
 import {
   MOCK_QUANTUM_RESULT,
   MOCK_BENCHMARK,
@@ -74,6 +76,7 @@ type QuantumTab =
   | "error_correction"
   | "tomography"
   | "math_explorer"
+  | "optimization_research"
   | "qaoa_optimizer"
   | "benchmarks";
 
@@ -340,6 +343,18 @@ export default function QuantumLab() {
             State Math
           </button>
           <button
+            onClick={() => setActiveTab("optimization_research")}
+            className={cn(
+              "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
+              activeTab === "optimization_research"
+                ? "border-blue-600 text-blue-600 bg-blue-50/40 rounded-t-lg font-semibold"
+                : "border-transparent text-slate-500 hover:text-slate-800"
+            )}
+          >
+            <Zap className="h-3.5 w-3.5 text-blue-600" />
+            Phase 04 Optimization Lab
+          </button>
+          <button
             onClick={() => setActiveTab("qaoa_optimizer")}
             className={cn(
               "flex items-center gap-1.5 border-b-2 px-3 py-2 transition-all whitespace-nowrap",
@@ -493,6 +508,9 @@ export default function QuantumLab() {
           numQubits={playgroundSimResult?.num_qubits || 2}
         />
       )}
+
+      {/* ── TAB: PHASE 04 ADVANCED QUANTUM-CLASSICAL OPTIMIZATION LAB ── */}
+      {activeTab === "optimization_research" && <QuantumOptimizationLab />}
 
       {/* ── TAB 4: QAOA LAND OPTIMIZER (PRESERVED) ────────────────────── */}
       {activeTab === "qaoa_optimizer" && (
